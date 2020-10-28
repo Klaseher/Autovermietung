@@ -17,7 +17,7 @@
             <div>
               <button type="submit" @click="redirect('/')">
                     Go back to Homepage
-              </button> 
+              </button>
             </div>
           </v-card>
         </v-flex>
@@ -27,13 +27,14 @@
 </template>
 
 <script>
-    export default {
-          methods : {
-            redirect(route){
-                 this.$router.push(route)
-            }
-        }
+import Helper from '../services/helper.service'
+export default {
+  methods: {
+    redirect (route) {
+      Helper.redirect(route)
     }
+  }
+}
 </script>
 
 <style>

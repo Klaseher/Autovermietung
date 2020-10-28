@@ -1,30 +1,35 @@
 <template>
     <div class="hello">
-         <button type="submit" @click="logout">
-                    Logout
+        <button type="submit"  @click="redirect('/')">
+                Home
+        </button>
+        <button type="submit" @click="logout">
+                Logout
         </button>
         <h1>Welcome to regular users page</h1>
         <h2>{{msg}}</h2>
-        
+
     </div>
 </template>
 
 <script>
-    import UserService from '../services/user.service';
-    export default {
-        data () {
-            return {
-                msg: 'The commoners'
-            }
-        },
+import Auth from '../services/auth.service'
+import Helper from '../services/helper.service'
+export default {
+  data () {
+    return {
+      msg: 'The commoners'
+    }
+  },
 
-         methods : {
-           logout(){
-               sessionStorage.removeItem('role');
-               sessionStorage.removeItem('auth');
-               this.$router.push("/")
-           }
-        }
+  methods: {
+    logout () {
+      Auth.logout()
+    },
+    redirect (route) {
+      Helper.redirect(route)
+    }
+  }
 }
 </script>
 

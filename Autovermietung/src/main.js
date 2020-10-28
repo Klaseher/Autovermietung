@@ -6,7 +6,7 @@ import router from './router'
 import Axios from 'axios'
 
 Vue.prototype.$http = Axios
-Axios.defaults.withCredentials = true;
+Axios.defaults.withCredentials = true
 
 Vue.config.productionTip = false
 
@@ -17,4 +17,3 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
-

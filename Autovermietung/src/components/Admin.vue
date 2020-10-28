@@ -5,26 +5,33 @@
                 <button>
                     Admin-Functions
                 </button>
-              </div> 
+              </div>
         </div>
-         <button type="submit" @click="logout">
+         <button type="submit"  @click="redirect('/')">
+                    Home
+        </button>
+        <button type="submit" @click="logout">
                     Logout
         </button>
         <h1>Welcome to Employee page</h1>
-        <h2>{{msg}}</h2>        
+        <h2>{{msg}}</h2>
         <div v-if="seen">
                 <p>Admin-Functions can be accessed from here</p>
                 <form>
-                <label for="name">Username</label>
-                <div>
-                    <input id="username" type="text" v-model="username" required autofocus>
-                </div>
+                    <label for="name">Name</label>
+                    <div>
+                        <input id="name" type="text" v-model="name" required autofocus>
+                    </div>
 
-                <label for="password">Password</label>
-                <div>
-                    <input id="password" type="password" v-model="password" required>
-                </div>
+                    <label for="username">Username</label>
+                    <div>
+                        <input id="username" type="text" v-model="username" required autofocus>
+                    </div>
 
+                    <label for="password">Password</label>
+                    <div>
+                        <input id="password" type="password" v-model="password" required>
+                    </div>
                 <label for="password-confirm">Confirm Password</label>
                 <div>
                     <input id="password-confirm" type="password" v-model="password_confirmation" required>
@@ -32,7 +39,7 @@
                 <div>
                     <button type="cancel">
                         Cancel
-                    </button>   
+                    </button>
                     <button type="submit" @click="handleSubmit">
                         Create new Employee
                     </button>
@@ -45,6 +52,22 @@
                 <button type="submit" @click="showEmployees">
                         Show all Employees
                 </button>
+                <table v-if="editEmployee">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(employee, index) in employees" :key="index">
+                            <td>{{employee.name}}</td>
+                            <td>{{employee.email}}</td>
+                            <td><button @click="editingEmployee(employee.email)">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div v-else>
@@ -54,96 +77,110 @@
 </template>
 
 <script>
-    export default {
-        data () {
-            return {
-                username: "",
-                password: "",
-                password_confirmation : "",
-                msg: 'The superheros',
-                created: "",
-                admin : false,
-                seen: false,
-                content: ""
+/* eslint-disable eqeqeq */
+import UserService from '../services/user.service'
+import Helper from '../services/helper.service'
+import Auth from '../services/auth.service'
+export default {
+  data () {
+    return {
+      name: '',
+      username: '',
+      password: '',
+      password_confirmation: '',
+      msg: 'The superheros',
+      created: '',
+      content: '',
+      admin: false,
+      seen: false,
+      editEmployee: false,
+      employees: []
+    }
+  },
+  methods: {
+    showEmployees () {
+      this.editEmployee = !this.editEmployee
+      if (this.editEmployee) {
+        UserService.getEmployee('all')
+          .then(response => {
+            this.employees.push.apply(this.employees, response.data.employees)
+          })
+          .catch((error) => Helper.handle(error))
+      } else {
+        this.employees = []
+      }
+    },
+    editingEmployee (username) {
+      this.$router.push('/admin/editEmployee/' + username)
+    },
+    logout () {
+      Auth.logout()
+    },
+
+    redirect (route) {
+      Helper.redirect(route)
+    },
+    handleSubmit (e) {
+      e.preventDefault()
+      /* Regex Name
+        Multiple letters containing ' , or whitespace but not two after each other */
+      var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
+      /* Regex: Strong Password
+      Special Characters - Not Allowed
+      Spaces - Not Allowed
+      Minimum and Maximum Length of field - 6 to 12 Characters
+      Met by [a-zA-Z0-9@]{6,12}
+      Numeric Character - At least one character
+      Met by positive lookahead (?=.*\d)
+      At least one Capital Letter
+      Met by positive lookahead (?=.*[A-Z])
+      Repetitive Characters - Allowed only two repetitive characters */
+      var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      if (this.name.length > 5 && this.name.length < 100 && nameTest.test(this.name)) {
+        if (this.username.length > 6 && this.username.length < 100 && userTest.test(this.username)) {
+          if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
+            if (passTest.test(this.password)) {
+              Auth.registerEmployee(this.name, this.username, this.password)
+                .then(response => {
+                  alert(response.data)
+                  this.created = 'User successfully created'
+                  this.name = ''
+                  this.username = ''
+                  this.password = ''
+                  this.password_confirmation = ''
+                })
+                .catch((error) => Helper.handle(error))
+            } else {
+              this.password = ''
+              this.password_confirmation = ''
+
+              return alert('Passwords not safe enough')
             }
-        },
-           methods : {
-            logout(){
-               sessionStorage.removeItem('role');
-               sessionStorage.removeItem('auth');
-               this.$router.push("/")
-           },
+          } else {
+            this.password = ''
+            this.password_confirmation = ''
 
-           showEmployees(){
-
-           },
-           handleSubmit(e) {
-                e.preventDefault()
-                var userTest = new RegExp("^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$");
-                var passTest = new RegExp("^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$");
-                if(this.username.length > 6 && this.username.length < 100 && userTest.test(this.username)){
-                        if (this.password === this.password_confirmation && this.password.length > 0 && this.password.length < 100)
-                            {  if(passTest.test(this.password)){
-                                let url = "http://localhost:3000/register-employee"
-                                this.$http.post(url, {
-                                    username: this.username,
-                                    password: this.password,
-
-                                })
-                                .then(response => {
-                                    this.created = "User successfully created"
-                                    this.username = ""
-                                    this.password = ""
-                                    this.password_confirmation = "" 
-                                })
-                                .catch((error) => this.handle(error));
-                            }
-                            else{
-                                this.password = ""
-                                this.password_confirmation = ""
-
-                            return alert("Passwords not safe enough")
-                            }
-                        } else {
-                            this.password = ""
-                            this.password_confirmation = ""
-
-                            return alert("Passwords do not match")
-                        }
-                    }
-                 else{
-                        this.username = ""
-                        return alert("Username not save enough (Min. 6 Characters + 1x uppercase + 1x Number)")
-                    }
-            },
-
-             handle (error) {
-	       
-                if (error.response.data) {
-
-                    if(error.response.status == 500){
-                        return alert(error.response.data);
-                    }
-
-                    else if (typeof error.response.data == 'string') {
-                    
-                        return alert('There is a problem with your credentials');
-                    }
-
-                }
-
-                return alert('We could not handle your request');
-                }
-        },
-         beforeMount(){
-              let role = sessionStorage.getItem('role')   
-                if(role == 1){
-                        this.admin = false
-                }
-                else if(role == 2){
-                        this.admin = true
-                }
-         }
+            return alert('Passwords do not match')
+          }
+        } else {
+          this.username = ''
+          return alert('Username not save enough (Min. 6 Characters + 1x uppercase + 1x Number)')
+        }
+      } else {
+        this.name = ''
+        return alert('Name invalid')
+      }
+    }
+  },
+  beforeMount () {
+    let role = sessionStorage.getItem('role')
+    if (role == 1) {
+      this.admin = false
+    } else if (role == 2) {
+      this.admin = true
+    }
+  }
 }
 </script>
 <style scoped>
