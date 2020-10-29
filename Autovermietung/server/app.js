@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 const express = require('express')
 const DB = require('./db')
 const config = require('./config')
@@ -32,27 +33,49 @@ router.post('/register', function (req, res) {
   ],
   function (err) {
     if (err) return res.status(500).send('There was a problem registering the user.')
-    db.selectByEmail(req.body.email, (err, user) => {
-      if (err) return res.status(500).send('There was a problem getting user')
-      res.status(200).send('User successfully created!\n Please go to the Login-Page and login with your credentials to access your account')
-    })
+    res.status(200).send('User successfully created!\n Please go to the Login-Page and login with your credentials to access your account')
   })
 })
 
 router.post('/register-employee', function (req, res) {
-  db.insert([
-    req.body.name,
-    req.body.username,
-    bcrypt.hashSync(req.body.password, 8),
-    1
-  ],
-  function (err) {
-    if (err) return res.status(500).send('There was a problem registering the user.')
-    db.selectByEmail(req.body.email, (err, user) => {
-      if (err) return res.status(500).send('There was a problem getting user')
+  let token = req.cookies.jwt
+  let userr = null
+  if (token) {
+    // verify secret
+    jwt.verify(token, config.secret, function (err, decoded) {
+      if (err) {
+        res.clearCookie('jwt')
+        return res.status(401).send('Unauthorized access')
+      }
+      db.selectById(decoded.id, (err, user) => {
+        if (err) {
+          res.clearCookie('jwt')
+          return res.status(500).send('Error on the server.')
+        }
+        if (!user) {
+          res.clearCookie('jwt')
+          return res.status(404).send('Invalid User')
+        }
+        userr = user
+      })
+    })
+  } else {
+    return res.status(403).send('Forbidden Access')
+  }
+  if (userr.is_admin == 2) {
+    db.insert([
+      req.body.name,
+      req.body.username,
+      bcrypt.hashSync(req.body.password, 8),
+      1
+    ],
+    function (err) {
+      if (err) return res.status(500).send('There was a problem registering the user.')
       res.status(200).send('Employee successfully created!')
     })
-  })
+  } else {
+    return res.status(401).send('Unauthorized access')
+  }
 })
 
 router.post('/login', (req, res) => {
@@ -70,6 +93,47 @@ router.post('/login', (req, res) => {
     })
     res.status(200).send({auth: true, role: user.is_admin})
   })
+})
+//bug
+router.post('/update-employee', (req, res) => {
+  let token = req.cookies.jwt
+  let userr = null
+  if (token) {
+    // verify secret
+    jwt.verify(token, config.secret, function (err, decoded) {
+      if (err) {
+        res.clearCookie('jwt')
+        return res.status(401).send('Unauthorized access')
+      }
+      db.selectById(decoded.id, (err, user) => {
+        if (err) {
+          res.clearCookie('jwt')
+          return res.status(500).send('Error on the server.')
+        }
+        if (!user) {
+          res.clearCookie('jwt')
+          return res.status(404).send('Invalid User')
+        }
+        userr = user
+        if (req.body.id != null && (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == req.body.id))) {
+          if (req.body.name != null && req.body.email == null && req.body.password == null && req.body.new_password == null) {
+            db.updateName(req.body.name, req.body.id, (err) => {
+              if (err) return res.status(500).send('Error on the server.')
+              return res.status(200).send({name: req.body.name})
+            })
+          } else if (req.body.name == null && req.body.email != null && req.body.password == null && req.body.new_password == null) {
+          } else if (req.body.name == null && req.body.email == null && req.body.password != null && req.body.new_password != null) {
+          } else { return res.status(400).send('Invalid request') }
+        } else if (userr.is_admin < 1) {
+          return res.status(401).send('Unauthorized access')
+        } else {
+          return res.status(400).send('Invalid request')
+        }
+      })
+    })
+  } else {
+    return res.status(403).send('Forbidden Access')
+  }
 })
 
 router.get('/authenticate', (req, res) => {
@@ -126,23 +190,55 @@ router.get('/testToken', (req, res) => {
 })
 
 router.get('/employee/:username', (req, res) => {
-  if (req.params.username != null) {
-    if (req.params.username === 'all') {
-      db.getAllEmployees((err, users) => {
-        if (err) return res.status(500).send('Error on the server.')
-        if (!users) return res.status(404).send('No Employees available')
-        return res.status(200).send({employees: users})
+  let token = req.cookies.jwt
+  let userr = null
+  if (token) {
+    // verify secret
+    jwt.verify(token, config.secret, function (err, decoded) {
+      if (err) {
+        res.clearCookie('jwt')
+        return res.status(401).send('Unauthorized access')
+      }
+      db.selectById(decoded.id, (err, user) => {
+        if (err) {
+          res.clearCookie('jwt')
+          return res.status(500).send('Error on the server.')
+        }
+        if (!user) {
+          res.clearCookie('jwt')
+          return res.status(404).send('Invalid User')
+        }
+        userr = user
+        if (req.params.username != null) {
+          if (req.params.username === 'all') {
+            if (userr.is_admin == 2) {
+              db.getAllEmployees((err, users) => {
+                if (err) return res.status(500).send('Error on the server.')
+                if (!users) return res.status(404).send('No Employees available')
+                return res.status(200).send({employees: users})
+              })
+            } else {
+              return res.status(401).send('Unauthorized access')
+            }
+          } else {
+            db.selectByEmail(req.params.username, (err, user) => {
+              if (err) return res.status(500).send('Error on the server.')
+              if (!user) return res.status(404).send('Employee not found')
+              if (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == user.id)) {
+                let employee = {id: user.id, name: user.name, email: user.email}
+                return res.status(200).send({employee: employee})
+              } else {
+                return res.status(401).send('Unauthorized access')
+              }
+            })
+          }
+        } else {
+          return res.status(404).send('Requested resource is not available')
+        }
       })
-    } else {
-      db.selectByEmail(req.params.username, (err, user) => {
-        if (err) return res.status(500).send('Error on the server.')
-        if (!user) return res.status(404).send('Employee not found')
-        let employee = {name: user.name, email: user.email}
-        return res.status(200).send({employee: employee})
-      })
-    }
+    })
   } else {
-    return res.status(404).send('Requested resource is not available')
+    return res.status(403).send('Forbidden Access')
   }
 })
 

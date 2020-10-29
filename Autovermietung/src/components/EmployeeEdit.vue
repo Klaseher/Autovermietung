@@ -38,19 +38,22 @@
         <button type="submit" @click="deleteEmployee">
                   Delete Employee Account
         </button>
+        <h1>{{meldung}}</h1>
     </div>
 </template>
 
 <script>
 import UserService from '../services/user.service'
+import Auth from '../services/auth.service'
 import Helper from '../services/helper.service'
 export default {
   data () {
     return {
+      meldung: '',
       name: '',
       username: '',
       password: '',
-      employee: null,
+      id: -1,
       new_name: '',
       new_username: '',
       new_password: ''
@@ -62,7 +65,23 @@ export default {
       this.$router.push('../')
     },
     updateName () {
-
+      var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
+      if (this.new_name.length > 5 && this.new_name.length < 100 && nameTest.test(this.new_name)) {
+        //bug
+        Auth.updateEmployee(this.id, this.new_name, null, null, null)
+          .then(response => {
+            this.meldung = 'Employee Name successfully updated'
+            this.name = response.data.name
+            this.new_name = ''
+          })
+          .catch((error) => {
+            Helper.handle(error)
+            Helper.redirect('/admin')
+          })
+      } else {
+        this.name = ''
+        return alert('Name invalid')
+      }
     },
     updateUsername () {
 
@@ -78,13 +97,16 @@ export default {
     if (this.$route.params.username != null) {
       UserService.getEmployee(this.$route.params.username)
         .then(response => {
-          this.employee = response.data.employee
+          this.id = response.data.employee.id
           this.name = response.data.employee.name
           this.username = response.data.employee.email
         })
-        .catch((error) => Helper.handle(error))
+        .catch((error) => {
+          Helper.handle(error)
+          Helper.redirect('/admin')
+        })
     } else {
-      this.$router.push('/admin')
+      Helper.redirect('/admin')
     }
   }
 }

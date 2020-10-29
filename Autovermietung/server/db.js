@@ -52,6 +52,29 @@ class Db {
         callback(err, users)
       })
   }
+
+  updateName (name, id, callback) {
+    return this.db.get(
+      `UPDATE user SET name = ? WHERE id = ?`,
+      [name, id], function (err, row) {
+        callback(err, row)
+      })
+  }
+  updateMail (email, id, callback) {
+    return this.db.get(
+      `UPDATE user SET email = ? WHERE id = ?`,
+      [email, id], function (err, row) {
+        callback(err, row)
+      })
+  }
+
+  updatePass (pass, id, callback) {
+    return this.db.get(
+      `UPDATE user SET user_pass = ? WHERE id = ?`,
+      [pass, id], function (err, row) {
+        callback(err, row)
+      })
+  }
 }
 
 module.exports = Db

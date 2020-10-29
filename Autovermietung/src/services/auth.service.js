@@ -32,6 +32,17 @@ class Auth {
       password: pass
     })
   }
+
+  // eslint-disable-next-line camelcase
+  updateEmployee (id, nam, mail, pass, new_pass) {
+    return axios.post(API_URL + 'update-employee', {
+      id: id,
+      name: nam,
+      username: mail,
+      password: pass,
+      new_password: new_pass
+    })
+  }
 }
 
 export default new Auth()
