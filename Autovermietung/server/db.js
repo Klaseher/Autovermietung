@@ -12,7 +12,10 @@ class Db {
             CREATE TABLE IF NOT EXISTS user (
                 id integer PRIMARY KEY,
                 name text NOT NULL,
+                vorname text NOT NULL,
                 email text UNIQUE NOT NULL,
+                address text NOT NULL,
+                telephone text,
                 user_pass text NOT NULL,
                 is_admin integer NOT NULL)`
     return this.db.run(sql)
@@ -20,7 +23,7 @@ class Db {
 
   insert (user, callback) {
     return this.db.run(
-      'INSERT INTO user (name,email,user_pass,is_admin) VALUES (?,?,?,?)',
+      'INSERT INTO user (name, vorname, email, user_pass, address, telephone, is_admin) VALUES (?,?,?,?,?,?,?)',
       user, (err) => {
         callback(err)
       })
@@ -44,7 +47,7 @@ class Db {
   getAllEmployees (callback) {
     let users = []
     return this.db.all(
-      `SELECT name, email FROM user WHERE is_admin = ?`,
+      `SELECT id, name, email FROM user WHERE is_admin = ?`,
       ['1'], function (err, rows) {
         rows.forEach(function (row) {
           users.push(row)
@@ -72,6 +75,14 @@ class Db {
     return this.db.get(
       `UPDATE user SET user_pass = ? WHERE id = ?`,
       [pass, id], function (err, row) {
+        callback(err, row)
+      })
+  }
+
+  deleteAccount (id, callback) {
+    return this.db.get(
+      `DELETE FROM user WHERE id = ?`,
+      [id], function (err, row) {
         callback(err, row)
       })
   }

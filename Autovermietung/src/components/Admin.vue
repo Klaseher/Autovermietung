@@ -64,7 +64,7 @@
                         <tr v-for="(employee, index) in employees" :key="index">
                             <td>{{employee.name}}</td>
                             <td>{{employee.email}}</td>
-                            <td><button @click="editingEmployee(employee.email)">Edit</button></td>
+                            <td><button @click="editingEmployee(employee.id)">Edit</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -101,7 +101,7 @@ export default {
     showEmployees () {
       this.editEmployee = !this.editEmployee
       if (this.editEmployee) {
-        UserService.getEmployee('all')
+        UserService.getEmployee(-200)
           .then(response => {
             this.employees.push.apply(this.employees, response.data.employees)
           })
@@ -110,8 +110,8 @@ export default {
         this.employees = []
       }
     },
-    editingEmployee (username) {
-      this.$router.push('/admin/editEmployee/' + username)
+    editingEmployee (id) {
+      this.$router.push('/admin/editEmployee/' + id)
     },
     logout () {
       Auth.logout()
@@ -137,8 +137,8 @@ export default {
       Repetitive Characters - Allowed only two repetitive characters */
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
       var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.name.length > 5 && this.name.length < 100 && nameTest.test(this.name)) {
-        if (this.username.length > 6 && this.username.length < 100 && userTest.test(this.username)) {
+      if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name)) {
+        if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
           if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
             if (passTest.test(this.password)) {
               Auth.registerEmployee(this.name, this.username, this.password)
@@ -161,7 +161,7 @@ export default {
             this.password = ''
             this.password_confirmation = ''
 
-            return alert('Passwords do not match')
+            return alert('Password is do not match')
           }
         } else {
           this.username = ''

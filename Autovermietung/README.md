@@ -25,6 +25,10 @@ npm run e2e
 
 # run all tests
 npm test
+
+#to test the project run
+npm run server // start Node.js Express-Server (Backend)
+npm run start //starts Vue Web-App (Frontend)
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

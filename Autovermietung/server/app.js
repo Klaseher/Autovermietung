@@ -27,8 +27,11 @@ app.use(function (req, res, next) {
 router.post('/register', function (req, res) {
   db.insert([
     req.body.name,
+    req.body.vorname,
     req.body.email,
     bcrypt.hashSync(req.body.password, 8),
+    req.body.address,
+    req.body.telephone,
     0
   ],
   function (err) {
@@ -57,33 +60,36 @@ router.post('/register-employee', function (req, res) {
           return res.status(404).send('Invalid User')
         }
         userr = user
+        if (userr.is_admin == 2) {
+          db.insert([
+            req.body.name,
+            null,
+            req.body.username,
+            bcrypt.hashSync(req.body.password, 8),
+            null,
+            null,
+            1
+          ],
+          function (err) {
+            if (err) return res.status(500).send('There was a problem registering the user.')
+            res.status(200).send('Employee successfully created!')
+          })
+        } else {
+          return res.status(401).send('Unauthorized access')
+        }
       })
     })
   } else {
     return res.status(403).send('Forbidden Access')
-  }
-  if (userr.is_admin == 2) {
-    db.insert([
-      req.body.name,
-      req.body.username,
-      bcrypt.hashSync(req.body.password, 8),
-      1
-    ],
-    function (err) {
-      if (err) return res.status(500).send('There was a problem registering the user.')
-      res.status(200).send('Employee successfully created!')
-    })
-  } else {
-    return res.status(401).send('Unauthorized access')
   }
 })
 
 router.post('/login', (req, res) => {
   db.selectByEmail(req.body.email, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
-    if (!user) return res.status(404).send('Invalid Login')
+    if (!user) return res.status(404).send('Credentials invalid')
     let passwordIsValid = bcrypt.compareSync(req.body.password, user.user_pass)
-    if (!passwordIsValid) return res.status(401).send('Invalid Login')
+    if (!passwordIsValid) return res.status(401).send('Credentials invalid')
     let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 3600 // expires in 1 hour
     })
     res.cookie('jwt', token, {
@@ -94,8 +100,8 @@ router.post('/login', (req, res) => {
     res.status(200).send({auth: true, role: user.is_admin})
   })
 })
-//bug
-router.post('/update-employee', (req, res) => {
+
+router.put('/employee/:id', (req, res) => {
   let token = req.cookies.jwt
   let userr = null
   if (token) {
@@ -115,14 +121,22 @@ router.post('/update-employee', (req, res) => {
           return res.status(404).send('Invalid User')
         }
         userr = user
-        if (req.body.id != null && (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == req.body.id))) {
-          if (req.body.name != null && req.body.email == null && req.body.password == null && req.body.new_password == null) {
-            db.updateName(req.body.name, req.body.id, (err) => {
+        if (req.params.id != null && (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == req.params.id))) {
+          if (req.body.name != null && req.body.username == null && req.body.password == null) {
+            db.updateName(req.body.name, req.params.id, (err) => {
               if (err) return res.status(500).send('Error on the server.')
               return res.status(200).send({name: req.body.name})
             })
-          } else if (req.body.name == null && req.body.email != null && req.body.password == null && req.body.new_password == null) {
-          } else if (req.body.name == null && req.body.email == null && req.body.password != null && req.body.new_password != null) {
+          } else if (req.body.name == null && req.body.username != null && req.body.password == null) {
+            db.updateMail(req.body.username, req.params.id, (err) => {
+              if (err) return res.status(500).send('Error on the server.')
+              return res.status(200).send({username: req.body.username})
+            })
+          } else if (req.body.name == null && req.body.username == null && req.body.password != null) {
+            db.updatePass(bcrypt.hashSync(req.body.password, 8), req.params.id, (err) => {
+              if (err) return res.status(500).send('Error on the server.')
+              return res.status(200).send(null)
+            })
           } else { return res.status(400).send('Invalid request') }
         } else if (userr.is_admin < 1) {
           return res.status(401).send('Unauthorized access')
@@ -132,7 +146,36 @@ router.post('/update-employee', (req, res) => {
       })
     })
   } else {
-    return res.status(403).send('Forbidden Access')
+    return res.status(405).send('Method not allowed')
+  }
+})
+
+router.delete('/employee/:id', (req, res) => {
+  let token = req.cookies.jwt
+  if (token) {
+    // verify secret
+    jwt.verify(token, config.secret, function (err, decoded) {
+      if (err) {
+        res.clearCookie('jwt')
+        return res.status(401).send('Unauthorized access')
+      }
+      db.selectById(decoded.id, (err, user) => {
+        if (err) {
+          res.clearCookie('jwt')
+          return res.status(500).send('Error on the server.')
+        }
+        if (!user) {
+          res.clearCookie('jwt')
+          return res.status(404).send('Invalid User')
+        }
+        db.deleteAccount(req.params.id, (err) => {
+          if (err) return res.status(500).send('Error on the server.')
+          return res.status(200).send(null)
+        })
+      })
+    })
+  } else {
+    return res.status(405).send('Method not allowed')
   }
 })
 
@@ -189,7 +232,7 @@ router.get('/testToken', (req, res) => {
   }
 })
 
-router.get('/employee/:username', (req, res) => {
+router.get('/employee/:id', (req, res) => {
   let token = req.cookies.jwt
   let userr = null
   if (token) {
@@ -209,8 +252,8 @@ router.get('/employee/:username', (req, res) => {
           return res.status(404).send('Invalid User')
         }
         userr = user
-        if (req.params.username != null) {
-          if (req.params.username === 'all') {
+        if (req.params.id != null) {
+          if (req.params.id == -200) {
             if (userr.is_admin == 2) {
               db.getAllEmployees((err, users) => {
                 if (err) return res.status(500).send('Error on the server.')
@@ -221,7 +264,7 @@ router.get('/employee/:username', (req, res) => {
               return res.status(401).send('Unauthorized access')
             }
           } else {
-            db.selectByEmail(req.params.username, (err, user) => {
+            db.selectById(req.params.id, (err, user) => {
               if (err) return res.status(500).send('Error on the server.')
               if (!user) return res.status(404).send('Employee not found')
               if (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == user.id)) {

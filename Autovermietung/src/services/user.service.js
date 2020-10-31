@@ -11,8 +11,8 @@ class UserService {
     return axios.get(API_URL + 'testToken')
   }
 
-  getEmployee (username) {
-    return axios.get(API_URL + 'employee/' + username)
+  getEmployee (id) {
+    return axios.get(API_URL + 'employee/' + id)
   }
   // example request for implementing car search
   searchCar (name, type, price) {

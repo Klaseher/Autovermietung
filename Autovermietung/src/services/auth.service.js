@@ -17,11 +17,14 @@ class Auth {
     })
   }
 
-  register (nam, mail, pass) {
+  register (nam, vornam, mail, pass, addr, tel) {
     return axios.post(API_URL + 'register', {
       name: nam,
+      vorname: vornam,
       email: mail,
-      password: pass
+      password: pass,
+      address: addr,
+      telephone: tel
     })
   }
 
@@ -35,13 +38,15 @@ class Auth {
 
   // eslint-disable-next-line camelcase
   updateEmployee (id, nam, mail, pass, new_pass) {
-    return axios.post(API_URL + 'update-employee', {
-      id: id,
+    return axios.put(API_URL + 'employee/' + id, {
       name: nam,
       username: mail,
-      password: pass,
-      new_password: new_pass
+      password: pass
     })
+  }
+
+  deleteEmployee (id) {
+    return axios.delete(API_URL + 'employee/' + id)
   }
 }
 

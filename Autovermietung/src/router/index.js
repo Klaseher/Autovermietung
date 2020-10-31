@@ -1,13 +1,13 @@
+/* eslint-disable camelcase */
 /* eslint-disable eqeqeq */
 
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
-import Login from '@/components/Login'
-import Register from '@/components/Register'
+import Home from '@/components/Home'
+import About from '@/components/About'
+import Register_Login from '@/components/Register_Login'
 import UserBoard from '@/components/UserBoard'
 import Admin from '@/components/Admin'
-import NotFound from '@/components/Notfound'
 import EmployeeEdit from '@/components/EmployeeEdit'
 import UserService from '../services/user.service'
 
@@ -18,21 +18,19 @@ let router = new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
+      name: 'Home',
+      component: Home
     },
+    {
+      path: '/about',
+      name: 'About',
+      component: About
+    },
+
     {
       path: '/login',
       name: 'login',
-      component: Login,
-      meta: {
-        guest: true
-      }
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register,
+      component: Register_Login,
       meta: {
         guest: true
       }
@@ -56,7 +54,7 @@ let router = new Router({
       }
     },
     {
-      path: '/admin/editEmployee/:username',
+      path: '/admin/editEmployee/:id',
       name: 'editEmployee',
       component: EmployeeEdit,
       meta: {
@@ -66,7 +64,7 @@ let router = new Router({
     },
     {
       path: '*',
-      component: NotFound
+      component: Home
     }
   ]
 })
