@@ -17,7 +17,9 @@ class Db {
                 address text NOT NULL,
                 telephone text,
                 user_pass text NOT NULL,
-                is_admin integer NOT NULL)`
+                is_admin integer NOT NULL,
+                resetToken text,
+                expire datetime)`
     return this.db.run(sql)
   }
 
@@ -25,6 +27,14 @@ class Db {
     return this.db.run(
       'INSERT INTO user (name, vorname, email, user_pass, address, telephone, is_admin) VALUES (?,?,?,?,?,?,?)',
       user, (err) => {
+        callback(err)
+      })
+  }
+
+  updateReset (reset, callback) {
+    return this.db.run(
+      'UPDATE user SET resetToken = ?, expire = ? WHERE id = ?',
+      reset, (err) => {
         callback(err)
       })
   }

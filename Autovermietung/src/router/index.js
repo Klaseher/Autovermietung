@@ -5,6 +5,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import About from '@/components/About'
+import Reset from '@/components/Reset'
 import Register_Login from '@/components/Register_Login'
 import UserBoard from '@/components/UserBoard'
 import Admin from '@/components/Admin'
@@ -26,7 +27,11 @@ let router = new Router({
       name: 'About',
       component: About
     },
-
+    {
+      path: '/reset/:id?/:token?',
+      name: 'Reset',
+      component: Reset
+    },
     {
       path: '/login',
       name: 'login',

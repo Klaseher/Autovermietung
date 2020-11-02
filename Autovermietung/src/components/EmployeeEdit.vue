@@ -20,7 +20,7 @@
             </button>
         </form>
          <form>
-             <label for="password">Old Password</label>
+             <label for="password">New Password</label>
             <div>
                 <input id="password" type="password" v-model="password" required>
             </div>
@@ -102,8 +102,8 @@ export default {
     },
     changePassword () {
       var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.password == this.new_password && this.new_password.length > 0 && this.new_password.length < 100) {
-        if (passTest.test(this.new_password)) {
+      if (this.password == this.new_password) {
+        if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
           Auth.updateEmployee(this.id, null, null, this.new_password)
             .then(response => {
               this.meldung = 'Employee Password successfully updated'

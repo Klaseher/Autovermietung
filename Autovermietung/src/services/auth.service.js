@@ -37,7 +37,7 @@ class Auth {
   }
 
   // eslint-disable-next-line camelcase
-  updateEmployee (id, nam, mail, pass, new_pass) {
+  updateEmployee (id, nam, mail, pass) {
     return axios.put(API_URL + 'employee/' + id, {
       name: nam,
       username: mail,
@@ -47,6 +47,20 @@ class Auth {
 
   deleteEmployee (id) {
     return axios.delete(API_URL + 'employee/' + id)
+  }
+
+  resetUserPW (mail) {
+    return axios.post(API_URL + 'reset-userpw', {
+      email: mail
+    })
+  }
+
+  resetUserPWConfirmation (id, token, password) {
+    return axios.post(API_URL + 'confirm-pwreset', {
+      id: id,
+      token: token,
+      password: password
+    })
   }
 }
 

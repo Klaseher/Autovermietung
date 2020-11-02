@@ -19,11 +19,11 @@
         <h2>Neues Konto</h2>
         <div>Nutzen Sie Ihre Email zum Registrieren</div>
 
-        <input type="firstname" placeholder="Vorname" v-model="name" required autofocus/>
-        <input type="lastname" placeholder="Name" v-model="vorname" required autofocus/>
+        <input type="text" placeholder="Vorname" v-model="name" required autofocus/>
+        <input type="text" placeholder="Name" v-model="vorname" required autofocus/>
         <input type="email" placeholder="Email" v-model="email" required/>
-        <input type="address" placeholder="Adresse" v-model="adresse" required autofocus/>
-        <input type="telefonnummer*" placeholder="Telefon" v-model="telefon"/>
+        <input type="text" placeholder="Adresse" v-model="adresse" required autofocus/>
+        <input type="tel" placeholder="Telefonnummer*" v-model="telefon"/>
          <input type="password" placeholder="Password" v-model="password" required/>
         <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
         <button type="cancel" @click="back">
@@ -38,7 +38,7 @@
         <div>Nutzen Sie Ihr Konto</div>
         <input type="email" placeholder="Email" v-model="email" required autofocus/>
         <input type="password" placeholder="Password" v-model="password" required/>
-        <a href="#">Haben Sie Ihr Passwort vergessen?</a>
+        <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
          <button type="cancel" @click="back">
                     Zurueck
         </button>
@@ -71,7 +71,7 @@ export default {
   methods: {
 
     back () {
-      this.$router.push('/')
+      Helper.redirect('/')
     },
     register (e) {
       e.preventDefault()
@@ -85,8 +85,8 @@ export default {
         if (mail.test(this.email) && this.email.length < 100) {
           if (address.test(this.adresse) && this.adresse.length < 100 && this.adresse.length > 0) {
             if ((this.telefon.length > 0 && telTester.test(this.telefon)) || this.telefon.length == 0) {
-              if (this.password == this.password_confirmation && this.password.length > 5 && this.password.length < 100) {
-                if (passTest.test(this.password)) {
+              if (this.password == this.password_confirmation) {
+                if (passTest.test(this.password) && this.password.length > 5 && this.password.length < 100) {
                   Auth.register(this.name, this.vorname, this.email, this.password, this.address, this.telefon)
                     .then(response => {
                       alert(response.data)

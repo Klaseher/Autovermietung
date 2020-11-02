@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const moment = require('moment')
+const nodemailer = require('nodemailer')
+const crypto = require('crypto')
+moment().format()
 
 const db = new DB('sqlitedb')
 const app = express()
@@ -98,6 +102,79 @@ router.post('/login', (req, res) => {
       secure: false // true in production
     })
     res.status(200).send({auth: true, role: user.is_admin})
+  })
+})
+
+router.post('/reset-userpw', (req, res) => {
+  db.selectByEmail(req.body.email, (err, user) => {
+    if (err) return res.status(500).send('Error on the server.')
+    if (!user) return res.status(200).send()
+    let valid = moment.utc().add(24, 'hours') // valid for 1 day
+    if (user.is_admin == 0) {
+      let token = crypto.randomBytes(32).toString('hex')
+      db.updateReset([
+        bcrypt.hashSync(token, 8),
+        moment(valid).format('YYYY-MM-DD HH:mm:ss'),
+        user.id
+      ],
+      function (err) {
+        if (err) return res.status(500).send('Error on the server.')
+        let transporter = nodemailer.createTransport({
+          service: 'gmail',
+          port: 587, // tsl port gmail smpt server
+          secure: true, // übertragung über ssl/ttl
+          auth: {
+            user: 'carsharing23@gmail.com',
+            pass: 'iwrfbrcwouhgvpdi'
+          }
+        })
+        let mailOptions = {
+          from: '"Autovermietung" <service@autovermietung.de>',
+          to: user.email,
+          subject: 'Setzen Sie Ihr Account-Passwort zurück',
+          html: '<h4><b>Passwort zurücksetzen</b></h4>' +
+        '<p>Um Ihr Passwort zurückzusetzen, drücken Sie auf diesen Link:</p>' +
+        '<a href=' + 'http://localhost:8080/reset/' + user.id + '/' + token + '>Setzen Sie Ihr Passwort zurück</a>' +
+        '<p>Dieser Link ist für 24h gültig</p>' +
+        '<br><br>' +
+        '<p>--Ihr Autovermietung-Team</p>'
+        }
+        transporter.sendMail(mailOptions, function (error, info) { // sending mail to user where he can reset password. User id and the token are sent as params in a link
+          if (error) {
+            res.status(500).send('Error on the server.')
+          } else {
+            console.log('Email erfolgreich gesendet')
+            res.status(200).send()
+          }
+        })
+      })
+    } else {
+      res.status(500).send('Error on the server.')
+    }
+  })
+})
+
+router.post('/confirm-pwreset', (req, res) => {
+  db.selectById(req.body.id, (err, user) => {
+    if (err) return res.status(500).send('Error on the server.')
+    if (!user || (user.expire == null && user.token == null)) return res.status(404).send('Invalid or expired reset link')
+    let tokenIsValid = bcrypt.compareSync(req.body.token, user.resetToken)
+    if (!tokenIsValid) return res.status(401).send('Invalid or expired reset link')
+    let currentTime = moment.utc()
+    let currentTimeFormated = moment(currentTime).format('YYYY-MM-DD HH:mm:ss')
+    let isafter = moment(currentTimeFormated).isAfter(user.expire)
+    db.updateReset([
+      null,
+      null,
+      req.body.id
+    ], (err) => {
+      if (err) return res.status(500).send('Error on the server.')
+      if (isafter) return res.status(401).send('Invalid or expired reset link')
+      db.updatePass(bcrypt.hashSync(req.body.password, 8), req.body.id, (err) => {
+        if (err) return res.status(500).send('Error on the server.')
+        return res.status(200).send(null)
+      })
+    })
   })
 })
 
