@@ -4,17 +4,24 @@
     
     <router-link to="/">Home</router-link> |
     <router-link to="/about">HEYRJP</router-link> |
-    <router-link to="/user">Login/Register</router-link> |
+    <!-- <router-link to="/user">Login/Register</router-link> | -->
     <router-link to="/catalog">Unsere Autos</router-link> |
-    <router-link to="/acc">Konto</router-link>
-   
+    <router-link to="/acc">Konto</router-link> |   
+    <router-link to="/user">{{login}}</router-link>
   </div>
   <router-view/>
 </div>
 </template>
 <script>
 export default {
-  
+  name: 'App',
+  data () {
+    return {
+      autoname: '' ,
+      login: 'Registrieren/Anmelden'
+      
+    }
+  }
 }
 </script>
 

@@ -20,10 +20,10 @@
         <div>Nutzen Sie Ihr Email zu registrieren</div>
         <!-- select option -->
         
-        <select>
+        <!-- <select>
           <option>Herr</option>
           <option>Frau</option>
-        </select>
+        </select> -->
         <input type="firstname" placeholder="Vorname" />
         <input type="lastname" placeholder="Name" />
         <input type="email" placeholder="Email" />
