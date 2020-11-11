@@ -11,7 +11,7 @@ const nodemailer = require('nodemailer')
 const crypto = require('crypto')
 moment().format()
 
-const db = new DB('sqlitedb')
+const db = new DB('autovermietung.db')
 const app = express()
 const router = express.Router()
 
@@ -64,13 +64,13 @@ router.post('/register-employee', function (req, res) {
           return res.status(404).send('Invalid User')
         }
         userr = user
-        if (userr.is_admin == 2) {
+        if (userr.rolle == 2) {
           db.insert([
             req.body.name,
-            null,
+            'n.a',
             req.body.username,
             bcrypt.hashSync(req.body.password, 8),
-            null,
+            'n.a',
             null,
             1
           ],
@@ -92,7 +92,7 @@ router.post('/login', (req, res) => {
   db.selectByEmail(req.body.email, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user) return res.status(404).send('Credentials invalid')
-    let passwordIsValid = bcrypt.compareSync(req.body.password, user.user_pass)
+    let passwordIsValid = bcrypt.compareSync(req.body.password, user.pass)
     if (!passwordIsValid) return res.status(401).send('Credentials invalid')
     let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 3600 // expires in 1 hour
     })
@@ -101,7 +101,7 @@ router.post('/login', (req, res) => {
       httpOnly: true,
       secure: false // true in production
     })
-    res.status(200).send({auth: true, role: user.is_admin})
+    res.status(200).send({auth: true, role: user.rolle})
   })
 })
 
@@ -110,7 +110,7 @@ router.post('/reset-userpw', (req, res) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user) return res.status(200).send()
     let valid = moment.utc().add(24, 'hours') // valid for 1 day
-    if (user.is_admin == 0) {
+    if (user.rolle == 0) {
       let token = crypto.randomBytes(32).toString('hex')
       db.updateReset([
         bcrypt.hashSync(token, 8),
@@ -130,7 +130,7 @@ router.post('/reset-userpw', (req, res) => {
         })
         let mailOptions = {
           from: '"Autovermietung" <service@autovermietung.de>',
-          to: user.email,
+          to: user.user,
           subject: 'Setzen Sie Ihr Account-Passwort zurück',
           html: '<h4><b>Passwort zurücksetzen</b></h4>' +
         '<p>Um Ihr Passwort zurückzusetzen, drücken Sie auf diesen Link:</p>' +
@@ -157,12 +157,12 @@ router.post('/reset-userpw', (req, res) => {
 router.post('/confirm-pwreset', (req, res) => {
   db.selectById(req.body.id, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
-    if (!user || (user.expire == null && user.token == null)) return res.status(404).send('Invalid or expired reset link')
+    if (!user || (user.ablaufdatum == null && user.resetToken == null)) return res.status(404).send('Invalid or expired reset link')
     let tokenIsValid = bcrypt.compareSync(req.body.token, user.resetToken)
     if (!tokenIsValid) return res.status(401).send('Invalid or expired reset link')
     let currentTime = moment.utc()
     let currentTimeFormated = moment(currentTime).format('YYYY-MM-DD HH:mm:ss')
-    let isafter = moment(currentTimeFormated).isAfter(user.expire)
+    let isafter = moment(currentTimeFormated).isAfter(user.ablaufdatum)
     db.updateReset([
       null,
       null,
@@ -198,7 +198,7 @@ router.put('/employee/:id', (req, res) => {
           return res.status(404).send('Invalid User')
         }
         userr = user
-        if (req.params.id != null && (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == req.params.id))) {
+        if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1 && userr.id == req.params.id))) {
           if (req.body.name != null && req.body.username == null && req.body.password == null) {
             db.updateName(req.body.name, req.params.id, (err) => {
               if (err) return res.status(500).send('Error on the server.')
@@ -215,7 +215,7 @@ router.put('/employee/:id', (req, res) => {
               return res.status(200).send(null)
             })
           } else { return res.status(400).send('Invalid request') }
-        } else if (userr.is_admin < 1) {
+        } else if (userr.rolle < 1) {
           return res.status(401).send('Unauthorized access')
         } else {
           return res.status(400).send('Invalid request')
@@ -274,7 +274,7 @@ router.get('/authenticate', (req, res) => {
           res.clearCookie('jwt')
           return res.status(404).send('Invalid User')
         }
-        return res.status(200).send({auth: true, role: user.is_admin})
+        return res.status(200).send({auth: true, role: user.rolle})
       })
     })
   } else {
@@ -294,7 +294,7 @@ router.get('/testToken', (req, res) => {
           if (err || !user) {
             error = true
           } else {
-            return res.status(200).send({auth: true, role: user.is_admin})
+            return res.status(200).send({auth: true, role: user.rolle})
           }
         })
       }
@@ -331,7 +331,7 @@ router.get('/employee/:id', (req, res) => {
         userr = user
         if (req.params.id != null) {
           if (req.params.id == -200) {
-            if (userr.is_admin == 2) {
+            if (userr.rolle == 2) {
               db.getAllEmployees((err, users) => {
                 if (err) return res.status(500).send('Error on the server.')
                 if (!users) return res.status(404).send('No Employees available')
@@ -344,8 +344,8 @@ router.get('/employee/:id', (req, res) => {
             db.selectById(req.params.id, (err, user) => {
               if (err) return res.status(500).send('Error on the server.')
               if (!user) return res.status(404).send('Employee not found')
-              if (userr.is_admin == 2 || (userr.is_admin == 1 && userr.id == user.id)) {
-                let employee = {id: user.id, name: user.name, email: user.email}
+              if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
+                let employee = {id: user.id, name: user.nachname, email: user.user}
                 return res.status(200).send({employee: employee})
               } else {
                 return res.status(401).send('Unauthorized access')

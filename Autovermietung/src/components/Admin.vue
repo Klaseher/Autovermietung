@@ -62,8 +62,8 @@
                     </thead>
                     <tbody>
                         <tr v-for="(employee, index) in employees" :key="index">
-                            <td>{{employee.name}}</td>
-                            <td>{{employee.email}}</td>
+                            <td>{{employee.nachname}}</td>
+                            <td>{{employee.user}}</td>
                             <td><button @click="editingEmployee(employee.id)">Edit</button></td>
                         </tr>
                     </tbody>
@@ -165,7 +165,7 @@ export default {
           }
         } else {
           this.username = ''
-          return alert('Username not save enough (Min. 6 Characters + 1x uppercase + 1x Number)')
+          return alert('Username not save enough (6-12 Characters + 1x uppercase + 1x Number)')
         }
       } else {
         this.name = ''

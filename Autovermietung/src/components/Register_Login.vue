@@ -87,7 +87,7 @@ export default {
             if ((this.telefon.length > 0 && telTester.test(this.telefon)) || this.telefon.length == 0) {
               if (this.password == this.password_confirmation) {
                 if (passTest.test(this.password) && this.password.length > 5 && this.password.length < 100) {
-                  Auth.register(this.name, this.vorname, this.email, this.password, this.address, this.telefon)
+                  Auth.register(this.name, this.vorname, this.email, this.password, this.adresse, this.telefon)
                     .then(response => {
                       alert(response.data)
                       this.$router.push('/')
@@ -167,7 +167,6 @@ export default {
             .catch((error) => {
               this.password = ''
               this.email = ''
-              this.msg = 'Login-Daten ungültig'
               Helper.handle(error)
             })
         }
@@ -175,7 +174,6 @@ export default {
         this.password = ''
         this.email = ''
         alert('Credentials invalid')
-        this.msg = 'Login-Daten ungültig'
       }
     }
 

@@ -4,28 +4,11 @@ const sqlite3 = require('sqlite3').verbose()
 class Db {
   constructor (file) {
     this.db = new sqlite3.Database(file)
-    this.createTable()
-  }
-
-  createTable () {
-    const sql = `
-            CREATE TABLE IF NOT EXISTS user (
-                id integer PRIMARY KEY,
-                name text NOT NULL,
-                vorname text NOT NULL,
-                email text UNIQUE NOT NULL,
-                address text NOT NULL,
-                telephone text,
-                user_pass text NOT NULL,
-                is_admin integer NOT NULL,
-                resetToken text,
-                expire datetime)`
-    return this.db.run(sql)
   }
 
   insert (user, callback) {
     return this.db.run(
-      'INSERT INTO user (name, vorname, email, user_pass, address, telephone, is_admin) VALUES (?,?,?,?,?,?,?)',
+      'INSERT INTO user (nachname, vorname, user, pass, adresse, telefon, rolle) VALUES (?,?,?,?,?,?,?)',
       user, (err) => {
         callback(err)
       })
@@ -33,7 +16,7 @@ class Db {
 
   updateReset (reset, callback) {
     return this.db.run(
-      'UPDATE user SET resetToken = ?, expire = ? WHERE id = ?',
+      'UPDATE user SET resetToken = ?, ablaufdatum = ? WHERE id = ?',
       reset, (err) => {
         callback(err)
       })
@@ -41,7 +24,7 @@ class Db {
 
   selectByEmail (email, callback) {
     return this.db.get(
-      `SELECT * FROM user WHERE email = ?`,
+      `SELECT * FROM user WHERE user = ?`,
       [email], function (err, row) {
         callback(err, row)
       })
@@ -57,7 +40,7 @@ class Db {
   getAllEmployees (callback) {
     let users = []
     return this.db.all(
-      `SELECT id, name, email FROM user WHERE is_admin = ?`,
+      `SELECT id, nachname, user FROM user WHERE rolle = ?`,
       ['1'], function (err, rows) {
         rows.forEach(function (row) {
           users.push(row)
@@ -68,14 +51,14 @@ class Db {
 
   updateName (name, id, callback) {
     return this.db.get(
-      `UPDATE user SET name = ? WHERE id = ?`,
+      `UPDATE user SET nachname = ? WHERE id = ?`,
       [name, id], function (err, row) {
         callback(err, row)
       })
   }
   updateMail (email, id, callback) {
     return this.db.get(
-      `UPDATE user SET email = ? WHERE id = ?`,
+      `UPDATE user SET user = ? WHERE id = ?`,
       [email, id], function (err, row) {
         callback(err, row)
       })
@@ -83,7 +66,7 @@ class Db {
 
   updatePass (pass, id, callback) {
     return this.db.get(
-      `UPDATE user SET user_pass = ? WHERE id = ?`,
+      `UPDATE user SET pass = ? WHERE id = ?`,
       [pass, id], function (err, row) {
         callback(err, row)
       })

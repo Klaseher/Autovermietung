@@ -3,7 +3,10 @@
     <main>
       <div class ="search-box">
 
-        <input type="text" class ="search-bar" placeholder="Suche"/>
+        <input type="text" class ="search-bar" v-model="autoname" placeholder="Suche nach Autoname"/>
+         <button type="submit" @click="redirect('/search')">
+                      Autosuche
+          </button>
 
       </div>
 
@@ -18,16 +21,25 @@
 </template>
 
 <script>
+import Helper from './services/helper.service'
 export default {
   name: 'App',
   data () {
     return {
+      autoname: '',
       login: 'Registrieren/Anmelden',
       loggedIn: false
     }
   },
 
   methods: {
+    redirect (route) {
+      if (this.autoname != null) {
+        route = route + '/' + this.autoname
+      }
+      Helper.redirect(this.$sanitize(route))
+      this.autoname = ''
+    },
     changeValue () {
       // eslint-disable-next-line eqeqeq
       if (sessionStorage.getItem('auth') == 'true') {

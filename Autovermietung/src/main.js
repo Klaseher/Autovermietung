@@ -4,6 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Axios from 'axios'
+import VueSanitize from 'vue-sanitize'
+
+Vue.use(VueSanitize)
 
 Vue.prototype.$http = Axios
 Axios.defaults.withCredentials = true

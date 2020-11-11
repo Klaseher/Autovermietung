@@ -3,6 +3,7 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+// eslint-disable-next-line no-unused-vars
 const loader = require('sass-loader')
 
 function resolve (dir) {
@@ -36,7 +37,7 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': resolve('src')
     }
   },
   module: {
@@ -70,7 +71,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ['style','css','sass']
+        loader: ['style', 'css', 'sass']
       },
       {
         test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
