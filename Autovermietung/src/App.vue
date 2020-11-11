@@ -1,4 +1,5 @@
 <template>
+<div id="app">
   <div id="nav">
     
     <router-link to="/">Home</router-link> |
@@ -9,11 +10,18 @@
    
   </div>
   <router-view/>
-  
+</div>
 </template>
+<script>
+export default {
+  
+}
+</script>
 
 <style lang="scss">
 #app {
+  background:black;
+  block-size: 5pc;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -22,7 +30,7 @@
 }
 
 #nav {
-  padding: 30px;
+  padding: 10px;
 
   a {
     font-weight: bold;

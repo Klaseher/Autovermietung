@@ -1,26 +1,23 @@
 <template>
-<div id="app">
-  <div class="home" v-bind:style="{ background: actColor}">
-    <h1>{{msg}}</h1>
-    <img alt="logo" src="../assets/logo2.png">
-     
-        <router-view/>
-      
-    
+  <div id="app">
+    <div class="home" v-bind:style="{ background: actColor}">
+      <h1>{{msg}}</h1>
+      <img alt="logo" src="../assets/logo2.png">
+      <router-view/>  
       <h2>Unsere Partner</h2>
       <div>
-        <img alt="partner" src="../assets/audii.png">     
-        <img alt="partner" src="../assets/bmw.png">
-        <img alt="partner" src="../assets/VW.png">
-        <img alt="partner" src="../assets/Merc.png">
-        <img alt="partner" src="../assets/opel.png">
-        <img alt="partner" src="../assets/mazda.png">
-        <img alt="partner" src="../assets/porsche.png">
-     </div>
+          <img alt="partner" src="../assets/Marke/audii.png">     
+          <img alt="partner1" src="../assets/Marke/bmw.png">
+          <img alt="partner2" src="../assets/Marke/VW.png">
+          <img alt="partner3" src="../assets/Marke/Merc.png">
+          <img alt="partner4" src="../assets/Marke/opel.png">
+          <img alt="partner5" src="../assets/Marke/mazda.png">
+          <img alt="partner6" src="../assets/Marke/porsche.png">
+      </div>
+    </div>
   </div>
-  
 
-</div>
+  
   
 </template>
 
@@ -35,7 +32,8 @@ export default {
   data(){
     return{
      msg: ' Welcome to HEYRJP',
-     actColor: 'lightgreen'
+     actColor: 'rgb(199, 62, 20)',
+     block: 'full'
     }
   }
 }
@@ -44,15 +42,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #app{
-  background-color:lightgreen;
+  background-color:rgb(199, 62, 20);
+  -webkit-text-size-adjust:auto;
 }
 h1{
   font-size: 4rem;
-  color: blue;
+  color: white;
 }
 h2{
   font-size: 3rem;
-  color:crimson;
+  color: black;
 }
 image{
   size: 19px;
@@ -72,6 +71,6 @@ li {
   margin: 0 10px;
 }
 a {
-  color: #42b983;
+  color: #13a865;
 }
 </style>
