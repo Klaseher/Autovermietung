@@ -49,6 +49,19 @@ class Db {
       })
   }
 
+  getAllCars (callback) {
+    let cars = []
+    return this.db.all(
+      `SELECT * FROM auto`,
+      function (err, rows) {
+        rows.forEach(function (row) {
+          cars.push(row)
+        })
+        callback(err, cars)
+      })
+  }
+
+
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,

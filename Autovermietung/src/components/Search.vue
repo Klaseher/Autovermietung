@@ -23,12 +23,13 @@
             <input type="text" placeholder="Tankvolumen (l)" v-model="tankvolumen" required autofocus/>
             <input type="text" placeholder="Leistung (PS)" v-model="leistung" required autofocus/>
             <input type="text" placeholder="Getriebeart" v-model="getriebe" required autofocus/>
-
         </div>
     </div>
 </template>
 
 <script>
+import UserService from '../services/user.service'
+import Helper from '../services/helper.service'
 export default {
   data () {
     return {
@@ -56,6 +57,13 @@ export default {
 
     }
 
+  },
+   beforeMount () {
+    UserService.getCars()
+      .then(response => {
+        this.autos.push.apply(this.autos, response.data.cars)
+      })
+      .catch((error) => Helper.handle(error))
   }
 
 }
