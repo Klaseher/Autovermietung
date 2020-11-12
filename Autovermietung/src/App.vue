@@ -2,26 +2,56 @@
 <div id="app">
   <div id="nav">
     
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">HEYRJP</router-link> |
+    <router-link @click="update" to="/">Home</router-link> |
+    <router-link @click="update" to="/about">HEYRJP</router-link> |
     <!-- <router-link to="/user">Login/Register</router-link> | -->
-    <router-link to="/catalog">Unsere Autos</router-link> |
-    <router-link to="/acc">Konto</router-link> |   
-    <router-link to="/user">{{login}}</router-link>
+    <router-link @click="update" to="/search">Unsere Autos</router-link> | 
+    <router-link @click="update" to="/login">{{changeValue}}</router-link>
+    <div v-if="loggedIn">
+    <router-link @click="logout" to="/logout">Ausloggen</router-link>
+    </div>
   </div>
   <router-view/>
 </div>
 </template>
+
+
 <script>
+import Auth from './services/auth.service'
 export default {
   name: 'App',
   data () {
     return {
-      autoname: '' ,
-      login: 'Registrieren/Anmelden'
-      
+      loggedIn: false
     }
+  },
+
+methods: {
+  updateLogin(value) {
+      this.loggedIn = value
+  },
+  logout(){
+    Auth.logout()
+    this.update()
+  },
+  update(){
+     this.$forceUpdate()
   }
+},
+
+ computed: {
+       changeValue () {
+        let login = ''  
+        if (sessionStorage.getItem('auth') == 'true') {
+          login = 'Dein Account'
+           this.updateLogin(true)
+        } else {
+          login = 'Registrieren/Anmelden'
+          this.updateLogin(false)
+        }
+        return login
+    }
+ }
 }
 </script>
 

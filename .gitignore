@@ -1,0 +1,17 @@
+.DS_Store
+Autovermietung/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+Autovermietung/node_modules/
+Autovermietung/test/unit/coverage/
+Autovermietung/test/e2e/reports/
+selenium-debug.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

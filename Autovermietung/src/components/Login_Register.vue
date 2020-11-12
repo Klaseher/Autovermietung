@@ -5,54 +5,181 @@
         <div class="overlay">
           <div class="overlay-left">
             <h2>Herzlich Willkommen!</h2>
-            <p>Loggen Sie sich mit Ihrer Infos ein! </p>
+            <p>Loggen Sie sich mit Ihren Infos ein! </p>
             <button class="invert" id="signIn" @click="signUp = !signUp">Weiter</button>
           </div>
           <div class="overlay-right">
             <h2>Guten Tag!</h2>
-            <p>Melden Sie sich an und genießen Sie unser Service</p>
+            <p>Melden Sie sich an und genießen Sie unseren Service</p>
             <button class="invert" id="signUp" @click="signUp = !signUp">Registrieren</button>
           </div>
         </div>
       </div>
-      <form class="sign-up" action="#">
-        <h2>Neue Konto</h2>
-        <div>Nutzen Sie Ihr Email zu registrieren</div>
-        <!-- select option -->
-        
-        <!-- <select>
-          <option>Herr</option>
-          <option>Frau</option>
-        </select> -->
-        <input type="firstname" placeholder="Vorname" />
-        <input type="lastname" placeholder="Name" />
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <input type="address" placeholder="Adresse" />
-        <input type="telephone" placeholder="Telephone" />
-        <button>Erstellen</button>
+      <form class="sign-up">
+        <h2>Neues Konto</h2>
+        <div>Nutzen Sie Ihre Email zum Registrieren</div>
+
+        <input type="text" placeholder="Vorname" v-model="name" required autofocus/>
+        <input type="text" placeholder="Name" v-model="vorname" required autofocus/>
+        <input type="email" placeholder="Email" v-model="email" required/>
+        <input type="text" placeholder="Adresse" v-model="adresse" required autofocus/>
+        <input type="tel" placeholder="Telefonnummer*" v-model="telefon"/>
+         <input type="password" placeholder="Password" v-model="password" required/>
+        <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
+        <button type="cancel" @click="back">
+                    Zurueck
+        </button>
+        <button type="submit" @click="register">
+                    Erstellen
+        </button>
       </form>
-      <form class="sign-in" action="#">
+      <form class="sign-in">
         <h2>Anmelden</h2>
-        <div>Nutzen Sie Ihre Konto</div>
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <a href="#">Vergessen Sie Password?</a>
-        <button>Einloggen</button>
+        <div>Nutzen Sie Ihr Konto</div>
+        <input type="email" placeholder="Email" v-model="email" required autofocus/>
+        <input type="password" placeholder="Password" v-model="password" required/>
+        <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
+         <button type="cancel" @click="back">
+                    Zurueck
+        </button>
+        <button type="submit" @click="login">
+                    Einloggen
+        </button>
       </form>
     </div>
   </article>
 </template>
 
+
 <script>
-  export default {
-    data: () => {
-      return {
-        signUp: false
+import Helper from '../services/helper.service'
+import Auth from '../services/auth.service'
+export default {
+  data () {
+    return {
+      name: '',
+      vorname: '',
+      email: '',
+      password: '',
+      password_confirmation: '',
+      adresse: '',
+      telefon: '',
+      is_admin: null,
+      signUp: false
+    }
+  },
+  methods: {
+
+    back () {
+      Helper.redirect('/')
+    },
+    register (e) {
+      e.preventDefault()
+      var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
+      var nameTest = new RegExp('[a-zA-Z]{3,100}')
+      var passTest = new RegExp('^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})')
+      var mail = new RegExp("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+      var address = new RegExp("[A-Za-z0-9'\\.\\-\\s\\,]")
+      var telTester = new RegExp('^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$')
+      if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
+        if (mail.test(this.email) && this.email.length < 100) {
+          if (address.test(this.adresse) && this.adresse.length < 100 && this.adresse.length > 0) {
+            if ((this.telefon.length > 0 && telTester.test(this.telefon)) || this.telefon.length == 0) {
+              if (this.password == this.password_confirmation) {
+                if (passTest.test(this.password) && this.password.length > 5 && this.password.length < 100) {
+                  Auth.register(this.name, this.vorname, this.email, this.password, this.adresse, this.telefon)
+                    .then(response => {
+                      alert(response.data)
+                      this.$router.push('/')
+                    })
+                    .catch((error) => Helper.handle(error))
+                } else {
+                  this.password = ''
+                  this.password_confirmation = ''
+
+                  return alert('Password is not safe enough')
+                }
+              } else {
+                this.password = ''
+                this.password_confirmation = ''
+
+                return alert('Passwords do not match')
+              }
+            } else {
+              this.telefon = ''
+              return alert('Telephone number is invalid')
+            }
+          } else {
+            this.address = ''
+            return alert('Invalid Address format')
+          }
+        } else {
+          this.email = ''
+          return alert('Invalid Email format')
+        }
+      } else {
+        this.name = ''
+        this.vorname = ''
+        return alert('Name too long or short or contains invalid symbols')
+      }
+    },
+    login (e) {
+      e.preventDefault()
+      /* Regex: Strong Password
+      Special Characters - Not Allowed
+      Spaces - Not Allowed
+      Minimum and Maximum Length of field - 6 to 12 Characters
+      Met by [a-zA-Z0-9@]{6,12}
+      Numeric Character - At least one character
+      Met by positive lookahead (?=.*\d)
+      At least one Capital Letter
+      Met by positive lookahead (?=.*[A-Z])
+      Repetitive Characters - Allowed only two repetitive characters */
+      var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      // Regex Mail: Only email allowed something@something.something
+      var mail = new RegExp("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+      // Regex Medium Password
+      var passTest = new RegExp('^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})')
+      if (this.email.length > 6 && this.email.length < 100 && (userTest.test(this.email) || mail.test(this.email)) &&
+                    passTest.test(this.password) && this.password.length > 0 && this.password.length < 100) {
+        if (this.password.length > 0) {
+          Auth.login(this.email, this.password)
+            .then(response => {
+              // eslint-disable-next-line camelcase
+              let is_admin = response.data.role
+              sessionStorage.setItem('role', JSON.stringify(response.data.role))
+              sessionStorage.setItem('auth', response.data.auth)
+
+              if (sessionStorage.getItem('auth') == 'true') {
+                if (this.$route.params.nextUrl != null) {
+                  this.$router.push(this.$route.params.nextUrl)
+                } else {
+                  // eslint-disable-next-line camelcase
+                  if (is_admin >= 1) {
+                    this.$router.go()
+                    this.$router.push('admin')
+                  } else {
+                    this.$router.go()
+                    this.$router.push('dashboard')
+                  }
+                }
+              }
+            })
+            .catch((error) => {
+              this.password = ''
+              this.email = ''
+              Helper.handle(error)
+            })
+        }
+      } else {
+        this.password = ''
+        this.email = ''
+        alert('Credentials invalid')
       }
     }
-    
+
   }
+}
 </script>
 
 <style lang="scss" scoped>
