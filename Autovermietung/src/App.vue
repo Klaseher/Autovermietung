@@ -28,12 +28,8 @@ export default {
   },
 
 methods: {
-  updateLogin(value) {
-      this.loggedIn = value
-  },
   logout(){
     Auth.logout()
-    this.update()
   },
    changeValue () {
       // eslint-disable-next-line eqeqeq
