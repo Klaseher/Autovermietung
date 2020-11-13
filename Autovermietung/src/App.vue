@@ -2,11 +2,11 @@
 <div id="app">
   <div id="nav">
     
-    <router-link @click="update" to="/">Home</router-link> |
-    <router-link @click="update" to="/about">HEYRJP</router-link> |
+    <router-link to="/">Home</router-link> |
+    <router-link to="/about">HEYRJP</router-link> |
     <!-- <router-link to="/user">Login/Register</router-link> | -->
-    <router-link @click="update" to="/search">Unsere Autos</router-link> | 
-    <router-link @click="update" to="/login">{{changeValue}}</router-link>
+    <router-link to="/search">Unsere Autos</router-link> | 
+    <router-link to="/login">{{login}}</router-link>
     <div v-if="loggedIn">
     <router-link @click="logout" to="/logout">Ausloggen</router-link>
     </div>
@@ -22,7 +22,8 @@ export default {
   name: 'App',
   data () {
     return {
-      loggedIn: false
+      loggedIn: false,
+      login: 'Registrieren/Anmelden'
     }
   },
 
@@ -34,24 +35,23 @@ methods: {
     Auth.logout()
     this.update()
   },
-  update(){
-     this.$forceUpdate()
-  }
+   changeValue () {
+      // eslint-disable-next-line eqeqeq
+      if (sessionStorage.getItem('auth') == 'true') {
+        this.login = 'Dein Account'
+        this.loggedIn = true
+      } else {
+        this.login = 'Registrieren/Anmelden'
+        this.loggedIn = false
+      }
+    }
 },
 
- computed: {
-       changeValue () {
-        let login = ''  
-        if (sessionStorage.getItem('auth') == 'true') {
-          login = 'Dein Account'
-           this.updateLogin(true)
-        } else {
-          login = 'Registrieren/Anmelden'
-          this.updateLogin(false)
-        }
-        return login
+watch: {
+    $route() {
+        this.changeValue()
     }
- }
+},
 }
 </script>
 

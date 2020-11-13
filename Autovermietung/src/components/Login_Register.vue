@@ -156,10 +156,8 @@ export default {
                 } else {
                   // eslint-disable-next-line camelcase
                   if (is_admin >= 1) {
-                    this.$router.go()
                     this.$router.push('admin')
                   } else {
-                    this.$router.go()
                     this.$router.push('dashboard')
                   }
                 }
