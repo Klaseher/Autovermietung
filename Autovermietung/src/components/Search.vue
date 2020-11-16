@@ -94,6 +94,8 @@
               <td>{{auto.getriebe}}</td>
               <td>Preis:</td>
               <td>{{auto.preis}}</td>
+              <td>Modell:</td>
+              <td>{{auto.modelbezeichnung}}</td>
             </tr>
             </article>
           </table>
