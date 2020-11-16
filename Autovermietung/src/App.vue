@@ -63,7 +63,7 @@ watch: {
 }
 
 #nav {
-  padding: 10px;
+  padding: 20px;
 
   a {
     font-weight: bold;
