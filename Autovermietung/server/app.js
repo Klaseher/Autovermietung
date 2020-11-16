@@ -67,7 +67,7 @@ router.post('/register-employee', function (req, res) {
         if (userr.rolle == 2) {
           db.insert([
             req.body.name,
-            'n.a',
+            req.body.vorname,
             req.body.username,
             bcrypt.hashSync(req.body.password, 8),
             'n.a',
@@ -362,13 +362,26 @@ router.get('/employee/:id', (req, res) => {
   }
 })
 
-router.get('/car', (_req, res) => {
-  db.getAllCars((err, cars) => {
-    if (err) return res.status(500).send('Error on the server.')
-    if (!cars) return res.status(404).send('No Cars available')
-    console.log(cars)
-    return res.status(200).send({cars: cars})
-  })
+router.get('/car/:autoname', (req, res) => {
+  if(req.params.autoname != null){
+    if (req.params.autoname == "alle") {
+      db.getAllCars((err, cars) => {
+        if (err) return res.status(500).send('Error on the server.')
+        if (!cars) return res.status(404).send('No Cars available')
+        console.log(cars)
+        return res.status(200).send({cars: cars})
+      })
+    }
+    else{
+      db.getCar(req.params.autoname, (err, car) => {
+        if (err) return res.status(500).send('Error on the server.')
+        if (!car) return res.status(404).send('Car not available')
+        return res.status(200).send({car: car})
+      })
+    } 
+  }else {
+    return res.status(404).send('Requested resource is not available')
+  }
 })
 
 app.use(router)

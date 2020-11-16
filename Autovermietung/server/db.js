@@ -48,7 +48,13 @@ class Db {
         callback(err, users)
       })
   }
-
+  getCar (name, callback) {
+    return this.db.get(
+      `SELECT * FROM auto WHERE name = ?`,
+      [name], function (err, row) {
+        callback(err, row)
+      })
+  }
   getAllCars (callback) {
     let cars = []
     return this.db.all(
@@ -60,8 +66,6 @@ class Db {
         callback(err, cars)
       })
   }
-
-
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,

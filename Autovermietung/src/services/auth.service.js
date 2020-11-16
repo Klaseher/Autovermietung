@@ -28,9 +28,10 @@ class Auth {
     })
   }
 
-  registerEmployee (nam, mail, pass) {
+  registerEmployee (nam, vornam, mail, pass) {
     return axios.post(API_URL + 'register-employee', {
       name: nam,
+      vorname: vornam,
       username: mail,
       password: pass
     })
@@ -62,6 +63,8 @@ class Auth {
       password: password
     })
   }
+
+
 }
 
 export default new Auth()

@@ -16,12 +16,8 @@ class UserService {
   }
 
   // example request for implementing car search
-  getCars () {
-    return axios.get(API_URL + 'car/')
-  }
-  // example request for implementing car search
-  searchCar (name, type, price) {
-    return axios.get(API_URL + 'car/' + name + '/' + type + '/' + price)
+  getCar (autoname) {
+    return axios.get(API_URL + 'car/' + autoname)
   }
 }
 

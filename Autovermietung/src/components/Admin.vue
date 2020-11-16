@@ -12,11 +12,14 @@
         <div v-if="seen">
                 <p>Admin-Functions can be accessed from here</p>
                 <form>
-                    <label for="name">Name</label>
+                    <label for="vorname">Vorname</label>
+                     <div>
+                        <input id="vorname" type="text" v-model="vorname" required autofocus>
+                    </div>
+                      <label for="name">Name</label>
                     <div>
                         <input id="name" type="text" v-model="name" required autofocus>
                     </div>
-
                     <label for="username">Username</label>
                     <div>
                         <input id="username" type="text" v-model="username" required autofocus>
@@ -78,6 +81,7 @@ import Auth from '../services/auth.service'
 export default {
   data () {
     return {
+      vorname: '',
       name: '',
       username: '',
       password: '',
@@ -112,9 +116,8 @@ export default {
     },
     handleSubmit (e) {
       e.preventDefault()
-      /* Regex Name
-        Multiple letters containing ' , or whitespace but not two after each other */
-      var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
+      var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
+      var nameTest = new RegExp('[a-zA-Z]{3,100}')
       /* Regex: Strong Password
       Special Characters - Not Allowed
       Spaces - Not Allowed
@@ -127,14 +130,15 @@ export default {
       Repetitive Characters - Allowed only two repetitive characters */
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
       var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name)) {
+        if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
         if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
           if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
             if (passTest.test(this.password)) {
-              Auth.registerEmployee(this.name, this.username, this.password)
+              Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
                 .then(response => {
                   alert(response.data)
                   this.created = 'User successfully created'
+                  this.vorname = ''
                   this.name = ''
                   this.username = ''
                   this.password = ''
@@ -159,7 +163,8 @@ export default {
         }
       } else {
         this.name = ''
-        return alert('Name invalid')
+        this.vorname = ''
+        return alert('Name too long or short or contains invalid symbols')
       }
     }
   },

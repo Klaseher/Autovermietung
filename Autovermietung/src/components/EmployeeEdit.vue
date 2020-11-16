@@ -2,12 +2,12 @@
     <div>
         <h4>Edit Employee</h4>
         <form>
-            <label for="name">Employee Name: {{name}}</label>
+            <label for="name">Employee Last Name: {{name}}</label>
             <div>
                 <input id="name" type="text" v-model="new_name" required autofocus>
             </div>
             <button type="button" @click="updateName">
-                    Change Name
+                    Change Last Name
             </button>
         </form>
          <form>

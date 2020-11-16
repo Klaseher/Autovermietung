@@ -26,7 +26,7 @@ const routes = [
     component: About
   },
   {
-    path: '/search',
+    path: '/search/:autoname?',
     name: 'Search',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
