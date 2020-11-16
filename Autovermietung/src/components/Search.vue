@@ -63,6 +63,8 @@
               <td>{{auto.typ}}</td>
               <td>CO2:</td>
               <td>{{auto.co2}}</td>
+              <td>Mieten:</td>
+              <td><button type="submit" @click="mieten(auto.name)" :disabled="!verfuegbarkeit(auto.verfuegbar)">Mieten</button></td>
             </tr>
             <tr>
               <td>Sitzplätze:</td>
@@ -92,8 +94,6 @@
               <td>{{auto.getriebe}}</td>
               <td>Preis:</td>
               <td>{{auto.preis}}</td>
-              <td>Mieten:</td>
-              <td><button type="submit" @click="buchen()" :disabled="!verfuegbarkeit(gewaehltesauto.verfuegbar)">Jetzt {{gewaehltesauto.name}} verbindlich mieten</button></td>
             </tr>
             </article>
           </table>
@@ -143,7 +143,19 @@ export default {
     }
   },
   methods: {
+
+    ladeAutos(){
+          if(this.autos.length < 1){
+            UserService.getCar("alle")
+            .then(response => {
+              this.autos.push.apply(this.autos, response.data.cars)
+              this.gesuchteAutos = this.autos
+            })
+            .catch((error) => Helper.handle(error)
+            )}
+    },
     searchCar () {
+          this.ladeAutos()
           this.gesuchteAutos = this.autos.filter((auto) =>{
             let co2 = false
             let max = false
@@ -201,14 +213,7 @@ export default {
     },
     back (){
      this.ausgewaehlt = false
-      if(this.autos.length < 1){
-        UserService.getCar("alle")
-        .then(response => {
-          this.autos.push.apply(this.autos, response.data.cars)
-          this.gesuchteAutos = this.autos
-      })
-      .catch((error) => Helper.handle(error)
-      )}
+     this.ladeAutos()
      this.$router.push('/search') 
     }
   },
@@ -226,17 +231,12 @@ export default {
        .catch((error) => {
             Helper.handle(error)
             this.ausgewaehlt = false
+            this.msg = ''
             Helper.redirect('/search')
       })
     } else {
       this.ausgewaehlt = false
-      UserService.getCar("alle")
-      .then(response => {
-        this.autos.push.apply(this.autos, response.data.cars)
-        this.gesuchteAutos = this.autos
-      })
-      .catch((error) => Helper.handle(error)
-      )
+      this.ladeAutos()
     }
   }
 }
