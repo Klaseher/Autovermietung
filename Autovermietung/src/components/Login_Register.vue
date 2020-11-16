@@ -19,12 +19,12 @@
         <h2>Neues Konto</h2>
         <div>Nutzen Sie Ihre Email zum Registrieren</div>
 
-        <input type="text" placeholder="Vorname" v-model="name" required autofocus/>
-        <input type="text" placeholder="Name" v-model="vorname" required autofocus/>
-        <input type="email" placeholder="Email" v-model="email" required/>
+        <input type="text" placeholder="Vorname*" v-model="name" required autofocus/>
+        <input type="text" placeholder="Name*" v-model="vorname" required autofocus/>
+        <input type="email" placeholder="Email*" v-model="email" required/>
         <input type="text" placeholder="Adresse" v-model="adresse" required autofocus/>
-        <input type="tel" placeholder="Telefonnummer*" v-model="telefon"/>
-         <input type="password" placeholder="Password" v-model="password" required/>
+        <input type="tel" placeholder="Telefonnummer" v-model="telefon"/>
+         <input type="password" placeholder="Password*" v-model="password" required/>
         <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
         <button type="cancel" @click="back">
                     Zurueck

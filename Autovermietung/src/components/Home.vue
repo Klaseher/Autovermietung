@@ -1,12 +1,12 @@
 <template>
-  <div id="app">
+  <div id="app-home">
     <div class="home" v-bind:style="{ background: actColor}">
       <h1>{{msg}}</h1>
-      <img alt="logo" src="../assets/logo2.png">
+      <img alt="logo" src="../assets/logo.png">
       <router-view/>  
       <h2>Unsere Partner</h2>
       <div>
-          <img alt="partner" src="../assets/Marke/audii.png">     
+          <img alt="partner" src="../assets/Marke/audi.png">     
           <img alt="partner1" src="../assets/Marke/bmw.png">
           <img alt="partner2" src="../assets/Marke/VW.png">
           <img alt="partner3" src="../assets/Marke/Merc.png">
@@ -15,6 +15,7 @@
           <img alt="partner6" src="../assets/Marke/porsche.png">
       </div>
     </div>
+    <app-footer></app-footer>
   </div>
 
   
@@ -22,11 +23,11 @@
 </template>
 
 <script>
-
+import Footer from './Footer.vue'
 export default {
   name: 'out',
   components: {
-    
+    'app-footer': Footer
     
   },
   data(){
@@ -41,9 +42,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#app{
+#app-home{
+  padding: 5px;
   background-color:rgb(199, 62, 20);
-  -webkit-text-size-adjust:auto;
+  /* -webkit-text-size-adjust:auto; */
+  background-size: cover;
 }
 h1{
   font-size: 4rem;
@@ -51,26 +54,17 @@ h1{
 }
 h2{
   font-size: 3rem;
-  color: black;
+  color:darkslategrey;
 }
-image{
-  size: 19px;
-  height: 15px;
-  padding: 10rem;
+img{
+  height: 15pc;
+  width: 15pc;
+  padding: 10 10rem;
+  background-size: auto;
 }
 h3 {
   margin: 40px 0 0;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #13a865;
-}
+
 </style>
