@@ -40,7 +40,20 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+<<<<<<< HEAD:autovermietung/src/components/HelloWorld.vue
 <style scoped>
+=======
+<%_ if (rootOptions.cssPreprocessor !== 'stylus') { _%>
+<style scoped<%-
+  rootOptions.cssPreprocessor
+    ? ` lang="${
+        rootOptions.cssPreprocessor.includes('sass')
+          ? 'scss'
+          : rootOptions.cssPreprocessor
+      }"`
+    : ``
+%>>
+>>>>>>> login2(bitte-nicht-hier-committen,-sondern-in-login1):Autovermietung/node_modules/@vue/cli-service/generator/template/src/components/HelloWorld.vue
 h3 {
   margin: 40px 0 0;
 }
