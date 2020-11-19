@@ -73,6 +73,7 @@ export default {
     back () {
       Helper.redirect('/')
     },
+    //Registrierungsdaten prüfen, auswerten und Kunde in DB anlegen
     register (e) {
       e.preventDefault()
       var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
@@ -123,6 +124,8 @@ export default {
         return alert('Name too long or short or contains invalid symbols')
       }
     },
+    //Anmelden des Kunden --> Verifizierung Anmeldedaten gegenüber Backend
+    //Identifizierung und Speicherung der Zugriffsrechte der Person
     login (e) {
       e.preventDefault()
       /* Regex: Strong Password

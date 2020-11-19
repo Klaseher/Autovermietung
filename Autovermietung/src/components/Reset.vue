@@ -26,6 +26,7 @@
 </template>
 
 <script>
+//Komponente zum Zurücksetzen Passwort Kunde
 import Helper from '../services/helper.service'
 import Auth from '../services/auth.service'
 export default {
@@ -43,6 +44,7 @@ export default {
     back () {
       Helper.redirect('/')
     },
+    //Rücksetz-Anfrage von Kundenpasswort an Backend gesendet
     reset () {
       this.resetPW = false
 
@@ -64,9 +66,9 @@ export default {
         this.msg = 'Invalid Email format'
       }
     },
+    //Verifizierung neues Passwort von Kunden durch Backend
     confirmNewPW () {
       let passTest = new RegExp('^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})')
-      // eslint-disable-next-line eqeqeq
       if (this.password == this.password_confirmation) {
         if (passTest.test(this.password) && this.password.length > 5 && this.password.length < 100) {
           Auth.resetUserPWConfirmation(this.$route.params.id, this.$route.params.token, this.password)

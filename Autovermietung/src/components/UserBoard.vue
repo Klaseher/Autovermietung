@@ -7,6 +7,7 @@
 </template>
 
 <script>
+//Komponente für Kunde
 import Helper from '../services/helper.service'
 export default {
   data () {

@@ -1,7 +1,8 @@
 <template>
-    <div >
+    <div> 
         <h1>Unsere Autos</h1>
         <main class="search" v-if="!ausgewaehlt">
+          <!-- Anzeige der Autos -->
             <h1> Suchergebnisse für: {{msg}}</h1>
             <span>
                 <input type="text" placeholder="Autoname" v-model="autoname" required autofocus/>
@@ -26,6 +27,7 @@
               </div>
           </div>
             <div v-if="seen"> 
+              <!-- Inputs für Suchfkt. -->
                 <input type="text" placeholder="Mindestpreis (€)" v-model="preis_min" required autofocus/>
                 <input type="text" placeholder="Höchstpreis (€)" v-model="preis_max" required autofocus/>
                 <input type="text" placeholder="Anzahl Sitze" v-model="platz" required autofocus/>
@@ -52,6 +54,7 @@
             </div>
           <h3> Suchergebnisse </h3>
             
+          <!-- Ausgabe der Autodaten in Tabelle --> 
           <table v-for="auto in gesuchteAutos" :key="auto.name" id="auto">
             <h2>{{auto.name}}</h2>
             <article>
@@ -100,6 +103,7 @@
             </article>
           </table>
         </main> 
+        <!-- Wenn Auto ausgewählt zum Mieten, dann wird dies geladen -->
         <div v-else>
           <button type="cancel" @click="back">
                   Zurueck zur Suche
@@ -113,6 +117,7 @@
 </template>
 
 <script>
+//Komponente zum Suchen + Mieten Auto
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
 export default {
@@ -133,19 +138,19 @@ export default {
       tankvolumen: '',
       leistung: '',
       getriebe: '',
-      gewaehltesauto: "",
-      autos: [],
-      gesuchteAutos: [],
-      kratstofftypen: [],
-      autotypen: [],
-      getriebetypen: [],
-      seen: false,
-      ausgewaehlt : false
+      gewaehltesauto: "", //hier wird ausgewähltes Auto gespeichert
+      autos: [],          //alle Autos von Backend
+      gesuchteAutos: [],  //Autos, die Filter entsprechen
+      kratstofftypen: [], //Arten von Kraftstoff
+      autotypen: [],      //Typen von Autos
+      getriebetypen: [],  //Typen von Autogetrieben
+      seen: false,        
+      ausgewaehlt : false //festlegen, ob Auto ausgewählt wurde
 
     }
   },
   methods: {
-
+    //alle Autos von Backend holen, wenn noch nicht vorhanden
     ladeAutos(){
           if(this.autos.length < 1){
             UserService.getCar("alle")
@@ -156,6 +161,7 @@ export default {
             .catch((error) => Helper.handle(error)
             )}
     },
+    //Autosuche + Filter
     searchCar () {
           this.ladeAutos()
           this.gesuchteAutos = this.autos.filter((auto) =>{
@@ -194,11 +200,13 @@ export default {
         this.msg = this.autoname
       }
     },
+    //Auswählen eines Autos und detaillierte Anzeige aller Infos
     mieten (autoname) {
       this.ausgewaehlt = true
       this.gewaehltesauto = this.autos.find(element => element.name == autoname )
       this.$router.push('/search/' + autoname)
     },
+    //Test, ob Auto gemietet werden kann
     verfuegbarkeit (vorhanden){
       if(vorhanden == 1){
         return true
@@ -208,6 +216,7 @@ export default {
       }
     },
 
+    //Buchung erstellen und an Backend senden
     buchen(){
         //request an backend, um buchung abzuschließen
         //dazu in db eine bestellung erstellt werden
@@ -220,10 +229,13 @@ export default {
     }
   },
 
+  //Weitere spezielle Fkt. von Komponente
+  //beforeMount() --> Wird automatisch ausgeführt, bevor Komponente geladen wird
    beforeMount () {
-    this.kraftstofftypen = ["Super", "Super Plus", "Diesel"]
-    this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"]
-    this.getriebetypen = ["Automatik", "Schaltung"]
+    this.kraftstofftypen = ["Super", "Super Plus", "Diesel"] //Auswahlmöglichkeiten Kraftstoffe
+    this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"] //Auswahlmöglichkeiten Autotypen
+    this.getriebetypen = ["Automatik", "Schaltung"]    //Auswahlmöglichkeiten Getriebe
+    //Test, ob Parameter in Route übergeben
     if (this.$route.params.autoname != '') {
       this.ausgewaehlt = true
       UserService.getCar(this.$route.params.autoname)

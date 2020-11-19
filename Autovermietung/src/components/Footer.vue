@@ -6,7 +6,7 @@
 
 
 <script>
-
+//Fusszeile Website
 export default {
     data(){
         return{

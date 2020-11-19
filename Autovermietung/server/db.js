@@ -1,3 +1,5 @@
+//Hier erfolgt Bearbeitung DB mit SQL-Anfragen
+//und genereller Zugriff auf diese
 'use strict'
 const sqlite3 = require('sqlite3').verbose()
 
@@ -6,6 +8,7 @@ class Db {
     this.db = new sqlite3.Database(file)
   }
 
+  //Neuen Datensatz in User-Tabelle einfügen
   insert (user, callback) {
     return this.db.run(
       'INSERT INTO user (nachname, vorname, user, pass, adresse, telefon, rolle) VALUES (?,?,?,?,?,?,?)',
@@ -14,6 +17,8 @@ class Db {
       })
   }
 
+  
+  //Token + Ablaufzeit zum Zurücksetzen PW für Kunden setzen
   updateReset (reset, callback) {
     return this.db.run(
       'UPDATE user SET resetToken = ?, ablaufdatum = ? WHERE id = ?',
@@ -22,6 +27,7 @@ class Db {
       })
   }
 
+  //Person-Datensatz mit spezischem Username/Email aus DB holen
   selectByEmail (email, callback) {
     return this.db.get(
       `SELECT * FROM user WHERE user = ?`,
@@ -29,6 +35,8 @@ class Db {
         callback(err, row)
       })
   }
+
+  //Person-Datensatz mit spezischer ID aus DB holen
   selectById (id, callback) {
     return this.db.get(
       `SELECT * FROM user WHERE id = ?`,
@@ -37,6 +45,8 @@ class Db {
       })
   }
 
+  
+  //alle Mitarbeiter holen
   getAllEmployees (callback) {
     let users = []
     return this.db.all(
@@ -48,6 +58,8 @@ class Db {
         callback(err, users)
       })
   }
+
+  //Auto-Datensatz mit spezischem Namen aus DB holen
   getCar (name, callback) {
     return this.db.get(
       `SELECT * FROM auto WHERE name = ?`,
@@ -55,6 +67,8 @@ class Db {
         callback(err, row)
       })
   }
+
+  //Alle Datensätze aus Auto-Tabelle zurückgeben
   getAllCars (callback) {
     let cars = []
     return this.db.all(
@@ -66,6 +80,9 @@ class Db {
         callback(err, cars)
       })
   }
+
+  
+  //Person-Nachname ändern
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,
@@ -73,6 +90,8 @@ class Db {
         callback(err, row)
       })
   }
+
+  //Person-Mail/Username ändern
   updateMail (email, id, callback) {
     return this.db.get(
       `UPDATE user SET user = ? WHERE id = ?`,
@@ -81,6 +100,7 @@ class Db {
       })
   }
 
+  //Person-Passwort ändern
   updatePass (pass, id, callback) {
     return this.db.get(
       `UPDATE user SET pass = ? WHERE id = ?`,
@@ -89,6 +109,7 @@ class Db {
       })
   }
 
+  //Person-Datensatz komplett aus DB löschen
   deleteAccount (id, callback) {
     return this.db.get(
       `DELETE FROM user WHERE id = ?`,

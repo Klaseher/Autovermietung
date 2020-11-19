@@ -43,7 +43,7 @@
 </template>
 
 <script>
-/* eslint-disable eqeqeq */
+//Komponente zum Bearbeiten von Mitarbeiter-Konto durch Admin
 import UserService from '../services/user.service'
 import Auth from '../services/auth.service'
 import Helper from '../services/helper.service'
@@ -64,6 +64,7 @@ export default {
     back () {
       this.$router.push('../')
     },
+    //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
     updateName () {
       var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
       if (this.new_name.length > 5 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
@@ -128,6 +129,7 @@ export default {
         return alert('Passwords do not match')
       }
     },
+    //Methode zum Löschen von Mitarbeiter-Account
     deleteEmployee () {
       if (confirm('Do you really want to delete the Employee account?')) {
         Auth.deleteEmployee(this.id)

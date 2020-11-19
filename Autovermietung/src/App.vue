@@ -17,21 +17,29 @@
 
 
 <script>
+//oberhalb hmtl-code
+
+//Main-Komponente Vue
+//Sie wird überall auf jeder Seite angezeigt
 import Auth from './services/auth.service'
+//Der Aufbau einer Vue-Komponente ist prinzipiell immer gleich bei allen
+//Daher hier kurz anhand dieser Komponente eine kurze Erklärung
 export default {
-  name: 'App',
-  data () {
+  name: 'App', //Name Komponente
+  data () { //Alle Variablen, die Komponente haben soll --> Quasi Konstruktor
     return {
-      loggedIn: false,
-      login: 'Registrieren/Anmelden'
+      loggedIn: false,  //ermitteln, ob Person angemeldet
+      login: 'Registrieren/Anmelden' //Textanzeige
     }
   },
 
-methods: {
-  logout(){
+methods: {  //Alle Methoden, die von der Komponente (wie bei einem Objekt) aufgerufen
+            //werden können
+            //können dann z.B. innerhalb der Komponente in <template></template> genutzt werden
+  logout(){ //ausloggen
     Auth.logout()
   },
-   changeValue () {
+   changeValue () { //test, ob angemeldet durch Auslesen von Browser-Speicher
       // eslint-disable-next-line eqeqeq
       if (sessionStorage.getItem('auth') == 'true') {
         this.login = 'Dein Account'
@@ -43,12 +51,16 @@ methods: {
     }
 },
 
+//spezielle Methode --> Wenn Pfad/URL geändert, wird Fkt. aufgerufen
 watch: {
+  //dient zum Ermitteln des Einloggstatus und ändert je nachdem
+  //die Komponente (Anmelden --> Ihr Konto/ Es wird Ausloggen angezeigt)
     $route() {
         this.changeValue()
     }
 },
 }
+//unterhalb css code
 </script>
 
 <style lang="scss">
