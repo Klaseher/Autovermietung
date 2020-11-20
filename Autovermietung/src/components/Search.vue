@@ -71,7 +71,6 @@
               <td>{{auto.sitzplaetze}}</td>
               <td>Türen:</td>
               <td>{{auto.tueren}}</td>
-              <td><button type="offerb" @click="offer(auto.name)" :disabled="!verfuegbarkeit(auto.verfuegbar)">Bestellen</button></td>
             </tr>
 
             <tr>
@@ -200,11 +199,6 @@ export default {
       this.gewaehltesauto = this.autos.find(element => element.name == autoname )
       this.$router.push('/search/' + autoname)
     },
-    offer (autoname) {
-      this.ausgewaehlt = true
-      this.gewaehltesauto = this.autos.find(element => element.name == autoname )
-      this.$router.push('/rent/' + autoname)
-    },
     verfuegbarkeit (vorhanden){
       if(vorhanden == 1){
         return true
@@ -215,6 +209,7 @@ export default {
     },
 
     buchen(){
+      this.$router.push('/rent/' + this.gewaehltesauto.name)
         //request an backend, um buchung abzuschließen
         //dazu in db eine bestellung erstellt werden
         //employee kann es dann abrufen in account
