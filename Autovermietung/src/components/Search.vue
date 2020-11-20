@@ -203,7 +203,7 @@ export default {
     offer (autoname) {
       this.ausgewaehlt = true
       this.gewaehltesauto = this.autos.find(element => element.name == autoname )
-      this.$router.push('/buchen/' + autoname)
+      this.$router.push('/rent/' + autoname)
     },
     verfuegbarkeit (vorhanden){
       if(vorhanden == 1){
