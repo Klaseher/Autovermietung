@@ -9,6 +9,7 @@ import UserBoard from '@/components/UserBoard.vue'
 import Admin from '@/components/Admin.vue'
 import EmployeeEdit from '@/components/EmployeeEdit.vue'
 import UserService from '../services/user.service'
+import Rent from '../components/Rent.vue'
 
 const routes = [
   {
@@ -33,6 +34,15 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     //component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
     component: Search
+  },
+  {
+    path: '/rent/:autoname',
+    name: 'Rent',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    //component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: Rent
   },
   {
     path: '/reset/:id?/:token?',
