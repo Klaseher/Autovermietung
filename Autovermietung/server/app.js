@@ -387,7 +387,6 @@ router.get('/car/:autoname', (req, res) => {
 router.get('/rent/', (req, res) => {
   
   let token = req.cookies.jwt
-  let userr = null
   if (token) {
     // verify secret
     jwt.verify(token, config.secret, function (err, decoded) {
@@ -404,7 +403,7 @@ router.get('/rent/', (req, res) => {
           res.clearCookie('jwt')
           return res.status(404).send('Invalid User')
         }
-        userr = user
+        let user = {id: user.id, name: user.nachname, email: user.user, telefon: user.telefon, adresse: user.adresse}
         return res.status(200).send({benutzer: user})
       })
     })

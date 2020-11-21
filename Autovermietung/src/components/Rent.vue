@@ -1,19 +1,22 @@
 <template>
-    <h1>Auto buchen</h1>
-    <br />
-    <br />
-    <br /> <h3>{{user.vorname}} {{user.nachname}}</h3>
-    <br /> <h3>{{user.addresse}}</h3>
-    <br /> <h3>{{user.telefon}}</h3>
-    <br />
-    <input type="text" placeholder="Startdatum" v-model="start" required autofocus/>
-    <input type="text" placeholder="Enddatum" v-model="ende" required autofocus/>
-    <br />
-    <br />
-    <br />
-    <button>
-        Anfrage
-    </button>
+<div>
+        <h1>Auto buchen</h1>
+        <br />
+        <br />
+        <br /> <h3>{{user.vorname}} {{user.nachname}}</h3>
+        <br /> <h3>{{user.adresse}}</h3>
+        <br /> <h3>{{user.telefon}}</h3>
+        <br /> <h3>{{user.user}}</h3>
+        <br />
+        <input type="text" placeholder="Startdatum" v-model="start" required autofocus/>
+        <input type="text" placeholder="Enddatum" v-model="ende" required autofocus/>
+        <br />
+        <br />
+        <br />
+        <button>
+            Anfrage
+        </button>
+    </div>
 </template>
 
 <script>
@@ -23,22 +26,21 @@ export default {
     data(){
         return{            
             name: '',
-            addresse: '',
+            adresse: '',
             telefon: '',
+            email: '',
             start: '',
             ende: '',
             user: null,
         }
     },
     
-    methods:{
-        beforeMount(){
+    beforeMount(){
             UserService.getUser()
             .then((response) =>{
-                this.user = response.data.user;                
+                this.user = response.data.benutzer;                
             })
-            .catch((error) => Helper.handle(error));
-        }
+        .catch((error) => Helper.handle(error));
     }
   
 }
