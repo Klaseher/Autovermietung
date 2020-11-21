@@ -403,8 +403,7 @@ router.get('/rent/', (req, res) => {
           res.clearCookie('jwt')
           return res.status(404).send('Invalid User')
         }
-        let user = {id: user.id, name: user.nachname, email: user.user, telefon: user.telefon, adresse: user.adresse}
-        return res.status(200).send({benutzer: user})
+        return res.status(200).send({user: user})
       })
     })
   } else {

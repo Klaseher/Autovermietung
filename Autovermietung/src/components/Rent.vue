@@ -31,14 +31,14 @@ export default {
             email: '',
             start: '',
             ende: '',
-            user: null,
+            user: '',
         }
     },
     
     beforeMount(){
             UserService.getUser()
             .then((response) =>{
-                this.user = response.data.benutzer;                
+                this.user = response.data.user;                
             })
         .catch((error) => Helper.handle(error));
     }
