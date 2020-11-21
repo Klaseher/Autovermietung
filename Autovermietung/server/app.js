@@ -384,6 +384,23 @@ router.get('/car/:autoname', (req, res) => {
   }
 })
 
+router.get('/rent/autoname', (req, res) => {
+  if(req.params.autoname != null){
+    db.selectById(req.params.id, (err, user) => {
+      if (err) return res.status(500).send('Error on the server.')
+      if (!user) return res.status(404).send('Employee not found')
+      if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
+        let employee = {id: user.id, name: user.nachname, email: user.user}
+        return res.status(200).send({employee: employee})
+      } else {
+        return res.status(401).send('Unauthorized access')
+      }
+    })
+  }else {
+    return res.status(404).send('Requested resource is not available')
+  }
+})
+
 app.use(router)
 
 let port = process.env.PORT || 3000
