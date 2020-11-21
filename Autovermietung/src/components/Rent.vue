@@ -1,5 +1,6 @@
 <template>
     <h1>Auto buchen</h1>
+<<<<<<< HEAD
     <br />
     <br />
     <br /> <h3>Username</h3>
@@ -14,6 +15,9 @@
     <button>
         Anfrage
     </button>
+=======
+    <p>Hoden</p>
+>>>>>>> b96b2e8f0a0f4ddcbb2f85299927f378c96df668
 </template>
 
 <script>
@@ -34,6 +38,9 @@ export default {
 <style scoped>
 h1{
     color: blue;
+}
+p{
+    color: black;
 }
 
 </style>
