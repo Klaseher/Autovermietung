@@ -39,11 +39,11 @@
         <input type="email" placeholder="Email" v-model="email" required autofocus/>
         <input type="password" placeholder="Password" v-model="password" required/>
         <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
-         <button type="cancel" @click="back">
-                    Zurueck
-        </button>
         <button type="submit" @click="login">
                     Einloggen
+        </button>
+         <button type="cancel" @click="back">
+                    Zurueck
         </button>
       </form>
     </div>

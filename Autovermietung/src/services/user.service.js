@@ -19,6 +19,10 @@ class UserService {
   getCar (autoname) {
     return axios.get(API_URL + 'car/' + autoname)
   }
+
+  getUser () {
+    return axios.get(API_URL + 'rent/')
+  }
 }
 
 export default new UserService()
