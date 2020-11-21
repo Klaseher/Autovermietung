@@ -12,7 +12,7 @@
     <br />
     <br />
     <button>
-        Anmeldung
+        Anfrage
     </button>
 </template>
 
