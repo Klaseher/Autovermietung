@@ -129,6 +129,22 @@ export default {
                     alert('Enddatum muss nach Startdatum liegen')
                     return
                 }
+                else{
+                    let bestellung
+                    for(bestellung of this.zeiten){ 
+                        let von = new Date(bestellung.startdatum)
+                        let bis = new Date(bestellung.enddatum)
+                        let startdatum = new Date(this.start)
+                        let enddatum = new Date(this.ende)
+                        if(((startdatum.getTime() < von.getTime()) && (enddatum.getTime() > bis.getTime()))){
+                            alert(this.$route.params.autoname + ' ist bereits innerhalb des Zeitraumes gemietet')
+                            return
+                        }
+
+
+                    }    
+
+                }
             }
             //Hier Bestellung in Backend erstellen mit Status 'offen'
             //Hier auch noch prüfen, dass Kunde nur eine Bestellung gleichzeitig in DB haben darf 
@@ -140,9 +156,9 @@ export default {
             Helper.redirect('/login')
         },
         //Alle Tage zw. (inklusive) Start- und Enddatum deaktivieren
-        erstelleDeaktivierteZeiten(zeiten){
+        erstelleDeaktivierteZeiten(){
             let bestellung = ''
-            for(bestellung of zeiten){             
+            for(bestellung of this.zeiten){             
                 let start = new Date(bestellung.startdatum)
                 let stop = new Date(bestellung.enddatum)
                 let current = start
@@ -170,8 +186,9 @@ export default {
             this.user = response.data.user;     
             UserService.getCar(this.$route.params.autoname)
                 .then((response) =>{
-                    this.auto = response.data.car    
-                    this.erstelleDeaktivierteZeiten(response.data.carTimes)            
+                    this.auto = response.data.car  
+                    this.zeiten = response.data.carTimes
+                    this.erstelleDeaktivierteZeiten()            
                 })
                 .catch((error) => {
                     Helper.handle(error)
