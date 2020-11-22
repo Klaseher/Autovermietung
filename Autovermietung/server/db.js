@@ -66,6 +66,18 @@ class Db {
         callback(err, cars)
       })
   }
+
+  getAllTimeframes (callback) {
+    let timeframes = []
+    return this.db.all(
+      `SELECT auto_fk, startdatum, enddatum FROM bestellung`,
+      function (err, rows) {
+        rows.forEach(function (row) {
+          timeframes.push(row)
+        })
+        callback(err, timeframes)
+      })
+  }
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,

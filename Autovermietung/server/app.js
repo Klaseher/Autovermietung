@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser')
 const moment = require('moment')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
+const { time } = require('console')
 moment().format()
 
 const db = new DB('autovermietung.db')
@@ -369,7 +370,33 @@ router.get('/car/:autoname', (req, res) => {
         if (err) return res.status(500).send('Error on the server.')
         if (!cars) return res.status(404).send('No Cars available')
         console.log(cars)
-        return res.status(200).send({cars: cars})
+        //sieht hier jede Bestellung (also auch Anfrage von Kunden)
+        //bereits als vollständige Bestellung an 
+        //--> Auto kann nicht gemietet werden, erst wenn Mitarbeiter Bestellung löschen würde
+        db.getAllTimeframes((err, timeframes) => {
+          if (err) return res.status(500).send('Error on the server.')
+          let orderTime = [] 
+          for (timee of timeframes){
+            let found = false
+            let index = 0
+            for(i=0;i<orderTime.length;i++){
+              if(orderTime[i].auto == timee.auto_fk){
+                index = i
+                found = true
+                break
+              }
+            }
+            if(!found){
+              let length = orderTime.push({auto: timee.auto_fk, times:[]})
+              index = length - 1
+            }
+            found = false
+            orderTime[index].times.push({from: timee.startdatum, to: timee.enddatum})
+          }
+          //werden jetzt alle Autos und die zu ihnen gehörigen Bestellzeiträume zurückgegeben
+          console.log(orderTime)
+          return res.status(200).send({cars: cars, times: orderTime})
+        })
       })
     }
     else{
