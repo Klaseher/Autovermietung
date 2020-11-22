@@ -1,19 +1,33 @@
 <template>
-    <div> 
-        <h1>Unsere Autos</h1>
-        <main class="search" v-if="!ausgewaehlt">
+    <div class="search">  
+        <!-- <h1>Unsere Autos</h1> -->
+        <main  v-if="!ausgewaehlt">
           <!-- Anzeige der Autos -->
             <h1> Suchergebnisse für: {{msg}}</h1>
-            <span>
+            
                 <input type="text" placeholder="Autoname" v-model="autoname" required autofocus/>
-                <button type="submit" @click="searchCar()">
+                <br />
+                <br />
+               
+                
+            
+            <button type="submit" @click="searchCar()">
                       Autosuche
                 </button>
-            </span>
             <br />
-              <br />
-              <input type="text" placeholder="Startdatum" v-model="start" required autofocus/>
-              <input type="text" placeholder="Enddatum" v-model="ende" required autofocus/>
+            <br />
+              
+              <h3 for="start">Startdatum:</h3>
+
+              <input type="date" id="start" name="trip-start"
+                   placeholder="Startdatum"
+                    min="2020-11-01" max="2025-12-31">
+
+
+              <h3 for="end">Enddatum:</h3>
+              <input type="date" id="end" name="trip-start"
+                    placeholder="Enddatum"
+                    min="2020-11-01" max="2025-12-31">
               <br />
               <br />
               <br />
@@ -26,12 +40,17 @@
                 <h2></h2>
               </div>
           </div>
-            <div v-if="seen"> 
+            <div class="erweiter" v-if="seen"> 
               <!-- Inputs für Suchfkt. -->
                 <input type="text" placeholder="Mindestpreis (€)" v-model="preis_min" required autofocus/>
                 <input type="text" placeholder="Höchstpreis (€)" v-model="preis_max" required autofocus/>
                 <input type="text" placeholder="Anzahl Sitze" v-model="platz" required autofocus/>
                 <input type="text" placeholder="Anzahl Türen" v-model="tuer" required autofocus/>  
+                
+                <input type="text" placeholder="Co2-Ausstoß (g/km)" v-model="c02" required autofocus/>
+                <input type="text" placeholder="Spritverbrauch (l/100km)" v-model="verbrauch" required autofocus/>
+                <input type="text" placeholder="Tankvolumen (l)" v-model="tankvolumen" required autofocus/>
+                <input type="text" placeholder="Leistung (PS)" v-model="leistung" required autofocus/>
                 <select v-model="typ">
                   <option value="" disabled selected>Autotyp (z.B. Kleinwagen)</option>
                   <option value="">Alle</option>
@@ -42,17 +61,13 @@
                   <option value="">Alle</option>
                   <option v-for="(kraftstoff,index) in kraftstofftypen" :key="index" :value="kraftstoff">{{kraftstoff}}</option>
                 </select>
-                <input type="text" placeholder="Co2-Ausstoß (g/km)" v-model="c02" required autofocus/>
-                <input type="text" placeholder="Spritverbrauch (l/100km)" v-model="verbrauch" required autofocus/>
-                <input type="text" placeholder="Tankvolumen (l)" v-model="tankvolumen" required autofocus/>
-                <input type="text" placeholder="Leistung (PS)" v-model="leistung" required autofocus/>
                 <select v-model="getriebe">
                 <option value="" disabled selected>Getriebeart</option>
                 <option value="">Alle</option>
                 <option v-for="(getriebe,index) in getriebetypen" :key="index" :value="getriebe">{{getriebe}}</option>
                 </select>
             </div>
-          <h3> Suchergebnisse </h3>
+          <h1> Suchergebnisse </h1>
             
           <!-- Ausgabe der Autodaten in Tabelle --> 
           <table v-for="auto in gesuchteAutos" :key="auto.name" id="auto">
@@ -66,8 +81,8 @@
               <td>{{auto.typ}}</td>
               <td>CO2:</td>
               <td>{{auto.co2}}</td>
-              <td>Mieten:</td>
-              <td><button type="submit" @click="mieten(auto.name)" :disabled="!verfuegbarkeit(auto.verfuegbar)">Mieten</button></td>
+              
+              
             </tr>
             <tr>
               <td>Sitzplätze:</td>
@@ -100,6 +115,7 @@
               <td>Modell:</td>
               <td>{{auto.modelbezeichnung}}</td>
             </tr>
+            <button type="submit" @click="mieten(auto.name)" :disabled="!verfuegbarkeit(auto.verfuegbar)">Mieten</button>
             </article>
           </table>
         </main> 
@@ -261,11 +277,52 @@ export default {
 h1{
     color: brown;
 }
-input{
-  padding: 5px;
-  width: fit-content;
+h3{
+  color: aqua;
+}
+input[type=text], select {
+  width: 25%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.search{
+  background-color:#44c767;
+	border-radius:28px;
+	border:1px solid #18ab29;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #2f6627;
+}
+.search:hover {
+	background-color:#5cbf2a;
+}
+.search:active {
+	position:relative;
+	top:1px;
 }
 button{
-  padding: 10 10px;
-}
+  box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	background-color:#7892c2;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:19px;
+	padding:12px 37px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+}  
 </style>
