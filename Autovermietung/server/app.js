@@ -403,7 +403,11 @@ router.get('/car/:autoname', (req, res) => {
       db.getCar(req.params.autoname, (err, car) => {
         if (err) return res.status(500).send('Error on the server.')
         if (!car) return res.status(404).send('Car not available')
-        return res.status(200).send({car: car})
+        //sucht nach allen Bestellzeitraeumen fuer Auto
+        db.getCarTimeframes(req.params.autoname, (err, carTimeframes) => {
+          if (err) return res.status(500).send('Error on the server.')
+          return res.status(200).send({car: car, carTimes: carTimeframes})
+        })
       })
     } 
   }else {
