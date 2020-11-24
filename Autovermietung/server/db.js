@@ -66,6 +66,32 @@ class Db {
         callback(err, cars)
       })
   }
+
+  //Alle Bestellzeitraeume von einem spezifischen Auto
+  getCarTimeframes (autoname, callback) {
+    let timeframes = []
+    return this.db.all(
+      `SELECT startdatum, enddatum FROM bestellung WHERE auto_fk = ?`,
+      [autoname], function (err, rows) {
+        rows.forEach(function (row) {
+          timeframes.push(row)
+        })
+        callback(err, timeframes)
+      })
+  }
+
+  //Alle Bestellzeitraeume von allen Autos
+  getAllTimeframes (callback) {
+    let timeframes = []
+    return this.db.all(
+      `SELECT auto_fk, startdatum, enddatum FROM bestellung`,
+      function (err, rows) {
+        rows.forEach(function (row) {
+          timeframes.push(row)
+        })
+        callback(err, timeframes)
+      })
+  }
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,

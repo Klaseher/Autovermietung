@@ -15,19 +15,23 @@
       </span>
       <br />
       <br />
-      <input
-        type="text"
-        placeholder="Startdatum"
-        v-model="start"
-        required
-        autofocus
+      <datepicker-lite 
+        :value-attr="datepickerSetting.value"
+        :year-minus="datepickerSetting.yearMinus"
+        :from="datepickerSetting.from"
+        :to="datepickerSetting.to"
+        :disabled-date="datepickerSetting.disabledDate"
+        :locale="datepickerSetting.locale"
+        @value-changed="datepickerSetting.changeEvent"
       />
-      <input
-        type="text"
-        placeholder="Enddatum"
-        v-model="ende"
-        required
-        autofocus
+      <datepicker-lite 
+        :value-attr="datepickerSetting2.value"
+        :year-minus="datepickerSetting2.yearMinus"
+        :from="datepickerSetting2.from"
+        :to="datepickerSetting2.to"
+        :disabled-date="datepickerSetting2.disabledDate"
+        :locale="datepickerSetting2.locale"
+        @value-changed="datepickerSetting2.changeEvent"
       />
       <br />
       <br />
@@ -199,17 +203,91 @@
 </template>
 
 <script>
+import DatepickerLite from "vue3-datepicker-lite";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
-export default {
+export default ({
+  name: "App",
+  components: {
+    DatepickerLite
+  },
   data() {
     return {
+      //startdatum
+       datepickerSetting : {
+        value:"",
+        yearMinus: 0,
+        from: "",
+        to: "1999/01/01",
+        disabledDate: [
+            
+        ],
+        locale: {
+          format: "YYYY/MM/DD",
+          weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
+          todayBtn: "Heute",
+          clearBtn: "Löschen",
+          closeBtn: "Schliessen",
+        },
+         changeEvent: (value) => {
+           //Wenn Startdatum geändert, dann wird automatisch Auswahldatumsraum auf +1 Tag vom ausgewählten
+           //Tag für Enddatum gesetzt
+            let date = new Date()
+            let date2 = new Date(value)
+            if(value == '' || (date2.getTime() <= date.getTime())){
+              this.start = ''
+              date.setDate(date.getDate() + 2)
+              this.datepickerSetting2.from = Helper.formatDate(date)
+              if(date2.getTime() <= date.getTime()){
+                alert('Ungültiges Datum. Es wird bei der Suche ignoriert')
+              }
+            }
+            else{
+              //BUG: Wenn Startdatum auf 31.12.2020 - 30.01.2021, dann wird zwar
+              //enddatum from-date richtig berechnet, aber kein Datum im Januar kann ausgewählt werden 
+              this.start = value
+              date2.setDate(date2.getDate() + 1)
+              this.datepickerSetting2.from = Helper.formatDate(date2) //Fehler replizieren --> ersetzen durch '2021/01/01'
+            }
+            //Wenn Startdatum geändert, wird automatisch auch gewähltes Enddatum ungültig
+            //Wird nur nicht graphisch geändert
+            this.ende = ''
+         }
+      },
+      //enddatum
+      datepickerSetting2 : {
+        value: "",
+        yearMinus: 0,
+        from: "",
+        to: "1999/01/01",
+        disabledDate: [
+            
+        ],
+        locale: {
+          format: "YYYY/MM/DD",
+          weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
+          todayBtn: "Heute",
+          clearBtn: "Löschen",
+          closeBtn: "Schliessen",
+        },
+          changeEvent: (value) => {
+          let date = new Date()
+          let date2 = new Date(value)
+          if(date2.getTime() <= date.getTime()){
+            this.ende = ''
+            alert('Ungültiges Datum. Es wird bei der Suche ignoriert')
+          }
+          else{
+            this.ende = value
+          }
+        }
+      },
       msg: "Alle Autos",
+      start: '',
+      ende: '',
       preis_min: "",
       preis_max: "",
       autoname: "",
-      start: "",
-      ende: "",
       platz: "",
       tuer: "",
       typ: "",
@@ -221,6 +299,7 @@ export default {
       getriebe: "",
       gewaehltesauto: "",
       autos: [],
+      zeiten: [],
       gesuchteAutos: [],
       kratstofftypen: [],
       autotypen: [],
@@ -234,7 +313,8 @@ export default {
       if (this.autos.length < 1) {
         UserService.getCar("alle")
           .then((response) => {
-            this.autos.push.apply(this.autos, response.data.cars);
+            this.autos.push.apply(this.autos, response.data.cars)
+            this.zeiten.push.apply(this.zeiten, response.data.times)
             this.gesuchteAutos = this.autos;
           })
           .catch((error) => Helper.handle(error));
@@ -267,6 +347,7 @@ export default {
         } else {
           verbrauch = auto.verbrauch <= this.verbrauch;
         }
+        let zeit = this.zeitFilter(auto)
         return (
           this.autoname
             .toLowerCase()
@@ -283,6 +364,7 @@ export default {
           auto.preis >= this.preis_min &&
           max &&
           auto.getriebe.toLowerCase().match(this.getriebe.toLowerCase())
+          && zeit
         );
       });
       if (this.autoname == "") {
@@ -290,6 +372,52 @@ export default {
       } else {
         this.msg = this.autoname;
       }
+    },
+    //Filter, um Autos zu finden, deren Buchungsdaten sich mit dem gesuchten Zeitraum überschneiden
+    zeitFilter(auto){
+      let index = 0
+      let gefunden = false
+      let i = 0
+      let buchung = ''
+      if(this.start == '' && this.ende == ''){
+        return true
+      }
+      for(;i<this.zeiten.length;i++){
+        if(this.zeiten[i].auto == auto.name){
+          index = i
+          gefunden = true
+          break
+        }
+      }
+      if(!gefunden){
+        return true
+      }
+      for(buchung of this.zeiten[index].times){
+        let von = new Date(buchung.from)
+        let bis = new Date(buchung.to)
+        if(this.start == ''){
+          let enddatum = new Date(this.ende)
+          if((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())){
+            return false
+          } 
+        }
+        else if(this.ende == ''){
+           let startdatum = new Date(this.start)
+           if((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())){
+            return false
+          }
+        }
+        else{
+          let startdatum = new Date(this.start)
+          let enddatum = new Date(this.ende)
+          if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
+            ||((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
+            ||((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))){
+               return false
+          }
+        }
+      }
+     return true
     },
     mieten(autoname) {
       this.ausgewaehlt = true;
@@ -316,10 +444,20 @@ export default {
       this.ausgewaehlt = false;
       this.ladeAutos();
       this.$router.push("/search");
-    },
+    }
   },
-
   beforeMount() {
+    let from = new Date()
+    let to = new Date();
+    from.setDate(from.getDate() + 1) // kann nicht am selben Tag buchen
+    to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
+    //Zeiträume für Start-und Endkalender festlegen
+    this.datepickerSetting.value = Helper.formatDate(from)
+    this.datepickerSetting.from = Helper.formatDate(from)
+    this.datepickerSetting.to = Helper.formatDate(to)
+    to.setDate(to.getDate() + 1) //Enddatum 1 Tag mehr
+    this.datepickerSetting2.from = Helper.formatDate(from)
+    this.datepickerSetting2.to = Helper.formatDate(to)
     this.kraftstofftypen = ["Super", "Super Plus", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
     this.getriebetypen = ["Automatik", "Schaltung"];
@@ -339,8 +477,8 @@ export default {
       this.ausgewaehlt = false;
       this.ladeAutos();
     }
-  },
-};
+  }
+})
 </script>
 
 
