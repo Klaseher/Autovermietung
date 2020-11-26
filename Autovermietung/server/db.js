@@ -11,7 +11,7 @@ class Db {
   //Neuen Datensatz in User-Tabelle einfügen
   insert (user, callback) {
     return this.db.run(
-      'INSERT INTO user (nachname, vorname, user, pass, adresse, telefon, rolle) VALUES (?,?,?,?,?,?,?)',
+      'INSERT INTO user (nachname, vorname, user, pass, adresse, telefon, rolle, aktiviert) VALUES (?,?,?,?,?,?,?,?)',
       user, (err) => {
         callback(err)
       })
@@ -23,6 +23,15 @@ class Db {
     return this.db.run(
       'UPDATE user SET resetToken = ?, ablaufdatum = ? WHERE id = ?',
       reset, (err) => {
+        callback(err)
+      })
+  }
+
+   //Kundenaccount verifizieren
+   verifyUser (id, callback) {
+    return this.db.run(
+      'UPDATE user SET aktiviert = 1 WHERE id = ?',
+      [id], (err) => {
         callback(err)
       })
   }
