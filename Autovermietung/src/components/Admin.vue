@@ -1,5 +1,5 @@
 <template>
-    <div class="hello">
+    <div class="administrator">
       <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
         <div v-if="admin">
               <div v-on:click="seen = !seen" class="control">
@@ -8,33 +8,35 @@
                 </button>
               </div>
         </div>
-        <h1>Welcome to Employee page</h1>
-        <h2>{{msg}}</h2>
+        <h1>{{msg}}</h1>
+        
          <!-- Anzeigen der Adminfunktionen -->
         <div v-if="seen">
                 <p>Admin-Functions can be accessed from here</p>
                 <form>
                     <label for="vorname">Vorname</label>
-                     <div>
-                        <input id="vorname" type="text" v-model="vorname" required autofocus>
-                    </div>
-                      <label for="name">Name</label>
                     <div>
-                        <input id="name" type="text" v-model="name" required autofocus>
+                      <input id="vorname" type="text" v-model="vorname" required autofocus>
+                    </div>
+                    <label for="name">Name</label>
+                    <div>
+                      <input id="name" type="text" v-model="name" required autofocus>
                     </div>
                     <label for="username">Username</label>
                     <div>
-                        <input id="username" type="text" v-model="username" required autofocus>
+                      <input id="username" type="text" v-model="username" required autofocus>
                     </div>
+                    
 
                     <label for="password">Password</label>
                     <div>
-                        <input id="password" type="password" v-model="password" required>
+                      <input id="password" type="password" v-model="password" required autofocus>
                     </div>
-                <label for="password-confirm">Confirm Password</label>
-                <div>
-                    <input id="password-confirm" type="password" v-model="password_confirmation" required>
-                </div>
+                    <label for="password-confirm">Confirm Password</label>
+                    <div>
+                        <input id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
+                    </div>
+                    <br/>
                 <div>
                     <button type="cancel">
                         Cancel
@@ -47,10 +49,12 @@
             <div>
             <h3 style="color:#00FF00">{{created}}</h3>
              </div>
-            <div>
+            <div class="grid-container">
                 <button type="submit" @click="showEmployees">
                         Show all Employees
                 </button>
+                <br/>
+                <br/>
                  <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
                 <table v-if="editEmployee">
                     <thead>
@@ -68,6 +72,8 @@
                         </tr>
                     </tbody>
                 </table>
+                <br/>
+                <br/>
             </div>
         </div>
         <div v-else>
@@ -89,7 +95,7 @@ export default {
       username: '',
       password: '',
       password_confirmation: '',
-      msg: 'The superheros',
+      msg: 'HEYRJP GmbH',
       created: '',
       content: '',
       admin: false, //speichern, ob Mitarbeiter Admin ist
@@ -185,18 +191,65 @@ export default {
 }
 </script>
 <style scoped>
-    h1, h2 {
-        font-weight: normal;
-    }
-    ul {
-        list-style-type: none;
-        padding: 0;
-    }
-    li {
-        display: inline-block;
-        margin: 0 10px;
-    }
-    a {
-        color: #42b983;
-    }
+.administrator{
+  background: lightblue;
+  
+}
+h1 {
+  
+  font-weight:bold;
+  color: mediumblue;
+  padding:20px;
+  text-align: center;
+        
+  font-size: 30px;
+  }
+input, select {
+  width: 30%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button{
+  box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	background-color:#7892c2;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:14px;
+	padding:20px 37px 20px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+  align-content: center;
+  width: 20%;
+}
+label{
+  color:indigo;
+}
+ul {
+  list-style-type: none;
+   padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
+}
 </style>

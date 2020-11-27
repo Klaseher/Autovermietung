@@ -3,35 +3,28 @@
         <!-- <h1>Unsere Autos</h1> -->
         <main  v-if="!ausgewaehlt">
           <!-- Anzeige der Autos -->
-            <h1> Suchergebnisse für: {{msg}}</h1>
-            
-                <input type="text" placeholder="Autoname" v-model="autoname" required autofocus/>
-                <br />
-                <br />
-               
-                
-            
-            <button type="submit" @click="searchCar()">
-                      Autosuche
-                </button>
+            <h1> Suchergebnisse für: {{msg}}</h1>           
+            <input type="text" placeholder="Autoname" v-model="autoname" required autofocus/>
+            <br />
+            <br />         
+            <button type="submit" @click="searchCar()">Autosuche  </button>
             <br />
             <br />
               
-              <h3 for="start">Startdatum:</h3>
+            <h3 for="start">Startdatum:</h3>
 
-              <input type="date" id="start" name="trip-start"
+            <input type="date" id="start" name="trip-start"
                    placeholder="Startdatum"
                     min="2020-11-01" max="2025-12-31">
 
-
-              <h3 for="end">Enddatum:</h3>
-              <input type="date" id="end" name="trip-start"
+            <h3 for="end">Enddatum:</h3>
+            <input type="date" id="end" name="trip-start"
                     placeholder="Enddatum"
                     min="2020-11-01" max="2025-12-31">
               <br />
               <br />
               <br />
-              <div v-on:click="seen = !seen">
+            <div v-on:click="seen = !seen">
               <button>
                   Erweiterte Suche
               </button>
@@ -40,33 +33,37 @@
                 <h2></h2>
               </div>
           </div>
-            <div class="erweiter" v-if="seen"> 
+
+          <div class="erweiter" v-if="seen"> 
               <!-- Inputs für Suchfkt. -->
-                <input type="text" placeholder="Mindestpreis (€)" v-model="preis_min" required autofocus/>
-                <input type="text" placeholder="Höchstpreis (€)" v-model="preis_max" required autofocus/>
-                <input type="text" placeholder="Anzahl Sitze" v-model="platz" required autofocus/>
-                <input type="text" placeholder="Anzahl Türen" v-model="tuer" required autofocus/>  
-                
-                <input type="text" placeholder="Co2-Ausstoß (g/km)" v-model="c02" required autofocus/>
-                <input type="text" placeholder="Spritverbrauch (l/100km)" v-model="verbrauch" required autofocus/>
-                <input type="text" placeholder="Tankvolumen (l)" v-model="tankvolumen" required autofocus/>
-                <input type="text" placeholder="Leistung (PS)" v-model="leistung" required autofocus/>
-                <select v-model="typ">
-                  <option value="" disabled selected>Autotyp (z.B. Kleinwagen)</option>
-                  <option value="">Alle</option>
-                  <option v-for="(typ,index) in autotypen" :key="index" :value="typ">{{typ}}</option>
-                </select> 
-                <select v-model="kraftstoff">
-                  <option value="" disabled selected>Kraftstoff</option>
-                  <option value="">Alle</option>
-                  <option v-for="(kraftstoff,index) in kraftstofftypen" :key="index" :value="kraftstoff">{{kraftstoff}}</option>
-                </select>
-                <select v-model="getriebe">
-                <option value="" disabled selected>Getriebeart</option>
-                <option value="">Alle</option>
-                <option v-for="(getriebe,index) in getriebetypen" :key="index" :value="getriebe">{{getriebe}}</option>
-                </select>
-            </div>
+            <input type="text" placeholder="Mindestpreis (€)" v-model="preis_min" required autofocus/>
+            <input type="text" placeholder="Höchstpreis (€)" v-model="preis_max" required autofocus/>
+            <input type="text" placeholder="Anzahl Sitze" v-model="platz" required autofocus/>
+            <input type="text" placeholder="Anzahl Türen" v-model="tuer" required autofocus/>                 
+            <input type="text" placeholder="Co2-Ausstoß (g/km)" v-model="c02" required autofocus/>
+            <input type="text" placeholder="Spritverbrauch (l/100km)" v-model="verbrauch" required autofocus/>
+            <input type="text" placeholder="Tankvolumen (l)" v-model="tankvolumen" required autofocus/>
+            <input type="text" placeholder="Leistung (PS)" v-model="leistung" required autofocus/>
+
+            <select v-model="typ">
+              <option value="" disabled selected>Autotyp (z.B. Kleinwagen)</option>
+              <option value="">Alle</option>
+              <option v-for="(typ,index) in autotypen" :key="index" :value="typ">{{typ}}</option>
+            </select> 
+
+            <select v-model="kraftstoff">
+              <option value="" disabled selected>Kraftstoff</option>
+              <option value="">Alle</option>
+              <option v-for="(kraftstoff,index) in kraftstofftypen" :key="index" :value="kraftstoff">{{kraftstoff}}</option>
+            </select>
+
+            <select v-model="getriebe">
+              <option value="" disabled selected>Getriebeart</option>
+              <option value="">Alle</option>
+              <option v-for="(getriebe,index) in getriebetypen" :key="index" :value="getriebe">{{getriebe}}</option>
+            </select>
+          </div>
+
           <h1> Suchergebnisse </h1>
             
           <!-- Ausgabe der Autodaten in Tabelle --> 
@@ -93,42 +90,42 @@
 
             <tr>
               <td>Kraftstoff:</td>
-              <td>{{auto.kraftstoff}}</td>
-              
+              <td>{{auto.kraftstoff}}</td>             
               <td>Leistung:</td>
-              <td>{{auto.leistung}}</td>
-              
+              <td>{{auto.leistung}}</td>             
             </tr>
 
             <tr>
               <td>Verbrauch:</td>
-              <td>{{auto.verbrauch}}</td>
-              
+              <td>{{auto.verbrauch}}</td>              
               <td>Tankvolumen:</td>
               <td>{{auto.tankvolumen}}</td>
             </tr>
+
             <tr>
               <td>Getriebe:</td>
               <td>{{auto.getriebe}}</td>
               <td>Preis:</td>
-              <td>{{auto.preis}}</td>
+              <td>{{auto.preis}}</td>             
+            </tr>
+
+            <tr>
               <td>Modell:</td>
               <td>{{auto.modelbezeichnung}}</td>
             </tr>
+
             <button type="submit" @click="mieten(auto.name)" :disabled="!verfuegbarkeit(auto.verfuegbar)">Mieten</button>
-            </article>
-          </table>
-        </main> 
+          </article>
+        </table>
+      </main> 
         <!-- Wenn Auto ausgewählt zum Mieten, dann wird dies geladen -->
-        <div v-else>
-          <button type="cancel" @click="back">
-                  Zurueck zur Suche
-          </button>
-          <h1>Auto: {{gewaehltesauto.name}}</h1>
-          <h1>Preis/Tag: {{gewaehltesauto.preis}}</h1>
-          <h1>Verbrauch: {{gewaehltesauto.verbrauch}}</h1>
-          <button type="submit" @click="buchen()" :disabled="!verfuegbarkeit(gewaehltesauto.verfuegbar)">Jetzt {{gewaehltesauto.name}} verbindlich mieten</button>
-        </div>
+      <div v-else>
+        <button type="cancel" @click="back">Zurueck zur Suche</button>
+        <h1>Auto: {{gewaehltesauto.name}}</h1>
+        <h1>Preis/Tag: {{gewaehltesauto.preis}}</h1>
+        <h1>Verbrauch: {{gewaehltesauto.verbrauch}}</h1>
+        <button type="submit" @click="buchen()" :disabled="!verfuegbarkeit(gewaehltesauto.verfuegbar)">Jetzt {{gewaehltesauto.name}} verbindlich mieten</button>
+      </div>
     </div>
 </template>
 
@@ -302,6 +299,7 @@ input[type=text], select {
 	padding:16px 31px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #2f6627;
+  -webkit-text-size-adjust:auto;
 }
 .search:hover {
 	background-color:#5cbf2a;
@@ -324,5 +322,6 @@ button{
 	padding:12px 37px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
+  align-content: center;
 }  
 </style>
