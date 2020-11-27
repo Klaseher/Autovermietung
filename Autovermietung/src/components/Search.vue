@@ -230,28 +230,15 @@ export default ({
           closeBtn: "Schliessen",
         },
          changeEvent: (value) => {
-           //Wenn Startdatum geändert, dann wird automatisch Auswahldatumsraum auf +1 Tag vom ausgewählten
-           //Tag für Enddatum gesetzt
             let date = new Date()
             let date2 = new Date(value)
-            if(value == '' || (date2.getTime() <= date.getTime())){
-              this.start = ''
-              date.setDate(date.getDate() + 2)
-              this.datepickerSetting2.from = Helper.formatDate(date)
-              if(date2.getTime() <= date.getTime()){
-                alert('Ungültiges Datum. Es wird bei der Suche ignoriert')
-              }
+            if(date2.getTime() <= date.getTime()){
+                this.start = ''
+                alert('Ungültiges Startdatum')
             }
             else{
-              //BUG: Wenn Startdatum auf 31.12.2020 - 30.01.2021, dann wird zwar
-              //enddatum from-date richtig berechnet, aber kein Datum im Januar kann ausgewählt werden 
-              this.start = value
-              date2.setDate(date2.getDate() + 1)
-              this.datepickerSetting2.from = Helper.formatDate(date2) //Fehler replizieren --> ersetzen durch '2021/01/01'
+                this.start = value
             }
-            //Wenn Startdatum geändert, wird automatisch auch gewähltes Enddatum ungültig
-            //Wird nur nicht graphisch geändert
-            this.ende = ''
          }
       },
       //enddatum
@@ -322,6 +309,20 @@ export default ({
     },
     searchCar() {
       this.ladeAutos();
+      let startdatum = new Date(this.start)
+      let enddatum = new Date(this.ende)
+      if(this.start == '' && this.ende == ''){
+        alert('Start- und Enddatum werden für die Suche ignoriert')
+      }
+      else if(this.start == ''){
+          alert('Das Startdatum wird für die Suche ignoriert')
+      }
+      else if(this.ende == ''){
+          alert('Das Enddatum wird für die Suche ignoriert')
+      }
+      else if(startdatum.getTime() > enddatum.getTime()){
+          alert('Enddatum darf nicht hinter Startdatum liegen.\nDer Zeitraum wird bei der Suche ignoriert')
+      }
       this.gesuchteAutos = this.autos.filter((auto) => {
         let co2 = false;
         let max = false;
@@ -379,7 +380,9 @@ export default ({
       let gefunden = false
       let i = 0
       let buchung = ''
-      if(this.start == '' && this.ende == ''){
+      let startdatum = new Date(this.start)
+      let enddatum = new Date(this.ende)
+      if((this.start == '' && this.ende == '') || (startdatum.getTime() > enddatum.getTime())){
         return true
       }
       for(;i<this.zeiten.length;i++){
@@ -396,20 +399,16 @@ export default ({
         let von = new Date(buchung.from)
         let bis = new Date(buchung.to)
         if(this.start == ''){
-          let enddatum = new Date(this.ende)
           if((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())){
             return false
           } 
         }
         else if(this.ende == ''){
-           let startdatum = new Date(this.start)
            if((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())){
             return false
           }
         }
         else{
-          let startdatum = new Date(this.start)
-          let enddatum = new Date(this.ende)
           if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
             ||((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
             ||((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))){
@@ -455,7 +454,6 @@ export default ({
     this.datepickerSetting.value = Helper.formatDate(from)
     this.datepickerSetting.from = Helper.formatDate(from)
     this.datepickerSetting.to = Helper.formatDate(to)
-    to.setDate(to.getDate() + 1) //Enddatum 1 Tag mehr
     this.datepickerSetting2.from = Helper.formatDate(from)
     this.datepickerSetting2.to = Helper.formatDate(to)
     this.kraftstofftypen = ["Super", "Super Plus", "Diesel"];

@@ -125,8 +125,8 @@ export default {
             else{
                 let startdatum = new Date(this.start)
                 let enddatum = new Date(this.ende)
-                if(startdatum.getTime() >= enddatum.getTime()){
-                    alert('Enddatum muss nach Startdatum liegen')
+                if(startdatum.getTime() > enddatum.getTime()){
+                    alert('Enddatum darf nicht hinter Startdatum liegen')
                     return
                 }
                 else{
@@ -177,8 +177,6 @@ export default {
         //Zeiträume für Start-und Endkalender festlegen
         this.datepickerSetting.from = Helper.formatDate(from)
         this.datepickerSetting.to = Helper.formatDate(to)
-        to.setDate(to.getDate() + 1) //Enddatum 1 Tag mehr
-        from.setDate(from.getDate() + 1) //Enddatum Mind.-Datum 1 Tag mehr
         this.datepickerSetting2.from = Helper.formatDate(from)
         this.datepickerSetting2.to = Helper.formatDate(to)
         UserService.getUser()
