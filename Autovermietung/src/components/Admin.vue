@@ -53,6 +53,13 @@
                 <button type="submit" @click="showEmployees">
                         Show all Employees
                 </button>
+                <button type="submit" @click="showCustomers">
+                        Show all Customers
+                </button>
+                <button type="submit" @click="showCars">
+                        Show all Cars
+                </button>
+                
                 <br/>
                 <br/>
                  <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
@@ -74,6 +81,39 @@
                 </table>
                 <br/>
                 <br/>
+                <table v-if="editCars">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Typ</th>
+                            <th>Türen</th>
+                            <th>Sitplätze</th>
+                            <th>Kraftstoff</th>
+                            <th>Verbrauch</th>
+                            <th>Leistung</th>
+                            <th>Tankvolume</th>
+                            <th>CO2</th>
+                            <th>Getriebe</th>
+                            <th>Modell</th>                           
+                            <th>Preis</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(employee, index) in employees" :key="index">
+                            <td>{{employee.nachname}}</td>
+                            <td>{{employee.user}}</td>
+                            <td><button @click="editingEmployee(employee.id)">Edit</button></td>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr v-for="(car, index) in cars" :key="index">
+                            <td>{{car.CarName}}</td>
+                            <td>{{car.getriebe}}</td>
+                            <td><button @click="editingCar(car.name)">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
         <div v-else>
@@ -101,7 +141,10 @@ export default {
       admin: false, //speichern, ob Mitarbeiter Admin ist
       seen: false,
       editEmployee: false,
-      employees: [] //Alle Mitarbeiter
+      employees: [], //Alle Mitarbeiter
+      cars:[],
+      CarName: '',
+      getriebe:''
     }
   },
   methods: {
@@ -118,9 +161,36 @@ export default {
         this.employees = []
       }
     },
+    showCustomers () {
+      this.editEmployee = !this.editEmployee
+      if (this.editEmployee) {
+        UserService.getEmployee(-200)
+          .then(response => {
+            this.employees.push.apply(this.employees, response.data.employees)
+          })
+          .catch((error) => Helper.handle(error))
+      } else {
+        this.employees = []
+      }
+    },
+    showCars () {
+      this.editCar = !this.editCar
+      if (this.editCar) {
+        UserService.getCar()
+          .then(response => {
+            this.cars.push.apply(this.cars, response.data.cars)
+          })
+          .catch((error) => Helper.handle(error))
+      } else {
+        this.cars = []
+      }
+    },
     //Pfad auf detaillierte Mitarbeiteranzeige ändern
     editingEmployee (id) {
       this.$router.push('/admin/editEmployee/' + id)
+    },
+    editingCar () {
+      
     },
     redirect (route) {
       Helper.redirect(route)
