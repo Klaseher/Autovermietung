@@ -25,6 +25,7 @@ import Search from '../components/Search.vue'
 import UserBoard from '@/components/UserBoard.vue'
 import Admin from '@/components/Admin.vue'
 import EmployeeEdit from '@/components/EmployeeEdit.vue'
+import CreateNewEmployee from '@/components/CreateNewEmployee.vue'
 import UserService from '../services/user.service'
 
 const routes = [
@@ -91,6 +92,17 @@ const routes = [
       is_admin: true
     }
   },
+  {
+    path: '/admin/newEmployee/:id',
+    name: 'newEmployee',
+    component: CreateNewEmployee,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+
+
    {
       path: "/:catchAll(.*)", //alle ungülitgen Routen führen zu Homepage
       component: Home

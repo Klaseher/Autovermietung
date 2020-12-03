@@ -13,7 +13,7 @@
          <!-- Anzeigen der Adminfunktionen -->
         <div v-if="seen">
                 <p>Admin-Functions can be accessed from here</p>
-                <form>
+                <!-- <form>
                     <label for="vorname">Vorname</label>
                     <div>
                       <input id="vorname" type="text" v-model="vorname" required autofocus>
@@ -44,15 +44,17 @@
                     <button type="submit" @click="handleSubmit">
                         Create new Employee
                     </button>
-                </div>
-            </form>
+                </div> -->
+            <!-- </form> -->
             <div>
-            <h3 style="color:#00FF00">{{created}}</h3>
-             </div>
+              <h3 >{{created}}</h3>
+            </div>
             <div class="grid-container">
                 <button type="submit" @click="showEmployees">
                         Show all Employees
+                        
                 </button>
+                
                 <button type="submit" @click="showCustomers">
                         Show all Customers
                 </button>
@@ -63,12 +65,18 @@
                 <br/>
                 <br/>
                  <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
-                <table v-if="editEmployee">
+                <table v-if="editEmployee">   
+                  <div v-for="employee in employees" :key="employee.index">
+                            <button @click="createEmployee(employee.id)">new</button>
+                      </div>                                       
                     <thead>
-                        <tr>
+                      
+                      
+                        <tr>                            
                             <th>Name</th>
                             <th>Username</th>
                             <th>Edit</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -76,11 +84,13 @@
                             <td>{{employee.nachname}}</td>
                             <td>{{employee.user}}</td>
                             <td><button @click="editingEmployee(employee.id)">Edit</button></td>
+                            <td><button @click="deleteEmployee(employee.id)">Delete</button></td>
                         </tr>
                     </tbody>
                 </table>
                 <br/>
                 <br/>
+                
                 <table v-if="editCars">
                     <thead>
                         <tr>
@@ -185,10 +195,15 @@ export default {
         this.cars = []
       }
     },
+    //Pfad auf detaillierte Mitarbeiteranzeige erneuern
+    createEmployee(id){
+      this.$router.push('/admin/newEmployee/' + id)
+    },
     //Pfad auf detaillierte Mitarbeiteranzeige ändern
     editingEmployee (id) {
       this.$router.push('/admin/editEmployee/' + id)
     },
+
     editingCar () {
       
     },
@@ -274,6 +289,10 @@ h1 {
         
   font-size: 30px;
   }
+
+h3{
+  color:#00FF00;
+  }
 input, select {
   width: 30%;
   padding: 12px 20px;
@@ -294,7 +313,7 @@ button{
 	color:#ffffff;
 	font-family:Arial;
 	font-size:14px;
-	padding:20px 37px 20px;
+	padding:20px 40px 20px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
