@@ -12,43 +12,7 @@
         
          <!-- Anzeigen der Adminfunktionen -->
         <div v-if="seen">
-                <p>Admin-Functions can be accessed from here</p>
-                <!-- <form>
-                    <label for="vorname">Vorname</label>
-                    <div>
-                      <input id="vorname" type="text" v-model="vorname" required autofocus>
-                    </div>
-                    <label for="name">Name</label>
-                    <div>
-                      <input id="name" type="text" v-model="name" required autofocus>
-                    </div>
-                    <label for="username">Username</label>
-                    <div>
-                      <input id="username" type="text" v-model="username" required autofocus>
-                    </div>
-                    
-
-                    <label for="password">Password</label>
-                    <div>
-                      <input id="password" type="password" v-model="password" required autofocus>
-                    </div>
-                    <label for="password-confirm">Confirm Password</label>
-                    <div>
-                        <input id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
-                    </div>
-                    <br/>
-                <div>
-                    <button type="cancel">
-                        Cancel
-                    </button>
-                    <button type="submit" @click="handleSubmit">
-                        Create new Employee
-                    </button>
-                </div> -->
-            <!-- </form> -->
-            <div>
-              <h3 >{{created}}</h3>
-            </div>
+            <p>Admin-Functions can be accessed from here</p>
             <div class="grid-container">
                 <button type="submit" @click="showEmployees">
                         Show all Employees
@@ -65,29 +29,25 @@
                 <br/>
                 <br/>
                  <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
-                <table v-if="editEmployee">   
-                  <div v-for="employee in employees" :key="employee.index">
-                            <button @click="createEmployee(employee.id)">new</button>
-                      </div>                                       
-                    <thead>
-                      
-                      
-                        <tr>                            
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(employee, index) in employees" :key="index">
-                            <td>{{employee.nachname}}</td>
-                            <td>{{employee.user}}</td>
-                            <td><button @click="editingEmployee(employee.id)">Edit</button></td>
-                            <td><button @click="deleteEmployee(employee.id)">Delete</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div v-if="editEmployee">
+                  <table >                                    
+                      <thead>  
+                          <tr>                            
+                              <th>Name</th>
+                              <th>Username</th>
+                              <th>Edit</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr v-for="(employee, index) in employees" :key="index">
+                              <td>{{employee.nachname}}</td>
+                              <td>{{employee.user}}</td>
+                              <td><button @click="editingEmployee(employee.id)">Edit</button></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <button @click="createEmployee()">Create New Employee</button>     
+                </div>  
                 <br/>
                 <br/>
                 
@@ -95,6 +55,7 @@
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <!--
                             <th>Typ</th>
                             <th>Türen</th>
                             <th>Sitplätze</th>
@@ -106,20 +67,13 @@
                             <th>Getriebe</th>
                             <th>Modell</th>                           
                             <th>Preis</th>
+                            <!-->
                             <th>Edit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(employee, index) in employees" :key="index">
-                            <td>{{employee.nachname}}</td>
-                            <td>{{employee.user}}</td>
-                            <td><button @click="editingEmployee(employee.id)">Edit</button></td>
-                        </tr>
-                    </tbody>
-                    <tbody>
                         <tr v-for="(car, index) in cars" :key="index">
-                            <td>{{car.CarName}}</td>
-                            <td>{{car.getriebe}}</td>
+                            <td>{{car.name}}</td>
                             <td><button @click="editingCar(car.name)">Edit</button></td>
                         </tr>
                     </tbody>
@@ -136,7 +90,6 @@
 //Komponente für Mitarbeiter/Admin
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
-import Auth from '../services/auth.service'
 export default {
   data () {
     return {
@@ -151,9 +104,9 @@ export default {
       admin: false, //speichern, ob Mitarbeiter Admin ist
       seen: false,
       editEmployee: false,
+      editCar: false,
       employees: [], //Alle Mitarbeiter
       cars:[],
-      CarName: '',
       getriebe:''
     }
   },
@@ -172,21 +125,12 @@ export default {
       }
     },
     showCustomers () {
-      this.editEmployee = !this.editEmployee
-      if (this.editEmployee) {
-        UserService.getEmployee(-200)
-          .then(response => {
-            this.employees.push.apply(this.employees, response.data.employees)
-          })
-          .catch((error) => Helper.handle(error))
-      } else {
-        this.employees = []
-      }
+     
     },
     showCars () {
       this.editCar = !this.editCar
       if (this.editCar) {
-        UserService.getCar()
+        UserService.getCar('alle')
           .then(response => {
             this.cars.push.apply(this.cars, response.data.cars)
           })
@@ -196,8 +140,8 @@ export default {
       }
     },
     //Pfad auf detaillierte Mitarbeiteranzeige erneuern
-    createEmployee(id){
-      this.$router.push('/admin/newEmployee/' + id)
+    createEmployee(){
+      this.$router.push('/admin/newEmployee')
     },
     //Pfad auf detaillierte Mitarbeiteranzeige ändern
     editingEmployee (id) {
@@ -209,60 +153,6 @@ export default {
     },
     redirect (route) {
       Helper.redirect(route)
-    },
-    //Registrieren neuer Mitarbeiter
-    handleSubmit (e) {
-      e.preventDefault()
-      var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
-      var nameTest = new RegExp('[a-zA-Z]{3,100}')
-      /* Regex: Strong Password
-      Special Characters - Not Allowed
-      Spaces - Not Allowed
-      Minimum and Maximum Length of field - 6 to 12 Characters
-      Met by [a-zA-Z0-9@]{6,12}
-      Numeric Character - At least one character
-      Met by positive lookahead (?=.*\d)
-      At least one Capital Letter
-      Met by positive lookahead (?=.*[A-Z])
-      Repetitive Characters - Allowed only two repetitive characters */
-      var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-        if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
-         if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
-          if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
-            if (passTest.test(this.password)) {
-              Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
-                .then(response => {
-                  alert(response.data)
-                  this.created = 'User successfully created'
-                  this.vorname = ''
-                  this.name = ''
-                  this.username = ''
-                  this.password = ''
-                  this.password_confirmation = ''
-                })
-                .catch((error) => Helper.handle(error))
-            } else {
-              this.password = ''
-              this.password_confirmation = ''
-
-              return alert('Passwords not safe enough')
-            }
-          } else {
-            this.password = ''
-            this.password_confirmation = ''
-
-            return alert('Password is do not match')
-          }
-        } else {
-          this.username = ''
-          return alert('Username not save enough (6-12 Characters + 1x uppercase + 1x Number)')
-        }
-      } else {
-        this.name = ''
-        this.vorname = ''
-        return alert('Name too long or short or contains invalid symbols')
-      }
     }
   },
   beforeMount () {

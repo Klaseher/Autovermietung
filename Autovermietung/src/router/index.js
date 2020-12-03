@@ -93,7 +93,7 @@ const routes = [
     }
   },
   {
-    path: '/admin/newEmployee/:id',
+    path: '/admin/newEmployee',
     name: 'newEmployee',
     component: CreateNewEmployee,
     meta: {

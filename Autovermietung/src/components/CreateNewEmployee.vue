@@ -1,169 +1,120 @@
 <template>
     <div class="newEmployee">
         <h4>New Employee</h4>
-        <form>
-            <label for="name"> New Employee Last Name</label>
+          <form>
+                <label for="vorname">Vorname</label>
+                <div>
+                  <input id="vorname" type="text" v-model="vorname" required autofocus>
+                </div>
+                <label for="name">Name</label>
+                <div>
+                  <input id="name" type="text" v-model="name" required autofocus>
+                </div>
+                <label for="username">Username</label>
+                <div>
+                  <input id="username" type="text" v-model="username" required autofocus>
+                </div>
+                
+
+                <label for="password">Password</label>
+                <div>
+                  <input id="password" type="password" v-model="password" required autofocus>
+                </div>
+                <label for="password-confirm">Confirm Password</label>
+                <div>
+                    <input id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
+                </div>
+                <br/>
             <div>
-                <input id="name" type="text" v-model="new_name" required autofocus>
+                <button type="button" @click="back">
+                    Go back
+                </button>
+                <button type="submit" @click="handleSubmit">
+                    Create new Employee
+                </button>
             </div>
-            <button type="button" @click="updateName">
-                     Last Name
-            </button>
-        </form>
-         <form>
-            <label for="email"> Username:  </label>
-            <div>
-                <input id="username" type="email" v-model="new_username" required autofocus>
-            </div>
-            <button type="button" @click="updateUsername">
-                     Username
-            </button>
-        </form>
-         <form>
-             <label for="password"> Password</label>
-            <div>
-                <input id="password" type="password" v-model="password" required>
-            </div>
-            <label for="password">Confirm Password</label>
-            <div>
-                <input id="new_password" type="password" v-model="new_password" required>
-            </div>
-            <button type="button" @click="confirmPassword">
-                    Confirm Password
-            </button>
-        </form>
-        <button type="cancel" @click="back">
-                 Go back
-        </button>
-        <button type="button" @click="deleteEmployee">
-                  Delete 
-        </button>
-        <h1>{{meldung}}</h1>
+          </form>
+           <div>
+              <h3 >{{created}}</h3>
+           </div>
     </div>
 </template>
 
 <script>
-//Komponente zum Bearbeiten von Mitarbeiter-Konto durch Admin
-import UserService from '../services/user.service'
-import Auth from '../services/auth.service'
 import Helper from '../services/helper.service'
+import Auth from '../services/auth.service'
+
 export default {
   data () {
     return {
-      meldung: '',
+      vorname: '',
       name: '',
       username: '',
       password: '',
-      id: -1,
-      new_name: '',
-      new_username: '',
-      new_password: ''
+      password_confirmation: '',
+      created: '',
     }
   },
   methods: {
     back () {
-      this.$router.push('../')
+      this.$router.push('/admin')
     },
-    //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
-    updateName () {
-      var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
-      if (this.new_name.length > 5 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
-        Auth.updateEmployee(this.id, this.new_name, null, null)
-          .then(response => {
-            this.meldung = 'Employee Name successfully updated'
-            this.name = response.data.name
-            this.new_name = ''
-          })
-          .catch((error) => {
-            Helper.handle(error)
-            Helper.redirect('/admin')
-          })
-      } else {
-        this.new_name = ''
-        return alert('Name invalid')
-      }
-    },
-    updateUsername () {
+     //Registrieren neuer Mitarbeiter
+    handleSubmit (e) {
+      e.preventDefault()
+      var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
+      var nameTest = new RegExp('[a-zA-Z]{3,100}')
+      /* Regex: Strong Password
+      Special Characters - Not Allowed
+      Spaces - Not Allowed
+      Minimum and Maximum Length of field - 6 to 12 Characters
+      Met by [a-zA-Z0-9@]{6,12}
+      Numeric Character - At least one character
+      Met by positive lookahead (?=.*\d)
+      At least one Capital Letter
+      Met by positive lookahead (?=.*[A-Z])
+      Repetitive Characters - Allowed only two repetitive characters */
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.new_username.length > 6 && this.new_username.length < 100 && this.new_username != this.username && userTest.test(this.new_username)) {
-        Auth.updateEmployee(this.id, null, this.new_username, null)
-          .then(response => {
-            this.meldung = 'Employee Username successfully updated'
-            this.username = response.data.username
-            this.new_username = ''
-          })
-          .catch((error) => {
-            Helper.handle(error)
-            Helper.redirect('/admin')
-          })
-      } else {
-        this.new_username = ''
-        return alert('Username invalid')
-      }
-    },
-    confirmPassword () {
       var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.password == this.new_password) {
-        if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
-          Auth.updateEmployee(this.id, null, null, this.new_password)
-            .then(response => {
-              if(response)
-
-              this.meldung = 'Employee Password successfully updated'
+        if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
+         if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
+          if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
+            if (passTest.test(this.password)) {
+              Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
+                .then(response => {
+                  alert(response.data)
+                  this.created = 'User successfully created'
+                  this.vorname = ''
+                  this.name = ''
+                  this.username = ''
+                  this.password = ''
+                  this.password_confirmation = ''
+                })
+                .catch((error) => Helper.handle(error))
+            } else {
               this.password = ''
-              this.new_password = ''
-            })
-            .catch((error) => {
-              Helper.handle(error)
-              Helper.redirect('/admin')
-            })
+              this.password_confirmation = ''
+
+              return alert('Passwords not safe enough')
+            }
+          } else {
+            this.password = ''
+            this.password_confirmation = ''
+
+            return alert('Password is do not match')
+          }
         } else {
-          this.password = ''
-          this.new_password = ''
-          return alert('Password is not safe enough')
+          this.username = ''
+          return alert('Username not save enough (6-12 Characters + 1x uppercase + 1x Number)')
         }
       } else {
-        this.password = ''
-        this.new_password = ''
-
-        return alert('Passwords do not match')
+        this.name = ''
+        this.vorname = ''
+        return alert('Name too long or short or contains invalid symbols')
       }
-    },
-    //Methode zum Löschen von Mitarbeiter-Account
-    deleteEmployee () {
-      if (confirm('Do you really want to delete the Employee account?')) {
-        Auth.deleteEmployee(this.id)
-          .then(response => {
-            if(response)
-            
-            alert('Employee account successfully deleted')
-            Helper.redirect('/admin')
-          })
-          .catch((error) => {
-            Helper.handle(error)
-            Helper.redirect('/admin')
-          })
-      } else {
-        this.meldung = ''
-      }
-    }
-  },
-  beforeMount () {
-    if (this.$route.params.id != null) {
-      UserService.getEmployee(this.$route.params.id)
-        .then(response => {
-          this.id = response.data.employee.id
-          this.name = response.data.employee.name
-          this.username = response.data.employee.email
-        })
-        .catch((error) => {
-          Helper.handle(error)
-          Helper.redirect('/admin')
-        })
-    } else {
-      Helper.redirect('/admin')
     }
   }
+
 }
 </script>
 <style  scoped>
