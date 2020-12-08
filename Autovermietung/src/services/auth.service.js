@@ -64,7 +64,14 @@ class Auth {
     })
   }
 
-
+  // bestellung durch kunden erstellt
+  createOrder (auto, start, ende) {
+    return axios.post(API_URL + 'rent/', {
+      auto: auto,
+      start: start,
+      ende: ende
+    })
+  }
 }
 
 export default new Auth()

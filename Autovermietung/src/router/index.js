@@ -10,6 +10,7 @@ import Admin from '@/components/Admin.vue'
 import EmployeeEdit from '@/components/EmployeeEdit.vue'
 import UserService from '../services/user.service'
 import Rent from '../components/Rent.vue'
+import BestellungenMa from '../components/BestellungenMa.vue'
 
 const routes = [
   {
@@ -86,6 +87,17 @@ const routes = [
     meta: {
       requiresAuth: true,
       is_admin: true
+    }
+  },
+  {
+    //Ohne Parameter bnr --> Alle Bestellungen angezeigt
+    //Mit Parameter --> Nur Bestellung mit spezifischer bnr
+    path: '/admin/bestellungen/:bnr?',
+    name: 'bestellungenMitarbeiter',
+    component: BestellungenMa,
+    meta: {
+      requiresAuth: true,
+      is_employee: true
     }
   },
    {

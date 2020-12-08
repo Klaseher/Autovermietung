@@ -1,5 +1,10 @@
 <template>
     <div class="hello">
+       <div v-on:click="zeigeBestellungen()" class="control">
+                <button>
+                    Bestellungen
+                </button>
+        </div>
         <div v-if="admin">
               <div v-on:click="seen = !seen" class="control">
                 <button>
@@ -96,6 +101,9 @@ export default {
     }
   },
   methods: {
+    zeigeBestellungen(){
+       this.$router.push('/admin/bestellungen')
+    },
     showEmployees () {
       this.editEmployee = !this.editEmployee
       if (this.editEmployee) {

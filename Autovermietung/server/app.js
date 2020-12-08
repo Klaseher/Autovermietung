@@ -416,7 +416,6 @@ router.get('/car/:autoname', (req, res) => {
 })
 
 router.get('/rent/', (req, res) => {
-  
   let token = req.cookies.jwt
   if (token) {
     // verify secret
@@ -434,12 +433,66 @@ router.get('/rent/', (req, res) => {
           res.clearCookie('jwt')
           return res.status(404).send('Invalid User')
         }
-        return res.status(200).send({user: user})
+        userr = ([user.vorname, user.nachname, user.user, user.adresse, user.telefon])
+        return res.status(200).send({user: userr})
       })
     })
   } else {
     return res.status(403).send('Forbidden Access')
   }
+})
+
+// bestellung erstellen
+router.post('/rent/', (req, res) => {
+    let token = req.cookies.jwt
+    if (token) {
+      // verify secret
+      jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) {
+          res.clearCookie('jwt')
+          return res.status(401).send('Unauthorized access')
+        }
+        db.selectById(decoded.id, (err, user) => {
+          if (err) {
+            res.clearCookie('jwt')
+            return res.status(500).send('Error on the server.')
+          }
+          if (!user) {
+            res.clearCookie('jwt')
+            return res.status(404).send('Invalid User')
+          }
+          // nur kunde darf bestellung erstellen
+          if(user.rolle == 0){
+            db.getCustomerOrders(user.id, (err, bestellungen) => {
+              if (err) return res.status(500).send('Error on the server.')
+              // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3) ist
+              if (bestellungen.length > 0) return res.status(500).send('You are already having an active orders.\nGo into the account tab for more information on your orders')
+              timestamp = moment.utc() //erstellzeitraum bestellung, damit mitarbeiter danach filtern kann
+              db.createOrder([
+                user.id,
+                req.body.auto,
+                req.body.start,
+                req.body.ende,
+                0,
+                moment(timestamp).format('YYYY/MM/DD'),
+              ], (err) => {
+                if (err) return res.status(500).send('Error on the server.')
+                return res.status(200).send({success: true})
+            })
+            })
+        }else{
+          return res.status(401).send('Unauthorized access')
+        }
+      })
+    })
+  } else {
+    return res.status(403).send('Forbidden Access')
+  }
+})
+
+// bestellungen holen
+router.get('/order/:bnr', (req, res) => {
+  
 })
 
 app.use(router)

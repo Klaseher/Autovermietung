@@ -71,7 +71,7 @@ class Db {
   getCarTimeframes (autoname, callback) {
     let timeframes = []
     return this.db.all(
-      `SELECT startdatum, enddatum FROM bestellung WHERE auto_fk = ?`,
+      `SELECT startdatum, enddatum FROM bestellung WHERE auto_fk = ? AND status <> 3 AND status <> 4`,
       [autoname], function (err, rows) {
         rows.forEach(function (row) {
           timeframes.push(row)
@@ -122,6 +122,38 @@ class Db {
         callback(err, row)
       })
   }
+
+  //Bestellungen Status
+  //0 --> vom Kunden erstellte Bestellung
+  //1 --> vom Mitarbeiter akzeptierte (damit aktive) Bestellung
+  //2 --> bestellung vom kunden aus abgebrochen --> von mitarbeiter noch zu bearbeiten
+  //3 --> abgebrochene abgeschlossene bestellung kunde z.B. wenn mitarbeiter bestellung abbricht oder kunde
+  // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
+  //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
+
+
+  //Bestellung Kunde erstellen
+  createOrder (order, callback) {
+    return this.db.run(
+      'INSERT INTO bestellung (user_fk, auto_fk, startdatum, enddatum, status, zeitstempel) VALUES (?,?,?,?,?,?)',
+      order, (err) => {
+        callback(err)
+      })
+  }
+
+   //Alle Bestellungen Kunde erhalten
+  getCustomerOrders (id, callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT * FROM bestellung WHERE user_fk = ? AND status <> 3 AND status <> 4`,
+      [id], function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
 }
 
 module.exports = Db

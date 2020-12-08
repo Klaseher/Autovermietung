@@ -37,9 +37,11 @@
 </template>
 
 <script>
+// Hier kann Kunde Bestellung erstellen
 import DatepickerLite from "vue3-datepicker-lite";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
+import Auth from "../services/auth.service";
 export default {
     data(){
         return{            
@@ -146,14 +148,22 @@ export default {
 
                 }
             }
-            //Hier Bestellung in Backend erstellen mit Status 'offen'
+            //Hier Bestellung in Backend erstellen mit Status '0'
             //Hier auch noch prüfen, dass Kunde nur eine Bestellung gleichzeitig in DB haben darf 
             //--> sonst könnte ein Kunde einfach alles auf einmal mieten
-
-            //Bestätigung, wenn Bestellung erfolgreich erstellt wurde in DB
-            alert('Die Mietanfrage für ' + this.$route.params.autoname + ' für den Zeitraum: ' + this.start + ' - ' + this.ende
-            + ' wird von einem Mitarbeiter bearbeitet. Den Stand Ihrer Anfrage können Sie in Ihrem Account nachverfolgen')
-            Helper.redirect('/login')
+            Auth.createOrder(this.auto.name, this.start, this.ende)
+            .then(response => {
+                if(response.data.success){
+                     //Bestätigung, wenn Bestellung erfolgreich erstellt wurde in DB
+                    alert('Die Mietanfrage für ' + this.$route.params.autoname + ' für den Zeitraum: ' + this.start + ' - ' + this.ende
+                      + ' wird von einem Mitarbeiter bearbeitet. Den Stand Ihrer Anfrage können Sie in Ihrem Account nachverfolgen')
+                     Helper.redirect('/login')     
+                }
+            })
+            .catch((error) => {
+              Helper.handle(error)
+              Helper.redirect('/')
+            })
         },
         //Alle Tage zw. (inklusive) Start- und Enddatum deaktivieren
         erstelleDeaktivierteZeiten(){

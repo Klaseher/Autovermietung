@@ -23,6 +23,12 @@ class UserService {
   getUser () {
     return axios.get(API_URL + 'rent/')
   }
+
+  // bestellungen holen
+  getOrder (bnr) {
+    return axios.get(API_URL + 'order/' + bnr)
+  }
+  
 }
 
 export default new UserService()
