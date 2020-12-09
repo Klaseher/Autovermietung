@@ -490,9 +490,74 @@ router.post('/rent/', (req, res) => {
   }
 })
 
-// bestellungen holen
+
+// bestellungen holen (sowohl kunde als auch mitarbeiter)
 router.get('/order/:bnr', (req, res) => {
-  
+ if(req.params.bnr != null){
+  let token = req.cookies.jwt
+      if (token) {
+        // verify secret
+        jwt.verify(token, config.secret, function (err, decoded) {
+          if (err) {
+            res.clearCookie('jwt')
+            return res.status(401).send('Unauthorized access')
+          }
+          db.selectById(decoded.id, (err, user) => {
+            if (err) {
+              res.clearCookie('jwt')
+              return res.status(500).send('Error on the server.')
+            }
+            if (!user) {
+              res.clearCookie('jwt')
+              return res.status(404).send('Invalid User')
+            }
+            // wenn mind. mitarbeiter
+            if (user.rolle > 0){
+              if (req.params.bnr == "alle") {
+                // alle bestellungen holen
+                db.getAllOpenOrders((err, orders) => {
+                  console.log(orders)
+                  if (err) return res.status(500).send('Error on the server.')
+                  if (!orders) return res.status(404).send('No Orders available')
+                  return res.status(200).send({orders: orders})
+                })
+              }
+              else{
+                // sucht spezifische Bestellung mit bnr
+                db.getOrderbyBnr(req.params.bnr, (err, order) => {
+                  if (err) return res.status(500).send('Error on the server.')
+                  if (!order) return res.status(404).send('Order not available')
+                  return res.status(200).send({order: order})
+                })
+              } 
+            } 
+            // wenn kunde
+            else{
+              if (req.params.bnr == "alle") {
+                // alle bestellungen holen
+                db.getCustomerOrders(user.id, (err, orders) => {
+                  if (err) return res.status(500).send('Error on the server.')
+                  if (!orders) return res.status(404).send('No Orders available')
+                  return res.status(200).send({orders: orders})
+                })
+              }
+              else{
+                // sucht spezifische Bestellung mit bnr
+                db.getCustomerOrderbyBnr(user,id, req.params.bnr, (err, order) => {
+                  if (err) return res.status(500).send('Error on the server.')
+                  if (!order) return res.status(404).send('Order not available')
+                  return res.status(200).send({order: order})
+                })
+              } 
+            }
+          })
+        })
+    } else {
+        return res.status(403).send('Forbidden Access')
+      }
+  }else{
+      return res.status(404).send('Requested resource is not available')
+  }  
 })
 
 app.use(router)

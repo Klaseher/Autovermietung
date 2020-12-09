@@ -141,12 +141,43 @@ class Db {
       })
   }
 
-   //Alle Bestellungen Kunde erhalten
+  //Bestellung Kunde erhalten mit BNR
+  getCustomerOrderbyBnr (id, bnr, callback) {
+     return this.db.get(
+      `SELECT * FROM bestellung WHERE user_fk = ? AND bnr = ?`,
+      [id, bnr], function (err, row) {
+        callback(err, row)
+      })
+  }
+
+  //Alle Bestellungen Kunde erhalten, die offen sind
   getCustomerOrders (id, callback) {
     let orders = []
     return this.db.all(
       `SELECT * FROM bestellung WHERE user_fk = ? AND status <> 3 AND status <> 4`,
       [id], function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Bestellung erhalten mit Bnr
+  getOrderbyBnr (bnr, callback) {
+     return this.db.get(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE bnr = ?`,
+      bnr, function (err, row) {
+        callback(err, row)
+      })
+  }
+
+  //Alle offenen Bestellungen Kunde erhalten
+  getAllOpenOrders (callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status <> 3 AND status <> 4`,
+      function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)
         })

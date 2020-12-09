@@ -30,7 +30,11 @@
         <br />
         <br />
         <br />
-        <button @click='bestellen()'>
+        <br /> <h3>Kosten: {{kosten}} €</h3>
+        <button
+            @click='bestellen()'
+            :disabled="!verfuegbarkeit(auto.verfuegbar)"
+            >
             Anfrage
         </button>
     </div>
@@ -110,6 +114,14 @@ export default {
         DatepickerLite
     },
     methods: {
+        // kann keine bestellung fuer auto erstellen, welches derzeit nicht verfuegbar ist
+         verfuegbarkeit(vorhanden) {
+            if (vorhanden == 1) {
+                return true;
+            } else {
+                return false;
+            }
+         },
         //Hier Methode zum Bestellen
         bestellen(){
             if(this.start == '' && this.ende == ''){
@@ -128,7 +140,7 @@ export default {
                 let startdatum = new Date(this.start)
                 let enddatum = new Date(this.ende)
                 if(startdatum.getTime() > enddatum.getTime()){
-                    alert('Enddatum darf nicht hinter Startdatum liegen')
+                    alert('Enddatum darf nicht vor Startdatum liegen')
                     return
                 }
                 else{
@@ -176,6 +188,26 @@ export default {
                     this.datepickerSetting.disabledDate.push(Helper.formatDate(current));
                     current.setDate(current.getDate() + 1)
                 }
+            }
+        }
+    },
+    computed: {
+        // kosten berechnen durch bestimmung zeitraumlaenge in tage
+        kosten: function () {
+            if(this.start != '' && this.ende != ''){
+                let startdatum = new Date(this.start)
+                let enddatum = new Date(this.ende)
+                if(startdatum.getTime() > enddatum.getTime()){
+                        return ''
+                }
+                else{
+                    let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+                    let diffDays = Math.floor((enddatum.getTime() - startdatum.getTime())/(oneDay))
+                    return this.auto.preis * (diffDays +1)
+                }
+            }
+            else{
+                return ''
             }
         }
     },
