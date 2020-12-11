@@ -2,6 +2,17 @@
     <div>
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
+            <button @click="update()">Aktualisieren</button>
+            <select v-model="bestellungsauswahl">
+                <option value="" disabled selected>Filter Bestellungen</option>
+                <option
+                    v-for="(bestellung, index) in bestellungstypen"
+                    :key="index"
+                    :value="bestellung"
+                >
+                    {{bestellung}}
+                </option>
+                </select>   
             <table>
                 <thead>
                     <tr>
@@ -17,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(bestellung, index) in bestellungen" :key="index" :class="getClass(bestellung.doppelt)">
+                    <tr v-for="(bestellung, index) in bestellungen" :key="index" :class="getClass(bestellung)">
                         <td>{{bestellung.bnr}}</td>
                         <td>{{bestellung.startdatum}}</td>
                         <td>{{bestellung.enddatum}}</td>
@@ -40,6 +51,9 @@
             <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
             <button type="cancel" @click="back">Zurueck zur Suche</button>
+            <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
+            <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
+            <button @click="showDamage(gewaehlteBestellung.auto_fk)">Anzeigen Offener Autoprobleme</button>
          </div>
     </div>
 </template>
@@ -48,6 +62,7 @@
 <script>
 // Hier wird fuer Mitarbeiter/Admin alles bzgl. Bestellungen angezeigt/definiert
 import UserService from "../services/user.service";
+import Auth from "../services/auth.service";
 import Helper from "../services/helper.service";
 export default {
     data(){
@@ -56,16 +71,152 @@ export default {
             msg: '',
             bestellungen: [],
             gewaehlteBestellung: '',
-            class: ''
+            schaeden: [],
+            class: '',
+            bestellungsauswahl: '',
+            bestellungstypen: []
         }
     },
     methods: {
+        // daten neu laden
+        update(){
+            this.$mount();
+        },
         // zurueck zur allgemeinen Bestellueubersicht
         back() {
             this.ausgewaehlt = false;
             this.msg = "Alle Bestellungen"
             this.holeBestellungen();
             this.$router.push("/admin/bestellungen")
+        },
+        showDamage(auto){
+            Helper.redirect("/admin/"+auto+"/schaden");
+        },
+          abbrechen(bnr) {
+            if(confirm("Moechten Sie die Bestellung BNR: " + bnr + " wirklich abbrechen?")){
+                this.gewaehlteBestellung.status = 3
+                Auth.updateStatusOrder(bnr, 3)
+                .then(response =>{
+                    if(response.data.success){
+                        this.bestellungen.find(
+                        (element) => element.bnr == bnr).status = 3
+                        alert("Bestellung wurde erfolgreich abgebrochen.")
+                        Helper.redirect("/admin/bestellungen");
+                        return
+                    }
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    Helper.redirect("/admin/bestellungen");
+                    return
+                })
+            }
+        },
+        //Bestellung akzeptieren --> 0 zu 1
+        acceptOrder(bnr){
+            // wegen async erst daten laden, danach bei 2tem click funktioniert es erst, wenn direkt auf bestellung via bnr zugegriffen wird
+            if(this.bestellungen.length<1){
+                this.holeBestellungen()
+                alert("Die Daten muessen nachgeladen werden. Versuchen Sie es erneut")
+            }
+            else{
+                let bestellung = this.bestellungen.find(
+                (element) => element.bnr == bnr)
+                let date = bestellung
+                //ueberpruefung, ob doppelte bestellungen
+                if(bestellung.doppelt){
+                    let doppelt = [bestellung]
+                    for(let i=0;i<this.bestellungen.length;i++){
+                        if(bestellung.bnr == this.bestellungen[i].bnr){
+                            continue
+                        }
+                        else if(bestellung.auto_fk == this.bestellungen[i].auto_fk && this.bestellungen[i].doppelt){
+                            doppelt.push(this.bestellungen[i])
+                        }
+                    }
+                    for(let i=1;i<doppelt.length;i++){
+                        alert("Die Bestellung BNR: " + doppelt[i].bnr + " ueberschneidet sich mit dieser Bestellung")
+                    }
+                    for(let i=1;i<doppelt.length-1;i++){
+                        let d1 = new Date(doppelt[i].zeitstempel) 
+                        let d2 = new Date(doppelt[i+1].zeitstempel) 
+                        if(d1.getTime() < d2.getTime()){
+                            date = doppelt[i]
+                        }
+                        else{
+                            date = doppelt[i+1]
+                        }
+                    }
+                    if(confirm("Soll die frueheste Bestellung BNR: " +  date.bnr +" akzeptiert und automatisch die anderen Anfragen abgebrochen werden?")){
+                        doppelt.forEach(async (item) => {
+                            if(item.bnr == date.bnr){
+                                return
+                            }
+                            await this.abbrechen(item.bnr)
+                        })
+                    }   
+                }
+                UserService.getSchaeden(date.auto_fk)
+                    .then((response) => {
+                        // wenn kein schaden, dann kann bestellung bestaetigt werden
+                        if(response.data.success){
+                            Auth.updateStatusOrder(date.bnr, 1)
+                            .then((response) =>{
+                                if(response.data.success){
+                                    this.bestellungen.find(
+                                    (element) => element.bnr == date.bnr).status = 1
+                                    alert("Bestellung wurde erfolgreich bestaetigt.")
+                                    Helper.redirect("/admin/bestellungen");
+                                    return
+                                }
+                            })
+                             .catch((error) => {
+                                Helper.handle(error)
+                                Helper.redirect("/admin/bestellungen");
+                                return
+                            })
+                        }
+                        // offene schaeden sind vorhanden
+                        else{
+                            let val = false
+                            this.schaeden.push.apply(this.schaeden, response.data.cardamage)
+                            for(let i=0;i<this.schaeden.length;i++){
+                                 if(this.schaeden[i].prioritaet == 0){
+                                    if(confirm("Das Auto kann nicht ausgeleihen werden wegen offener fataler Probleme.\nMoechten Sie diese jetzt bearbeiten?")){
+                                        val = true
+                                        Helper.redirect("/admin/" + date.auto_fk + "/schaden");
+                                        return
+                                    }
+                                    val = true
+                                    return
+                                }
+                            }
+                            if(!val){
+                                if(confirm("Es bestehen noch offene Probleme, die aber nicht fatal sind. Moechten Sie die Bestellung bestaetigen")){    
+                                    Auth.updateStatusOrder(date.bnr, 1)
+                                        .then((response) =>{
+                                            if(response.data.success){
+                                                this.bestellungen.find(
+                                                (element) => element.bnr == date.bnr).status = 1
+                                                alert("Bestellung wurde erfolgreich bestaetigt.")
+                                                Helper.redirect("/admin/bestellungen");
+                                                return
+                                            }
+                                        })
+                                        .catch((error) => {
+                                            Helper.handle(error)
+                                            Helper.redirect("/admin/bestellungen");
+                                            return
+                                        })
+                                }
+                            }
+                        }
+                    })
+                    .catch((error) => {
+                        Helper.handle(error)
+                        Helper.redirect("/admin/bestellungen");
+                    })
+            }
         },
         // test, ob bestellungen mehrfach vorhanden sind
         testdoppelt(){
@@ -112,12 +263,16 @@ export default {
             }
         },
         // faerbe tabelle, wenn doppelte bestellung
-        getClass(doppelt) {
-              if (doppelt) {
+        getClass(bestellung) {
+              if (bestellung.doppelt) {
                 this.class="doppelt"
                 return this.class
               }
-              else {
+              else if (bestellung.status == 2) {
+                this.class = "bezahlen"
+                return this.class
+              }
+              else{
                 this.class = "normal"
                 return this.class
               }
@@ -153,7 +308,7 @@ export default {
                return 'Laufende Bestellung'
            }
            else if(status == 2){
-               return 'Wartet auf Ueberpruefung'
+               return 'Bezahlung ausstehend'
            }
            else if(status == 3){
                return 'Abgebrochene Bestellung'
@@ -163,7 +318,8 @@ export default {
            }
         }   
     },
-    beforeMount(){
+    beforeMount(){                  //0                       3,4                   2                        doppelt = true          endstatus < heute              1
+        this.bestellungstypen = ["Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Doppelte Bestellungen", "Ueberzogene Bestellungen", "Laufende Bestellungen"];
         if (this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
@@ -198,6 +354,9 @@ p{
 
 .doppelt{
     background-color: red
+}
+.bezahlen {
+    background-color: orange
 }
 .normal {
     background-color: white

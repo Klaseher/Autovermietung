@@ -11,6 +11,8 @@ import EmployeeEdit from '@/components/EmployeeEdit.vue'
 import UserService from '../services/user.service'
 import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
+import BestellungenKu from '../components/BestellungenKu.vue'
+import CarDamage from '../components/CarDamage.vue'
 
 const routes = [
   {
@@ -72,6 +74,17 @@ const routes = [
     }
   },
   {
+    //Ohne Parameter bnr --> Alle Bestellungen angezeigt
+    //Mit Parameter --> Nur Bestellung mit spezifischer bnr
+    path: '/dashboard/bestellungen/:bnr?',
+    name: 'bestellungenKunde',
+    component: BestellungenKu,
+    meta: {
+      requiresAuth: true,
+      is_user: true
+    }
+  },
+  {
     path: '/admin',
     name: 'admin',
     component: Admin,
@@ -87,6 +100,16 @@ const routes = [
     meta: {
       requiresAuth: true,
       is_admin: true
+    }
+  },
+  {
+    // uebersicht schaeden auto
+    path: '/admin/:autoname/schaden',
+    name: 'carDamage',
+    component: CarDamage,
+    meta: {
+      requiresAuth: true,
+      is_employee: true
     }
   },
   {

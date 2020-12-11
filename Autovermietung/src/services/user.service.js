@@ -28,6 +28,16 @@ class UserService {
   getOrder (bnr) {
     return axios.get(API_URL + 'order/' + bnr)
   }
+
+   // bestellungen holen
+   getOrderCost (bnr) {
+    return axios.get(API_URL + 'order/' + bnr + '/cost')
+  }
+
+   // schaeden von auto holen
+   getSchaeden (autoname) {
+    return axios.get(API_URL + 'car/' + autoname + '/schaeden')
+  }
   
 }
 

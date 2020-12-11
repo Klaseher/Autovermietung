@@ -57,6 +57,7 @@ export default {
             ende: '',
             user: '',
             auto: '',
+            cost: '',
             datepickerSetting : {
                 value:"",
                 yearMinus: 0,
@@ -122,6 +123,10 @@ export default {
                 return false;
             }
          },
+         // kosten an backend geben
+         setKosten(cost) {
+           this.cost = cost
+         },
         //Hier Methode zum Bestellen
         bestellen(){
             if(this.start == '' && this.ende == ''){
@@ -163,7 +168,7 @@ export default {
             //Hier Bestellung in Backend erstellen mit Status '0'
             //Hier auch noch prüfen, dass Kunde nur eine Bestellung gleichzeitig in DB haben darf 
             //--> sonst könnte ein Kunde einfach alles auf einmal mieten
-            Auth.createOrder(this.auto.name, this.start, this.ende)
+            Auth.createOrder(this.auto.name, this.start, this.ende, this.cost)
             .then(response => {
                 if(response.data.success){
                      //Bestätigung, wenn Bestellung erfolgreich erstellt wurde in DB
@@ -203,7 +208,9 @@ export default {
                 else{
                     let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
                     let diffDays = Math.floor((enddatum.getTime() - startdatum.getTime())/(oneDay))
-                    return this.auto.preis * (diffDays +1)
+                    let cost = this.auto.preis * (diffDays +1)
+                    this.setKosten(cost)
+                    return cost
                 }
             }
             else{

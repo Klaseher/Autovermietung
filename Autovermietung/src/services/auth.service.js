@@ -65,11 +65,28 @@ class Auth {
   }
 
   // bestellung durch kunden erstellt
-  createOrder (auto, start, ende) {
+  createOrder (auto, start, ende, kosten) {
     return axios.post(API_URL + 'rent/', {
       auto: auto,
       start: start,
-      ende: ende
+      ende: ende,
+      kosten: kosten
+    })
+  }
+
+  //bestellung abbrechen kunde
+  updateStatusOrder (bnr, status) {
+    return axios.put(API_URL + 'order/' + bnr + '/updateStatus', {
+      status: status
+    })
+  }
+
+  //bestellung kosten hinzufuegen
+  addCost (bnr, typ, kosten, beschreibung) {
+    return axios.post(API_URL + 'order/' + bnr + '/cost', {
+      typ: typ,
+      kosten: kosten,
+      beschreibung: beschreibung
     })
   }
 }
