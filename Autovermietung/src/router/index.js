@@ -104,7 +104,7 @@ const routes = [
   },
   {
     // uebersicht schaeden auto
-    path: '/admin/:autoname/schaden',
+    path: '/admin/:autoname/schaden/:bnr?',
     name: 'carDamage',
     component: CarDamage,
     meta: {

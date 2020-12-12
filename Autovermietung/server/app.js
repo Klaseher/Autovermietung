@@ -458,6 +458,113 @@ router.get('/car/:autoname/schaeden', (req, res) => {
    }  
 })
 
+// bestellungen abbrechen 
+router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
+  if(req.body.status != null &&  req.body.pos != null){
+   let token = req.cookies.jwt
+       if (token) {
+         // verify secret
+         jwt.verify(token, config.secret, function (err, decoded) {
+           if (err) {
+             res.clearCookie('jwt')
+             return res.status(401).send('Unauthorized access')
+           }
+           db.selectById(decoded.id, (err, user) => {
+             if (err) {
+               res.clearCookie('jwt')
+               return res.status(500).send('Error on the server.')
+             }
+             if (!user) {
+               res.clearCookie('jwt')
+               return res.status(404).send('Invalid User')
+             }
+             // nur mitarbeiter
+             if(user.rolle > 0){
+                db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
+                  if (err) return res.status(500).send('Error on the server.')
+                  return res.status(200).send({success: true})
+              })
+            }
+            else{
+              return res.status(401).send('Unauthorized access')  
+            }
+           })
+         })
+     } else {
+         return res.status(403).send('Forbidden Access')
+       }
+   }else{
+       return res.status(404).send('Requested resource is not available')
+   }  
+})
+
+//schaeden auto erstellen
+router.post('/car/:autoname/schaeden', (req, res) => {
+  console.log(req.body)
+  if(req.body.beschreibung != null && req.body.prio != null && req.body.typ != null && req.body.kosten != null){
+   let token = req.cookies.jwt
+       if (token) {
+         // verify secret
+         jwt.verify(token, config.secret, function (err, decoded) {
+           if (err) {
+             res.clearCookie('jwt')
+             return res.status(401).send('Unauthorized access')
+           }
+           db.selectById(decoded.id, (err, user) => {
+             if (err) {
+               res.clearCookie('jwt')
+               return res.status(500).send('Error on the server.')
+             }
+             if (!user) {
+               res.clearCookie('jwt')
+               return res.status(404).send('Invalid User')
+             }
+             db.getOpenCarDamage(req.params.autoname, (err, damage) => {
+                if (err) return res.status(500).send('Error on the server.')
+              // letzte positionszahl erhalten
+                let posMax = 0
+                if(damage.length == 1){
+                  posMax = damage[0].pos
+                }
+                else{
+                  for(let i=0;i<damage.length-1;i++){
+                    if(damage[i].pos > damage[i+1].pos){
+                      posMax = damage[i].pos
+                    }
+                    else{
+                      posMax = damage[i+1].pos
+                    }
+                  }
+              }
+              // nur mitarbeiter darf schaeden hinzufuegen
+              if(user.rolle > 0){
+                db.createDamage([
+                  req.params.autoname,
+                  (posMax+1),
+                  req.body.beschreibung,
+                  req.body.prio,
+                  req.body.typ,
+                  req.body.kosten
+                ], (err) => {
+                  console.log(err)
+                  if (err) return res.status(500).send('Error on the server.')
+                  return res.status(200).send({success: true})
+                })
+              }
+              else{
+                return res.status(401).send('Unauthorized access')  
+              }
+            })
+          })
+         })
+     } else {
+         return res.status(403).send('Forbidden Access')
+       }
+   }else{
+       return res.status(404).send('Requested resource is not available')
+   }  
+})
+
 router.get('/rent/', (req, res) => {
   let token = req.cookies.jwt
   if (token) {
@@ -601,6 +708,50 @@ router.get('/order/:bnr', (req, res) => {
                   return res.status(200).send({order: order})
                 })
               } 
+            }
+          })
+        })
+    } else {
+        return res.status(403).send('Forbidden Access')
+      }
+  }else{
+      return res.status(404).send('Requested resource is not available')
+  }  
+})
+
+// testen, ob bestellung mit auto u. bnr vorhanden
+router.get('/order/:bnr/:autoname', (req, res) => {
+ if(req.params.bnr != null){
+  let token = req.cookies.jwt
+      if (token) {
+        // verify secret
+        jwt.verify(token, config.secret, function (err, decoded) {
+          if (err) {
+            res.clearCookie('jwt')
+            return res.status(401).send('Unauthorized access')
+          }
+          db.selectById(decoded.id, (err, user) => {
+            if (err) {
+              res.clearCookie('jwt')
+              return res.status(500).send('Error on the server.')
+            }
+            if (!user) {
+              res.clearCookie('jwt')
+              return res.status(404).send('Invalid User')
+            }
+            // wenn mind. mitarbeiter
+            if (user.rolle > 0){
+              console.log(req.params.bnr, req.params.autoname)
+              db.getOrderbyBnrAndCar(req.params.bnr, req.params.autoname, (err, order) => {
+                console.log(err)
+                console.log(order)
+                if (err) return res.status(500).send('Error on the server.')
+                if (!order) return res.status(200).send({success: false})
+                return res.status(200).send({success: true})
+              })
+            } 
+            else{
+              res.status(401).send('Unauthorized access')
             }
           })
         })

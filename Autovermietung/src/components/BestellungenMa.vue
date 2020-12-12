@@ -53,7 +53,7 @@
             <button type="cancel" @click="back">Zurueck zur Suche</button>
             <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
             <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            <button @click="showDamage(gewaehlteBestellung.auto_fk)">Anzeigen Offener Autoprobleme</button>
+            <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
          </div>
     </div>
 </template>
@@ -89,8 +89,15 @@ export default {
             this.holeBestellungen();
             this.$router.push("/admin/bestellungen")
         },
-        showDamage(auto){
-            Helper.redirect("/admin/"+auto+"/schaden");
+        showDamage(bestellung){
+            // vor bestaetigung behandlung schaeden
+            if(bestellung.status == 0){
+                Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden");
+            }
+            // offene oder zeitlich ueberfaellige bestellungen
+            else if(bestellung.status == 1 || bestellung.status == 5){
+                 Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
+            }
         },
           abbrechen(bnr) {
             if(confirm("Moechten Sie die Bestellung BNR: " + bnr + " wirklich abbrechen?")){
@@ -318,7 +325,7 @@ export default {
            }
         }   
     },
-    beforeMount(){                  //0                       3,4                   2                        doppelt = true          endstatus < heute              1
+    beforeMount(){                  //0                       3,4                   2                        doppelt = true          5                              1
         this.bestellungstypen = ["Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Doppelte Bestellungen", "Ueberzogene Bestellungen", "Laufende Bestellungen"];
         if (this.$route.params.bnr != "") {
             this.ausgewaehlt = true

@@ -29,6 +29,11 @@ class UserService {
     return axios.get(API_URL + 'order/' + bnr)
   }
 
+   // testen, ob bestellung mit bnr u. auto existiert
+   testOrder (bnr, auto) {
+    return axios.get(API_URL + 'order/' + bnr + "/" + auto)
+  }
+
    // bestellungen holen
    getOrderCost (bnr) {
     return axios.get(API_URL + 'order/' + bnr + '/cost')

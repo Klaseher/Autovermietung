@@ -89,6 +89,24 @@ class Auth {
       beschreibung: beschreibung
     })
   }
+
+   //auto schaden hinzufuegen
+   addSchaden (autoname, beschreibung, prio, typ, kosten) {
+    return axios.post(API_URL + 'car/' + autoname + '/schaeden', {
+      beschreibung: beschreibung,
+      prio: prio,
+      typ: typ,
+      kosten: kosten
+    })
+  }
+
+   //schaden auto prioritaet updaten
+   updatePriority (auto, pos, status) {
+    return axios.put(API_URL + 'car/' + auto + '/schaeden/updateStatus', {
+      pos: pos,
+      status: status
+    })
+  }
 }
 
 export default new Auth()

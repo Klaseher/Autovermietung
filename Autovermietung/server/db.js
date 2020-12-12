@@ -130,6 +130,7 @@ class Db {
   //3 --> abgebrochene abgeschlossene bestellung kunde z.B. wenn mitarbeiter bestellung abbricht oder kunde
   // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
   //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
+  //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist
 
 
   //Bestellung Kunde erstellen
@@ -171,6 +172,15 @@ class Db {
         callback(err, row)
       })
   }
+
+   //Bestellung testen, ob bnr u. autoname hat
+   getOrderbyBnrAndCar (bnr, autoname, callback) {
+    return this.db.get(
+     `SELECT * from bestellung WHERE bnr = ? AND auto_fk = ?`,
+     [bnr,autoname], function (err, row) {
+       callback(err, row)
+     })
+ }
 
   //Alle offenen Bestellungen Kunde erhalten (0, also die noch zu bestaetigen sind), wenn mitarbeiter zuerst bestellungen anzeigt
   getAllOpenOrders (callback) {
@@ -246,6 +256,25 @@ class Db {
         callback(err, damage)
       })
   }
+
+  //schaden hinzufuegen
+  createDamage (damage, callback) {
+    return this.db.run(
+      'INSERT INTO schaden (auto_fk, pos, beschreibung, prioritaet, typ, hoehe) VALUES (?,?,?,?,?,?)',
+      damage, (err) => {
+        callback(err)
+      })
+  }
+
+    //schaden hinzufuegen
+    updatePriority (update, callback) {
+      return this.db.run(
+        `UPDATE schaden SET prioritaet = ? WHERE auto_fk = ? AND pos = ?`,
+        update, (err) => {
+          callback(err)
+        })
+    }
+
 
 }
 
