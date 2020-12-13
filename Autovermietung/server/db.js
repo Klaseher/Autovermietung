@@ -126,11 +126,11 @@ class Db {
   //Bestellungen Status
   //0 --> vom Kunden erstellte Bestellung
   //1 --> vom Mitarbeiter akzeptierte (damit aktive) Bestellung
-  //2 --> bestellung vom kunden aus abgebrochen --> zahlung ausstehend, d.h. auto wird freigegeben, aber bestellung ist noch nicht abgeschlossen
+  //2 --> bestellung vom kunden aus abgebrochen --> zahlung ausstehend, d.h. auto wird freigegeben, aber bestellung ist noch nicht abgeschlossen --> wenn auto zurueckgegeben, aber zahlung noch offen
   //3 --> abgebrochene abgeschlossene bestellung kunde z.B. wenn mitarbeiter bestellung abbricht oder kunde
   // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
   //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
-  //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist
+  //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist --> wenn auto noch nicht zurueckgegeben, aber zahlung noch offen
 
 
   //Bestellung Kunde erstellen
@@ -249,6 +249,18 @@ class Db {
     let damage = []
     return this.db.all(
       `SELECT * FROM schaden WHERE auto_fk = ? AND prioritaet >= 0`,
+      [auto], function (err, rows) {
+        rows.forEach(function (row) {
+          damage.push(row)
+        })
+        callback(err, damage)
+      })
+  }
+
+  getAllCarDamage (auto, callback) {
+    let damage = []
+    return this.db.all(
+      `SELECT * FROM schaden WHERE auto_fk = ?`,
       [auto], function (err, rows) {
         rows.forEach(function (row) {
           damage.push(row)

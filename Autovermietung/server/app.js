@@ -519,7 +519,7 @@ router.post('/car/:autoname/schaeden', (req, res) => {
                res.clearCookie('jwt')
                return res.status(404).send('Invalid User')
              }
-             db.getOpenCarDamage(req.params.autoname, (err, damage) => {
+             db.getAllCarDamage(req.params.autoname, (err, damage) => {
                 if (err) return res.status(500).send('Error on the server.')
               // letzte positionszahl erhalten
                 let posMax = 0
@@ -546,9 +546,8 @@ router.post('/car/:autoname/schaeden', (req, res) => {
                   req.body.typ,
                   req.body.kosten
                 ], (err) => {
-                  console.log(err)
                   if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
+                  return res.status(200).send({success: true, pos: posMax+1})
                 })
               }
               else{

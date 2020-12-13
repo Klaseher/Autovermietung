@@ -116,8 +116,10 @@ export default {
                  Auth.updatePriority(schaden.auto_fk, schaden.pos, -1)
                     .then((response) =>{
                         if(response.data.success){
-                             alert("Schaden wurde erfolgreich behoben")
-                             // hier geupdated werden
+                            // schaden lokal aus array entfernen --> "aktualisieren"
+                            let index = this.schaeden.indexOf(schaden)
+                            this.schaeden.splice(index, 1);
+                            alert("Schaden wurde erfolgreich behoben")
                         }
                     })
                     .catch((error) => {
@@ -153,9 +155,9 @@ export default {
                                         this.kosten = ''
                                         this.beschreibung = ''
                                         this.auswahl = ''
+                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
                                         alert("Schaden erfolgreich hinzugefuegt")
-                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos:0, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
-                                    }
+                                       }
                                 })
                                 .catch((error) => {
                                     Helper.handle(error)
@@ -163,7 +165,7 @@ export default {
                                 })
                             }
                             else{
-                               this.schaeden.push({auto_fk: this.$route.params.autoname, pos:0, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
+                                this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
                                 this.prio = ''
                                 this.kosten = ''
                                 this.beschreibung = ''

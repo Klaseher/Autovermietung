@@ -41,6 +41,7 @@
                     </tr>
                 </tbody>
             </table>
+            <button @click="home()">Zurueck</button>
         </div>
         <div v-else>
             <h1>{{msg}}</h1>
@@ -80,7 +81,7 @@ export default {
     methods: {
         // daten neu laden
         update(){
-            this.$mount();
+            // hier wird filter angewandt
         },
         // zurueck zur allgemeinen Bestellueubersicht
         back() {
@@ -88,6 +89,9 @@ export default {
             this.msg = "Alle Bestellungen"
             this.holeBestellungen();
             this.$router.push("/admin/bestellungen")
+        },
+        home() {
+            this.$router.push("/admin")
         },
         showDamage(bestellung){
             // vor bestaetigung behandlung schaeden
