@@ -481,14 +481,60 @@ export default ({
 
 
 <style scoped>
-h1 {
-  color: brown;
+h1{
+    color: rgb(106, 167, 26);
 }
-input {
-  padding: 5px;
-  width: fit-content;
+h2{
+  color:burlywood
 }
-button {
-  padding: 10 10px;
+h3{
+  color: aqua;
 }
+input[type=text], select {
+  width: 25%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.search{
+  background-color:#443dac;
+	border-radius:28px;
+	border:1px solid #162f9b;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #2f6627;
+  -webkit-text-size-adjust:auto;
+}
+/* .search:hover {
+	background-color:#342abf;
+} */
+.search:active {
+	position:relative;
+	top:1px;
+}
+button{
+  box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	background-color:#7892c2;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:19px;
+	padding:12px 37px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+  align-content: center;
+}  
 </style>

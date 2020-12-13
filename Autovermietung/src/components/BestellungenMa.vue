@@ -368,4 +368,11 @@ p{
 .normal {
     background-color: white
 }
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
+}
 </style>
