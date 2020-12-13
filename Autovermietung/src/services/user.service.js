@@ -21,6 +21,31 @@ class UserService {
   getCar (autoname) {
     return axios.get(API_URL + 'car/' + autoname)
   }
+
+  getUser () {
+    return axios.get(API_URL + 'rent/')
+  }
+
+  // bestellungen holen
+  getOrder (bnr) {
+    return axios.get(API_URL + 'order/' + bnr)
+  }
+
+   // testen, ob bestellung mit bnr u. auto existiert
+   testOrder (bnr, auto) {
+    return axios.get(API_URL + 'order/' + bnr + "/" + auto)
+  }
+
+   // bestellungen holen
+   getOrderCost (bnr) {
+    return axios.get(API_URL + 'order/' + bnr + '/cost')
+  }
+
+   // schaeden von auto holen
+   getSchaeden (autoname) {
+    return axios.get(API_URL + 'car/' + autoname + '/schaeden')
+  }
+  
 }
 
 export default new UserService()

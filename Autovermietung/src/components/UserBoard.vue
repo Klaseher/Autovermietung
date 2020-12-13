@@ -2,6 +2,11 @@
     <div class="hello">
         <h1>Welcome to regular users page</h1>
         <h2>{{msg}}</h2>
+        <div v-on:click="zeigeBestellungen()" class="control">
+                <button>
+                    Bestellungen
+                </button>
+        </div>
 
     </div>
 </template>
@@ -19,6 +24,9 @@ export default {
   methods: {
     redirect (route) {
       Helper.redirect(route)
+    },
+     zeigeBestellungen(){
+       this.$router.push('/dashboard/bestellungen')
     }
   }
 }

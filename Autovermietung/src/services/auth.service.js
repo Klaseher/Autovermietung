@@ -69,7 +69,49 @@ class Auth {
     })
   }
 
+  // bestellung durch kunden erstellt
+  createOrder (auto, start, ende, kosten) {
+    return axios.post(API_URL + 'rent/', {
+      auto: auto,
+      start: start,
+      ende: ende,
+      kosten: kosten
+    })
+  }
 
+  //bestellung abbrechen kunde
+  updateStatusOrder (bnr, status) {
+    return axios.put(API_URL + 'order/' + bnr + '/updateStatus', {
+      status: status
+    })
+  }
+
+  //bestellung kosten hinzufuegen
+  addCost (bnr, typ, kosten, beschreibung) {
+    return axios.post(API_URL + 'order/' + bnr + '/cost', {
+      typ: typ,
+      kosten: kosten,
+      beschreibung: beschreibung
+    })
+  }
+
+   //auto schaden hinzufuegen
+   addSchaden (autoname, beschreibung, prio, typ, kosten) {
+    return axios.post(API_URL + 'car/' + autoname + '/schaeden', {
+      beschreibung: beschreibung,
+      prio: prio,
+      typ: typ,
+      kosten: kosten
+    })
+  }
+
+   //schaden auto prioritaet updaten
+   updatePriority (auto, pos, status) {
+    return axios.put(API_URL + 'car/' + auto + '/schaeden/updateStatus', {
+      pos: pos,
+      status: status
+    })
+  }
 }
 
 export default new Auth()

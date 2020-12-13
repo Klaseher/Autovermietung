@@ -1,6 +1,10 @@
 <template>
     <div class="hello">
-      <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
+       <div v-on:click="zeigeBestellungen()" class="control">
+                <button>
+                    Bestellungen
+                </button>
+        </div>
         <div v-if="admin">
               <div v-on:click="seen = !seen" class="control">
                 <button>
@@ -10,7 +14,6 @@
         </div>
         <h1>Welcome to Employee page</h1>
         <h2>{{msg}}</h2>
-         <!-- Anzeigen der Adminfunktionen -->
         <div v-if="seen">
                 <p>Admin-Functions can be accessed from here</p>
                 <form>
@@ -51,7 +54,6 @@
                 <button type="submit" @click="showEmployees">
                         Show all Employees
                 </button>
-                 <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
                 <table v-if="editEmployee">
                     <thead>
                         <tr>
@@ -77,7 +79,7 @@
 </template>
 
 <script>
-//Komponente für Mitarbeiter/Admin
+/* eslint-disable eqeqeq */
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
 import Auth from '../services/auth.service'
@@ -92,14 +94,16 @@ export default {
       msg: 'The superheros',
       created: '',
       content: '',
-      admin: false, //speichern, ob Mitarbeiter Admin ist
+      admin: false,
       seen: false,
       editEmployee: false,
-      employees: [] //Alle Mitarbeiter
+      employees: []
     }
   },
   methods: {
-    //laden aller Mitarbeiter aus Backend
+    zeigeBestellungen(){
+       this.$router.push('/admin/bestellungen')
+    },
     showEmployees () {
       this.editEmployee = !this.editEmployee
       if (this.editEmployee) {
@@ -112,14 +116,12 @@ export default {
         this.employees = []
       }
     },
-    //Pfad auf detaillierte Mitarbeiteranzeige ändern
     editingEmployee (id) {
       this.$router.push('/admin/editEmployee/' + id)
     },
     redirect (route) {
       Helper.redirect(route)
     },
-    //Registrieren neuer Mitarbeiter
     handleSubmit (e) {
       e.preventDefault()
       var vornameTest = new RegExp('([a-zA-Z]{3,100}\\s*)+')
@@ -137,7 +139,7 @@ export default {
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
       var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
         if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
-         if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
+        if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
           if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {
             if (passTest.test(this.password)) {
               Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
