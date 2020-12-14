@@ -41,6 +41,7 @@
                     </tr>
                 </tbody>
             </table>
+            <button @click="home()">Zurueck</button>
         </div>
         <div v-else>
             <h1>{{msg}}</h1>
@@ -80,7 +81,7 @@ export default {
     methods: {
         // daten neu laden
         update(){
-            this.$mount();
+            // hier wird filter angewandt
         },
         // zurueck zur allgemeinen Bestellueubersicht
         back() {
@@ -88,6 +89,9 @@ export default {
             this.msg = "Alle Bestellungen"
             this.holeBestellungen();
             this.$router.push("/admin/bestellungen")
+        },
+        home() {
+            this.$router.push("/admin")
         },
         showDamage(bestellung){
             // vor bestaetigung behandlung schaeden
@@ -108,12 +112,16 @@ export default {
                         this.bestellungen.find(
                         (element) => element.bnr == bnr).status = 3
                         alert("Bestellung wurde erfolgreich abgebrochen.")
+                        this.ausgewaehlt = false;
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                         return
                     }
                 })
                 .catch((error) => {
                     Helper.handle(error)
+                    this.ausgewaehlt = false;
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen");
                     return
                 })
@@ -173,12 +181,16 @@ export default {
                                     this.bestellungen.find(
                                     (element) => element.bnr == date.bnr).status = 1
                                     alert("Bestellung wurde erfolgreich bestaetigt.")
+                                    this.ausgewaehlt = false;
+                                    this.msg = "Alle Bestellungen"
                                     Helper.redirect("/admin/bestellungen");
                                     return
                                 }
                             })
                              .catch((error) => {
                                 Helper.handle(error)
+                                this.ausgewaehlt = false;
+                                this.msg = "Alle Bestellungen"
                                 Helper.redirect("/admin/bestellungen");
                                 return
                             })
@@ -206,12 +218,16 @@ export default {
                                                 this.bestellungen.find(
                                                 (element) => element.bnr == date.bnr).status = 1
                                                 alert("Bestellung wurde erfolgreich bestaetigt.")
+                                                this.ausgewaehlt = false;
+                                                this.msg = "Alle Bestellungen"
                                                 Helper.redirect("/admin/bestellungen");
                                                 return
                                             }
                                         })
                                         .catch((error) => {
                                             Helper.handle(error)
+                                            this.ausgewaehlt = false;
+                                            this.msg = "Alle Bestellungen"
                                             Helper.redirect("/admin/bestellungen");
                                             return
                                         })
@@ -221,6 +237,8 @@ export default {
                     })
                     .catch((error) => {
                         Helper.handle(error)
+                        this.ausgewaehlt = false;
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                     })
             }
@@ -338,7 +356,7 @@ export default {
                 .catch((error) => {
                     Helper.handle(error);
                     this.ausgewaehlt = false;
-                    this.msg = ""
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen")
                 })
         }
