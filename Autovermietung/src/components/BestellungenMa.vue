@@ -112,12 +112,16 @@ export default {
                         this.bestellungen.find(
                         (element) => element.bnr == bnr).status = 3
                         alert("Bestellung wurde erfolgreich abgebrochen.")
+                        this.ausgewaehlt = false;
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                         return
                     }
                 })
                 .catch((error) => {
                     Helper.handle(error)
+                    this.ausgewaehlt = false;
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen");
                     return
                 })
@@ -177,12 +181,16 @@ export default {
                                     this.bestellungen.find(
                                     (element) => element.bnr == date.bnr).status = 1
                                     alert("Bestellung wurde erfolgreich bestaetigt.")
+                                    this.ausgewaehlt = false;
+                                    this.msg = "Alle Bestellungen"
                                     Helper.redirect("/admin/bestellungen");
                                     return
                                 }
                             })
                              .catch((error) => {
                                 Helper.handle(error)
+                                this.ausgewaehlt = false;
+                                this.msg = "Alle Bestellungen"
                                 Helper.redirect("/admin/bestellungen");
                                 return
                             })
@@ -210,12 +218,16 @@ export default {
                                                 this.bestellungen.find(
                                                 (element) => element.bnr == date.bnr).status = 1
                                                 alert("Bestellung wurde erfolgreich bestaetigt.")
+                                                this.ausgewaehlt = false;
+                                                this.msg = "Alle Bestellungen"
                                                 Helper.redirect("/admin/bestellungen");
                                                 return
                                             }
                                         })
                                         .catch((error) => {
                                             Helper.handle(error)
+                                            this.ausgewaehlt = false;
+                                            this.msg = "Alle Bestellungen"
                                             Helper.redirect("/admin/bestellungen");
                                             return
                                         })
@@ -225,6 +237,8 @@ export default {
                     })
                     .catch((error) => {
                         Helper.handle(error)
+                        this.ausgewaehlt = false;
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                     })
             }
@@ -342,7 +356,7 @@ export default {
                 .catch((error) => {
                     Helper.handle(error);
                     this.ausgewaehlt = false;
-                    this.msg = ""
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen")
                 })
         }

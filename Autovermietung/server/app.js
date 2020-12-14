@@ -719,7 +719,7 @@ router.get('/order/:bnr', (req, res) => {
 })
 
 // testen, ob bestellung mit auto u. bnr vorhanden
-router.get('/order/:bnr/:autoname', (req, res) => {
+router.get('/order/:bnr/car/:autoname', (req, res) => {
  if(req.params.bnr != null){
   let token = req.cookies.jwt
       if (token) {
@@ -796,7 +796,6 @@ router.put('/order/:bnr/updateStatus', (req, res) => {
             else{
               db.updateStatusOrder(req.params.bnr, req.body.status, (err) => {
                 if (err) return res.status(500).send('Error on the server.')
-                console.log("jennsgknk")
                 return res.status(200).send({success: true})
               })    
             }

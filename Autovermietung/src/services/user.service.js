@@ -31,7 +31,7 @@ class UserService {
 
    // testen, ob bestellung mit bnr u. auto existiert
    testOrder (bnr, auto) {
-    return axios.get(API_URL + 'order/' + bnr + "/" + auto)
+    return axios.get(API_URL + 'order/' + bnr + "/car/" + auto)
   }
 
    // bestellungen holen
