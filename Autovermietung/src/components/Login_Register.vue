@@ -168,13 +168,11 @@ export default {
             })
             .catch((error) => {
               this.password = ''
-              this.email = ''
               Helper.handle(error)
             })
         }
       } else {
         this.password = ''
-        this.email = ''
         alert('Credentials invalid')
       }
     }

@@ -165,21 +165,21 @@
             <td>{{ auto.kraftstoff }}</td>
 
             <td>Leistung:</td>
-            <td>{{ auto.leistung }}</td>
+            <td>{{ auto.leistung }} PS</td>
           </tr>
 
           <tr>
             <td>Verbrauch:</td>
-            <td>{{ auto.verbrauch }}</td>
+            <td>{{ auto.verbrauch }}l/100km  </td>
 
             <td>Tankvolumen:</td>
-            <td>{{ auto.tankvolumen }}</td>
+            <td>{{ auto.tankvolumen }} Liter</td>
           </tr>
           <tr>
             <td>Getriebe:</td>
             <td>{{ auto.getriebe }}</td>
             <td>Preis:</td>
-            <td>{{ auto.preis }}</td>
+            <td>{{ auto.preis }} €/Tag</td>
             <td>Modell:</td>
             <td>{{ auto.modelbezeichnung }}</td>
           </tr>
