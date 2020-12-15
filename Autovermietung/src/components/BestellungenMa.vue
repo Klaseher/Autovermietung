@@ -169,6 +169,9 @@ export default {
                             }
                             await this.abbrechen(item.bnr)
                         })
+                    }
+                    else{
+                        return
                     }   
                 }
                 UserService.getSchaeden(date.auto_fk)
