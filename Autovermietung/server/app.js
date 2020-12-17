@@ -542,7 +542,7 @@ router.post('/car/:autoname/schaeden', (req, res) => {
     confirmToken(token,res, function(ausgabe){
       if(ausgabe.role != -1) {
         user = ausgabe.user
-        db.getOpenCarDamage(req.params.autoname, (err, damage) => {
+         db.getAllCarDamage(req.params.autoname, (err, damage) => {
           if (err) return ausgabe.res.status(500).send('Error on the server.')
           // letzte positionszahl erhalten
             let posMax = 0
@@ -571,7 +571,7 @@ router.post('/car/:autoname/schaeden', (req, res) => {
             ], (err) => {
               console.log(err)
               if (err) return ausgabe.res.status(500).send('Error on the server.')
-              return ausgabe.res.status(200).send({success: true})
+              return res.status(200).send({success: true, pos: posMax+1})
             })
           }
           else{
@@ -715,7 +715,7 @@ router.get('/order/:bnr', (req, res) => {
 })
 
 // testen, ob bestellung mit auto u. bnr vorhanden
-router.get('/order/:bnr/:autoname', (req, res) => {
+router.get('/order/:bnr/car/:autoname', (req, res) => {
  if(req.params.bnr != null){
   let token = req.cookies.jwt
   //Wenn Token vorhanden, Verifizerung, ob Token gültig
