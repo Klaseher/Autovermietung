@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <h1>Unsere Autos</h1>
     <main class="search" v-if="!ausgewaehlt">
@@ -198,11 +199,13 @@
       >
         Jetzt {{ gewaehltesauto.name }} verbindlich mieten
       </button>
+
     </div>
   </div>
 </template>
 
 <script>
+
 import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
@@ -374,6 +377,7 @@ export default ({
         this.msg = this.autoname;
       }
     },
+
     //Filter, um Autos zu finden, deren Buchungsdaten sich mit dem gesuchten Zeitraum überschneiden
     zeitFilter(auto){
       let index = 0
@@ -393,6 +397,7 @@ export default ({
         }
       }
       if(!gefunden){
+
         return true
       }
       for(buchung of this.zeiten[index].times){
@@ -433,11 +438,13 @@ export default ({
       }
     },
 
+
     buchen() {
       this.$router.push("/rent/" + this.gewaehltesauto.name);
       //request an backend, um buchung abzuschließen
       //dazu in db eine bestellung erstellt werden
       //employee kann es dann abrufen in account
+
     },
     back() {
       this.ausgewaehlt = false;
@@ -445,6 +452,7 @@ export default ({
       this.$router.push("/search");
     }
   },
+
   beforeMount() {
     let from = new Date()
     let to = new Date();
@@ -484,6 +492,7 @@ export default ({
 h1{
     color: rgb(106, 167, 26);
 }
+
 h2{
   color:burlywood
 }
@@ -521,6 +530,7 @@ h3{
 	position:relative;
 	top:1px;
 } */
+
 button{
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
@@ -531,6 +541,7 @@ button{
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
+
   text-align: center;
 	font-size:12px;
 	padding:12px 39px;
@@ -538,4 +549,5 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center; 
 } 
+
 </style>

@@ -23,6 +23,7 @@
 </template>
 
 <script>
+//Homepage-Komponente
 import Footer from './Footer.vue'
 export default {
   name: 'out',

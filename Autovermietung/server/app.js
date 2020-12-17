@@ -1,4 +1,5 @@
-/* eslint-disable eqeqeq */
+//Backend
+//Express-Server, der Anfragen von Frontend an jeweiligen Endpunkten übernimmt
 const express = require('express')
 const DB = require('./db')
 const config = require('./config')
@@ -12,7 +13,7 @@ const crypto = require('crypto')
 const { time } = require('console')
 moment().format()
 
-const db = new DB('autovermietung.db')
+const db = new DB('autovermietung.db') //DB wird geöffnet --> siehe db.js
 const app = express()
 const router = express.Router()
 
@@ -23,12 +24,13 @@ router.use(cookieParser())
 // CORS middleware
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080') // website that sends request
+  res.header('Access-Control-Allow-Origin', 'http://localhost:8080') // webseite, die requests sendet
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept')
   next()
 })
 
+//Registrieren Kunden durch Hinzufügen Daten in Datenbank 
 router.post('/register', function (req, res) {
   db.insert([
     req.body.name,
@@ -45,26 +47,15 @@ router.post('/register', function (req, res) {
   })
 })
 
+//Mitarbeiter registrieren
 router.post('/register-employee', function (req, res) {
   let token = req.cookies.jwt
   let userr = null
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        userr = user
+  //Da nur Admin dies tun darf, wird hier verifizert, ob Anfragender Adminrechte hat
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+        userr = ausgabe.user
+        //Wenn Anfragender Adminrechte hat, dann wird Mitarbeiter erstellt, sonst Fehler
         if (userr.rolle == 2) {
           db.insert([
             req.body.name,
@@ -82,36 +73,45 @@ router.post('/register-employee', function (req, res) {
         } else {
           return res.status(401).send('Unauthorized access')
         }
-      })
-    })
-  } else {
-    return res.status(403).send('Forbidden Access')
-  }
+    } else {
+    if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+    else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+    else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+    else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
+//Loginprozess
 router.post('/login', (req, res) => {
+  //wird geschaut, ob gesendetr Username/Email und PW mit gespeicherten Daten übereinstimmen
   db.selectByEmail(req.body.email, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user) return res.status(404).send('Credentials invalid')
     let passwordIsValid = bcrypt.compareSync(req.body.password, user.pass)
     if (!passwordIsValid) return res.status(401).send('Credentials invalid')
+    //Erstellen JWT-Token und Speichern in Cookie, sodass Kunde diesen immer automatisch mitsendet
     let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 3600 // expires in 1 hour
     })
     res.cookie('jwt', token, {
       maxAge: 60 * 60 * 1000, // expires in 1 h
-      httpOnly: true,
-      secure: false // true in production
+      httpOnly: true, //not accesible via javscript by clinet
+      secure: false // true in production --> only https
     })
+    //zurücksenden Erfolg der Authentifizierung + Rolle, die in Browser temporär gespeichert werden
     res.status(200).send({auth: true, role: user.rolle})
   })
 })
 
+//Anfrage Kunde, um Passwort ändern zu können
 router.post('/reset-userpw', (req, res) => {
+  //Test, ob Email vorhanden ist
   db.selectByEmail(req.body.email, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user) return res.status(200).send({success: true})
     let valid = moment.utc().add(24, 'hours') // valid for 1 day
     if (user.rolle == 0) {
+      //Erstellen sicheres Token und Speichern in DB
       let token = crypto.randomBytes(32).toString('hex')
       db.updateReset([
         bcrypt.hashSync(token, 8),
@@ -120,6 +120,7 @@ router.post('/reset-userpw', (req, res) => {
       ],
       function (err) {
         if (err) return res.status(500).send('Error on the server.')
+        //Senden Email an Kunden mit enthaltenen Token und Link auf Website zum Zurücksetzen PW
         let transporter = nodemailer.createTransport({
           service: 'gmail',
           port: 587, // tsl port gmail smpt server
@@ -129,6 +130,7 @@ router.post('/reset-userpw', (req, res) => {
             pass: 'iwrfbrcwouhgvpdi'
           }
         })
+        //Mail-Inhalt
         let mailOptions = {
           from: '"Autovermietung" <service@autovermietung.de>',
           to: user.user,
@@ -155,7 +157,9 @@ router.post('/reset-userpw', (req, res) => {
   })
 })
 
+//Passwort ändern von Kunden
 router.post('/confirm-pwreset', (req, res) => {
+  //Wenn Link gültig, d.h. ID Kunde + Token, dann wird PW von Kunde in DB geändert
   db.selectById(req.body.id, (err, user) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user || (user.ablaufdatum == null && user.resetToken == null)) return res.status(404).send('Invalid or expired reset link')
@@ -179,190 +183,129 @@ router.post('/confirm-pwreset', (req, res) => {
   })
 })
 
+//Mitarbeiter-Daten aktualisieren/ändern durch Admin
 router.put('/employee/:id', (req, res) => {
   let token = req.cookies.jwt
   let userr = null
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        userr = user
-        if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1 && userr.id == req.params.id))) {
-          if (req.body.name != null && req.body.username == null && req.body.password == null) {
-            db.updateName(req.body.name, req.params.id, (err) => {
-              if (err) return res.status(500).send('Error on the server.')
-              return res.status(200).send({name: req.body.name})
-            })
-          } else if (req.body.name == null && req.body.username != null && req.body.password == null) {
-            db.updateMail(req.body.username, req.params.id, (err) => {
-              if (err) return res.status(500).send('Error on the server.')
-              return res.status(200).send({username: req.body.username})
-            })
-          } else if (req.body.name == null && req.body.username == null && req.body.password != null) {
-            db.updatePass(bcrypt.hashSync(req.body.password, 8), req.params.id, (err) => {
-              if (err) return res.status(500).send('Error on the server.')
-              return res.status(200).send(null)
-            })
-          } else { return res.status(400).send('Invalid request') }
-        } else if (userr.rolle < 1) {
-          return res.status(401).send('Unauthorized access')
-        } else {
-          return res.status(400).send('Invalid request')
-        }
-      })
-    })
-  } else {
-    return res.status(405).send('Method not allowed')
-  }
+  //Wenn Person keine Adminrechte oder Person nicht der Mitarbeiter ist,
+  //von dem die Daten geändert werden sollen (also falsche ID), dann Fehler
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+          userr = ausgabe.user
+          if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1 && userr.id == req.params.id))) {
+            if (req.body.name != null && req.body.username == null && req.body.password == null) {
+              db.updateName(req.body.name, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({name: req.body.name})
+              })
+            } else if (req.body.name == null && req.body.username != null && req.body.password == null) {
+              db.updateMail(req.body.username, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({username: req.body.username})
+              })
+            } else if (req.body.name == null && req.body.username == null && req.body.password != null) {
+              db.updatePass(bcrypt.hashSync(req.body.password, 8), req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send(null)
+              })
+            } else { return ausgabe.res.status(400).send('Invalid request') }
+          } else if (userr.rolle < 1) {
+            return ausgabe.res.status(401).send('Unauthorized access')
+          } else {
+            return ausgabe.res.status(400).send('Invalid request')
+          }
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
+//Mitarbeiter aus DB löschen
 router.delete('/employee/:id', (req, res) => {
   let token = req.cookies.jwt
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        db.deleteAccount(req.params.id, (err) => {
-          if (err) return res.status(500).send('Error on the server.')
-          return res.status(200).send(null)
-        })
-      })
-    })
-  } else {
-    return res.status(405).send('Method not allowed')
-  }
+  //Wenn keine Adminrechte, dann Fehler
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+          db.deleteAccount(req.params.id, (err) => {
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            return ausgabe.res.status(200).send(null)
+          })
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })  
 })
 
+//Test der Zugriffsrechte Person durch Auswertung JWT in Cookie
 router.get('/authenticate', (req, res) => {
   let token = req.cookies.jwt
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        return res.status(200).send({auth: true, role: user.rolle})
-      })
-    })
-  } else {
-    return res.status(403).send('Forbidden Access')
-  }
+  //Wenn Token vorhanden, Verifizerung, ob Token gültig
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+          return ausgabe.res.status(200).send({auth: true, role: ausgabe.role})
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
-router.get('/testToken', (req, res) => {
-  let token = req.cookies.jwt
-  let error = false
-  if (token) {
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        error = true
-      } else {
-        db.selectById(decoded.id, (err, user) => {
-          if (err || !user) {
-            error = true
-          } else {
-            return res.status(200).send({auth: true, role: user.rolle})
-          }
-        })
-      }
-    })
-  } else {
-    return res.status(403).send({auth: null, role: null})
-  }
-  if (error) {
-    res.clearCookie('jwt')
-    error = false
-    return res.status(403).send({auth: null, role: null})
-  }
-})
 
+//Mitarbeiter holen
 router.get('/employee/:id', (req, res) => {
   let token = req.cookies.jwt
   let userr = null
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        userr = user
-        if (req.params.id != null) {
-          if (req.params.id == -200) {
-            if (userr.rolle == 2) {
-              db.getAllEmployees((err, users) => {
-                if (err) return res.status(500).send('Error on the server.')
-                if (!users) return res.status(404).send('No Employees available')
-                return res.status(200).send({employees: users})
-              })
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+          userr = ausgabe.user
+          if (req.params.id != null) {
+            //Wenn Paramter -200, dann alle Mitarbeiter holen
+            if (req.params.id == -200) {
+              //Nur Admin darf das
+              if (userr.rolle == 2) {
+                db.getAllEmployees((err, users) => {
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  if (!users) return ausgabe.res.status(404).send('No Employees available')
+                  return ausgabe.res.status(200).send({employees: users})
+                })
+              } else {
+                return ausgabe.res.status(401).send('Unauthorized access')
+              }
             } else {
-              return res.status(401).send('Unauthorized access')
+              //Wenn andere ID, dann Mitarbeiter holen und testen, ob
+              //Adminrechte oder ID der des anfragenden Mitarbeiters entspricht
+              db.selectById(req.params.id, (err, user) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                if (!user) return ausgabe.res.status(404).send('Employee not found')
+                if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
+                  let employee = {id: user.id, name: user.nachname, email: user.user}
+                  return ausgabe.res.status(200).send({employee: employee})
+                } else {
+                  return ausgabe.res.status(401).send('Unauthorized access')
+                }
+              })
             }
           } else {
-            db.selectById(req.params.id, (err, user) => {
-              if (err) return res.status(500).send('Error on the server.')
-              if (!user) return res.status(404).send('Employee not found')
-              if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
-                let employee = {id: user.id, name: user.nachname, email: user.user}
-                return res.status(200).send({employee: employee})
-              } else {
-                return res.status(401).send('Unauthorized access')
-              }
-            })
+            return ausgabe.res.status(404).send('Requested resource is not available')
           }
-        } else {
-          return res.status(404).send('Requested resource is not available')
-        }
-      })
-    })
-  } else {
-    return res.status(403).send('Forbidden Access')
-  }
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
+//Auto(s) holen
 router.get('/car/:autoname', (req, res) => {
   if(req.params.autoname != null){
     if (req.params.autoname == "alle") {
@@ -910,6 +853,7 @@ router.post('/order/:bnr/cost', (req, res) => {
        return res.status(404).send('Requested resource is not available')
    }  
 })
+
 
 
 app.use(router)

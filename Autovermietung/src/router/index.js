@@ -1,5 +1,22 @@
+/*Ist verantwortlich für das Wechseln zw. den Pfaden
+und das Laden der spezifischen Komponente
+-----------------------------------------------------------------------------------
+Meta Tags müssen zu jeder neuen Komponente hinzugefügt werden,
+in der die Zugriffsrechte spezifiziert werden
+
+guest: wenn person auf loginseite geht, wird damit geschaut, ob Person
+       bereits angemeldet ist (Cookie vorhanden) --> wenn vorhanden, dann zu Account weitergeleitet
+requiresAuth: nur Zugriff nach vorheriger Authentifizierung gegenüber Backend
+is_user: Seiten, auf die nur Kunde Zugriff hat
+is_employye: Seiten, auf die nur Mitarbeiter/Admin Zugriff hat
+is_admin: Seiten, auf die nur Admin Zugriff hat
+------------------------------------------------------------------------------------
+Pfadspezifische Dinge:
+':' --> Paramter, die Route übergeben werden können
+'?' --> Optionale Parameter
+*/
+
 import { createWebHistory, createRouter } from "vue-router"
-//import Home from '../views/Home.vue'
 import Home from '../components/Home.vue'
 import About from '../components/About.vue'
 import Login_Register from '../components/Login_Register.vue'
@@ -8,6 +25,7 @@ import Search from '../components/Search.vue'
 import UserBoard from '@/components/UserBoard.vue'
 import Admin from '@/components/Admin.vue'
 import EmployeeEdit from '@/components/EmployeeEdit.vue'
+import CreateNewEmployee from '@/components/CreateNewEmployee.vue'
 import UserService from '../services/user.service'
 import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
@@ -61,7 +79,7 @@ const routes = [
       name: 'login',
       component: Login_Register,
       meta: {
-        guest: true
+        guest: true //
       }
   },
   {
@@ -103,6 +121,7 @@ const routes = [
     }
   },
   {
+
     // uebersicht schaeden auto
     path: '/admin/:autoname/schaden/:bnr?',
     name: 'carDamage',
@@ -123,8 +142,9 @@ const routes = [
       is_employee: true
     }
   },
+
    {
-      path: "/:catchAll(.*)",
+      path: "/:catchAll(.*)", //alle ungülitgen Routen führen zu Homepage
       component: Home
     }
 ]
@@ -134,6 +154,9 @@ const router = createRouter({
   routes
 })
 
+//wird vor jedem Routenwechsel ausgeführt
+//Test der Meta-Tags, um Authentifizerungsstufe der angefrageten Ressource zu ermitteln
+//Danach, wenn nötig, Authentifizierung gegenüber Backend und Weiterleiten je nach Ergebnis
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     UserService.getAuthentication().then(
@@ -192,7 +215,7 @@ router.beforeEach((to, from, next) => {
       }
     )
   } else if (to.matched.some(record => record.meta.guest)) {
-    UserService.testToken().then(
+    UserService.getAuthentication().then(
       response => {
         if (response.data.role != null && response.data.auth != null) {
           sessionStorage.setItem('role', JSON.stringify(response.data.role))

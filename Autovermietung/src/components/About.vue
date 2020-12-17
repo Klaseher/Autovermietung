@@ -3,6 +3,7 @@
 </template>
 
 <script>
+//About-Komponente
 export default {
     
 }

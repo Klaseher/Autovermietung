@@ -1,9 +1,14 @@
+//Hier sind alle Fkt., die irgendwelche Daten vom Backend modifizieren 
+//bzw. die etwas mit Authentifizierung zu tun haben oder auch benötigen
+//siehe Endpunkte Backend für spezifische Funktionalitäten
 import axios from 'axios'
 import router from '../router'
 
 const API_URL = 'http://localhost:3000/'
 
 class Auth {
+  //hier wird Person abgemeldet, wobei Authentifizierungs-Paramter aus Browser 
+  //entfernt werden --> Wenn Cookie vorhanden, ist Anmelden aber direkt wieder möglich
   logout () {
     sessionStorage.removeItem('role')
     sessionStorage.removeItem('auth')
