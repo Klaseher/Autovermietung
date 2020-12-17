@@ -549,5 +549,11 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center; 
 } 
-
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
+}
 </style>

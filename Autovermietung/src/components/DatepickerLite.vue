@@ -493,7 +493,7 @@ export default defineComponent({
   background-color: white;
   border-radius: 10px;
   box-shadow: 3px 3px 15px rgba(18, 47, 61, 0.5),
-    -3px -3px 15px rgba(248, 253, 255, 0.9), inset 3px 3px 15px transparent,
+    -3px -3px 15px rgba(7, 26, 34, 0.9), inset 3px 3px 15px transparent,
     inset -3px -3px 15px transparent;
 }
 
@@ -581,7 +581,7 @@ export default defineComponent({
 .picker__nav--prev:hover {
   cursor: pointer;
   color: #000;
-  background: #b1dcfb;
+  background: #0d161d;
 }
 
 .picker--focused .picker__day--highlighted,
@@ -598,14 +598,14 @@ export default defineComponent({
 }
 
 .picker__day--outfocus {
-  color: #ddd;
+  color: rgb(29, 22, 22);
 }
 
 .picker--focused .picker__day--selected,
 .picker__day--selected,
 .picker__day--selected:hover {
   background: #0089ec;
-  color: #fff;
+  color: rgb(155, 39, 39);
 }
 
 .picker--focused .picker__day--disabled,
@@ -619,14 +619,14 @@ export default defineComponent({
 
 .picker__day--highlighted.picker__day--disabled,
 .picker__day--highlighted.picker__day--disabled:hover {
-  background: #bbb;
+  background: rgb(40, 103, 122);
 }
 
 .picker__weekday {
   width: 14.285714286%;
   font-size: 0.75em;
   padding-bottom: 0.25em;
-  color: #999;
+  color: rgb(63, 8, 192);
   font-weight: 500;
 }
 
@@ -699,14 +699,14 @@ export default defineComponent({
   vertical-align: top;
   font-size: 1.1em;
   margin-right: 0.35em;
-  color: #777;
+  color: rgb(26, 7, 7);
 }
 
 .picker__button--today[disabled],
 .picker__button--today[disabled]:hover {
   background: #f5f5f5;
   border-color: #f5f5f5;
-  color: #ddd;
+  color: rgb(27, 16, 16);
   cursor: default;
 }
 

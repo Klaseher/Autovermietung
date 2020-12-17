@@ -112,6 +112,15 @@ const routes = [
     }
   },
   {
+    path: '/admin/newEmployee',
+    name: 'newEmployee',
+    component: CreateNewEmployee,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
     path: '/admin/editEmployee/:id',
     name: 'editEmployee',
     component: EmployeeEdit,

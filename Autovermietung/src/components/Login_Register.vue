@@ -29,6 +29,7 @@
         <button type="cancel" @click="back">
                     Zurueck
         </button>
+        <br />
         <button type="submit" @click="register">
                     Erstellen
         </button>
@@ -248,17 +249,16 @@ export default {
     font-size: 1rem;
   }
   button {
-    border-radius: 20px;
+   border-radius: 20px;
     border: 1px solid #009345;
     background-color: #009345;
     color: #fff;
-    font-size: 0.5rem;
+    font-size: 1rem;
     font-weight: bold;
-    padding: 10px 10px;
+    padding: 10px 40px;
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
-    width: 30%;
     transition: transform .1s ease-in;
     &:active {
       transform: scale(.9);
