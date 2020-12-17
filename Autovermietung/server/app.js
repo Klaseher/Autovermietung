@@ -17,6 +17,19 @@ const db = new DB('autovermietung.db') //DB wird geöffnet --> siehe db.js
 const app = express()
 const router = express.Router()
 
+//Mailoptionen für Senden Email von Gmail-Account
+let transporter = nodemailer.createTransport({
+  service: 'gmail',
+  port: 587, // tsl port gmail smpt server
+  secure: true, // übertragung über ssl/ttl
+  auth: {
+    user: 'carsharing23@gmail.com',
+    pass: 'iwrfbrcwouhgvpdi'
+  }
+})
+let mailOptions;
+
+
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 router.use(cookieParser())
@@ -39,11 +52,46 @@ router.post('/register', function (req, res) {
     bcrypt.hashSync(req.body.password, 8),
     req.body.address,
     req.body.telephone,
+    0,
     0
   ],
   function (err) {
     if (err) return res.status(500).send('There was a problem registering the user.')
-    res.status(200).send('User successfully created!\n Please go to the Login-Page and login with your credentials to access your account')
+    db.selectByEmail(req.body.email, (err, user) => {
+        if (err || !user) return res.status(500).send('Error on the server.')
+        if (!user) return res.status(404).send('Credentials invalid')
+        let valid = moment.utc().add(24, 'hours') // valid for 1 day
+        //Erstellen sicheres Token und Speichern in DB
+        let token = crypto.randomBytes(32).toString('hex')
+        db.updateReset([
+          bcrypt.hashSync(token, 8),
+          moment(valid).format('YYYY-MM-DD HH:mm:ss'),
+          user.id
+        ],
+        function (err) {
+          if (err) return res.status(500).send('Error on the server.')
+          mailOptions = {
+            from: '"Autovermietung" <service@autovermietung.de>',
+            to: user.user,
+            subject: 'Verifizieren Sie Ihren Account',
+            html: '<h4><b>Account verifizieren</b></h4>' +
+            'Hallo Herr/Frau ' + user.nachname + ',' +
+            '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
+            '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+            '<p>Dieser Link ist für 24h gültig</p>' +
+            '<br><br>' +
+            '<p>--Ihr Autovermietung-Team</p>'
+          }
+          transporter.sendMail(mailOptions, function (error, info) { // sending mail to user where he can verify account. User id and the token are sent as params in a link
+            if (error) {
+              res.status(500).send('Error on the server.')
+            } else {
+              console.log('Verifizierungs-Email erfolgreich gesendet')
+              res.status(200).send('User successfully created!\nPlease verify your account first by clicking on the link sent to the provided email')
+            }
+          })
+        })
+    })
   })
 })
 
@@ -64,6 +112,7 @@ router.post('/register-employee', function (req, res) {
             bcrypt.hashSync(req.body.password, 8),
             'n.a',
             null,
+            1,
             1
           ],
           function (err) {
@@ -90,16 +139,56 @@ router.post('/login', (req, res) => {
     if (!user) return res.status(404).send('Credentials invalid')
     let passwordIsValid = bcrypt.compareSync(req.body.password, user.pass)
     if (!passwordIsValid) return res.status(401).send('Credentials invalid')
-    //Erstellen JWT-Token und Speichern in Cookie, sodass Kunde diesen immer automatisch mitsendet
-    let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 3600 // expires in 1 hour
-    })
-    res.cookie('jwt', token, {
-      maxAge: 60 * 60 * 1000, // expires in 1 h
-      httpOnly: true, //not accesible via javscript by clinet
-      secure: false // true in production --> only https
-    })
-    //zurücksenden Erfolg der Authentifizierung + Rolle, die in Browser temporär gespeichert werden
-    res.status(200).send({auth: true, role: user.rolle})
+    //Wenn Account verifiziert wurde
+    if(user.aktiviert == 1){
+      //Erstellen JWT-Token und Speichern in Cookie, sodass Kunde diesen immer automatisch mitsendet
+      let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 3600 // expires in 1 hour
+      })
+      res.cookie('jwt', token, {
+        maxAge: 60 * 60 * 1000, // expires in 1 h
+        httpOnly: true, //not accesible via javscript by clinet
+        secure: false // true in production --> only https
+      })
+      //zurücksenden Erfolg der Authentifizierung + Rolle, die in Browser temporär gespeichert werden
+      res.status(200).send({auth: true, role: user.rolle})
+    }
+    //Wenn nicht verifiziert
+    else if(user.aktiviert == 0){
+      let valid = moment.utc().add(24, 'hours') // valid for 1 day
+      //Erstellen sicheres Token und Speichern in DB
+      let token = crypto.randomBytes(32).toString('hex')
+      db.updateReset([
+        bcrypt.hashSync(token, 8),
+        moment(valid).format('YYYY-MM-DD HH:mm:ss'),
+        user.id
+      ],
+      function (err) {
+          if (err) return res.status(500).send('Error on the server.')
+          mailOptions = {
+          from: '"Autovermietung" <service@autovermietung.de>',
+          to: user.user,
+          subject: 'Verifizieren Sie Ihren Account',
+          html: '<h4><b>Account verifizieren</b></h4>' +
+          'Hallo Herr/Frau ' + user.nachname + ',' +
+          '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
+          '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+          '<p>Dieser Link ist für 24h gültig</p>' +
+          '<br><br>' +
+          '<p>--Ihr Autovermietung-Team</p>'
+        }
+        transporter.sendMail(mailOptions, function (error, info) { // sending mail to user where he can verify account. User id and the token are sent as params in a link
+          if (error) {
+            res.status(500).send('Error on the server.')
+          } else {
+            console.log('Verifizierungs-Email erfolgreich gesendet')
+            res.status(420).send('We\'ve sent a verification email. Please verify your account first before logging in again')
+          }
+        })
+      })
+    }
+    else{
+      res.status(500).send('Error on the server.')
+    }
   })
 })
 
@@ -110,7 +199,8 @@ router.post('/reset-userpw', (req, res) => {
     if (err) return res.status(500).send('Error on the server.')
     if (!user) return res.status(200).send({success: true})
     let valid = moment.utc().add(24, 'hours') // valid for 1 day
-    if (user.rolle == 0) {
+    //Wenn Rücksetz-Anfrage von Passwort und nur wenn Account bereits verifizert ist und nur durch Kunden nutzbar
+    if (user.rolle == 0 && user.aktiviert == 1) {
       //Erstellen sicheres Token und Speichern in DB
       let token = crypto.randomBytes(32).toString('hex')
       db.updateReset([
@@ -121,17 +211,8 @@ router.post('/reset-userpw', (req, res) => {
       function (err) {
         if (err) return res.status(500).send('Error on the server.')
         //Senden Email an Kunden mit enthaltenen Token und Link auf Website zum Zurücksetzen PW
-        let transporter = nodemailer.createTransport({
-          service: 'gmail',
-          port: 587, // tsl port gmail smpt server
-          secure: true, // übertragung über ssl/ttl
-          auth: {
-            user: 'carsharing23@gmail.com',
-            pass: 'iwrfbrcwouhgvpdi'
-          }
-        })
         //Mail-Inhalt
-        let mailOptions = {
+        mailOptions = {
           from: '"Autovermietung" <service@autovermietung.de>',
           to: user.user,
           subject: 'Setzen Sie Ihr Account-Passwort zurück',
@@ -146,13 +227,13 @@ router.post('/reset-userpw', (req, res) => {
           if (error) {
             res.status(500).send('Error on the server.')
           } else {
-            console.log('Email erfolgreich gesendet')
+            console.log('Rücksetz-Email erfolgreich gesendet')
             res.status(200).send({success: true})
           }
         })
       })
     } else {
-      res.status(500).send('Error on the server.')
+      res.status(420).send('The account is either not available or not verified. Please check your emails for a verification link')
     }
   })
 })
@@ -178,6 +259,31 @@ router.post('/confirm-pwreset', (req, res) => {
       db.updatePass(bcrypt.hashSync(req.body.password, 8), req.body.id, (err) => {
         if (err) return res.status(500).send('Error on the server.')
         return res.status(200).send({success: true})
+      })
+    })
+  })
+})
+
+router.get('/verify-account/:id/:token', (req, res) => {
+  //Wenn Link gültig, d.h. ID Kunde + Token, dann wird Account verifiziert
+  db.selectById(req.params.id, (err, user) => {
+    if (err) return res.status(500).end('<h1>Error on the server.</h1>')
+    if (!user || (user.ablaufdatum == null && user.resetToken == null)) return res.status(404).end('<h1>Invalid or expired reset link</h1>')
+    let tokenIsValid = bcrypt.compareSync(req.params.token, user.resetToken)
+    if (!tokenIsValid) return res.status(401).end('<h1>Invalid or expired reset link</h1>')
+    let currentTime = moment.utc()
+    let currentTimeFormated = moment(currentTime).format('YYYY-MM-DD HH:mm:ss')
+    let isafter = moment(currentTimeFormated).isAfter(user.ablaufdatum)
+    db.updateReset([
+      null,
+      null,
+      req.params.id
+    ], (err) => {
+      if (err) return res.status(500).end('<h1>Error on the server.</h1>')
+      if (isafter) return res.status(401).end('<h1>Invalid or expired reset link</h1>')
+      db.verifyUser(req.params.id, (err) => {
+        if (err) return res.status(500).end('<h1>Error on the server.</h1>')
+        res.status(200).end("<h1>Der Account wurde erfolgreich verifiziert</h1>" + '<p> <a href=' + 'http://localhost:8080/login>Zum Login</a></p>')
       })
     })
   })
