@@ -335,10 +335,16 @@ router.delete('/employee/:id', (req, res) => {
   //Wenn keine Adminrechte, dann Fehler
   confirmToken(token,res, function(ausgabe){
     if(ausgabe.role != -1) {
+      let user = ausgabe.user
+      if(user.rolle == 2){
           db.deleteAccount(req.params.id, (err) => {
             if (err) return ausgabe.res.status(500).send('Error on the server.')
             return ausgabe.res.status(200).send(null)
           })
+      }
+      else{
+        return ausgabe.res.status(401).send('Unauthorized access')
+      }
     } else {
       if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
       else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
@@ -467,41 +473,31 @@ router.get('/car/:autoname', (req, res) => {
 //schaeden auto holen
 router.get('/car/:autoname/schaeden', (req, res) => {
   if(req.params.autoname != null){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             }
-             // nur mitarbeiter darf auf schaeden zugreifen
-             if(user.rolle > 0){
-               console.log(req.params.autoname)
-              db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
-                if (err) return res.status(500).send('Error on the server.')
-                console.log(cardamage)
-                if (cardamage.length == 0) return res.status(200).send({success: true}) // kein aktiver schaden ist erfolg
-                return res.status(200).send({cardamage: cardamage})
-              })
-             }
-            else{
-              return res.status(401).send('Unauthorized access')  
-            }
-           })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // nur mitarbeiter darf auf schaeden zugreifen
+        if(user.rolle > 0){
+          console.log(req.params.autoname)
+          db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            console.log(cardamage)
+            if (cardamage.length == 0) return ausgabe.res.status(200).send({success: true}) // kein aktiver schaden ist erfolg
+            return ausgabe.res.status(200).send({cardamage: cardamage})
+          })
+        }
+        else{
+          return ausgabe.res.status(401).send('Unauthorized access')  
+        }
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
    }else{
        return res.status(404).send('Requested resource is not available')
    }  
@@ -510,38 +506,28 @@ router.get('/car/:autoname/schaeden', (req, res) => {
 // bestellungen abbrechen 
 router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
   if(req.body.status != null &&  req.body.pos != null){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             }
-             // nur mitarbeiter
-             if(user.rolle > 0){
-                db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-              })
-            }
-            else{
-              return res.status(401).send('Unauthorized access')  
-            }
-           })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // nur mitarbeiter
+        if(user.rolle > 0){
+          db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            return ausgabe.res.status(200).send({success: true})
+          })
+        }
+        else{
+          return ausgabe.res.status(401).send('Unauthorized access')  
+        }
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
    }else{
        return res.status(404).send('Requested resource is not available')
    }  
@@ -551,64 +537,54 @@ router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
 router.post('/car/:autoname/schaeden', (req, res) => {
   console.log(req.body)
   if(req.body.beschreibung != null && req.body.prio != null && req.body.typ != null && req.body.kosten != null){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             }
-             db.getOpenCarDamage(req.params.autoname, (err, damage) => {
-                if (err) return res.status(500).send('Error on the server.')
-              // letzte positionszahl erhalten
-                let posMax = 0
-                if(damage.length == 1){
-                  posMax = damage[0].pos
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        db.getOpenCarDamage(req.params.autoname, (err, damage) => {
+          if (err) return ausgabe.res.status(500).send('Error on the server.')
+          // letzte positionszahl erhalten
+            let posMax = 0
+            if(damage.length == 1){
+              posMax = damage[0].pos
+            }
+            else{
+              for(let i=0;i<damage.length-1;i++){
+                if(damage[i].pos > damage[i+1].pos){
+                  posMax = damage[i].pos
                 }
                 else{
-                  for(let i=0;i<damage.length-1;i++){
-                    if(damage[i].pos > damage[i+1].pos){
-                      posMax = damage[i].pos
-                    }
-                    else{
-                      posMax = damage[i+1].pos
-                    }
-                  }
+                  posMax = damage[i+1].pos
+                }
               }
-              // nur mitarbeiter darf schaeden hinzufuegen
-              if(user.rolle > 0){
-                db.createDamage([
-                  req.params.autoname,
-                  (posMax+1),
-                  req.body.beschreibung,
-                  req.body.prio,
-                  req.body.typ,
-                  req.body.kosten
-                ], (err) => {
-                  console.log(err)
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-                })
-              }
-              else{
-                return res.status(401).send('Unauthorized access')  
-              }
+          }
+          // nur mitarbeiter darf schaeden hinzufuegen
+          if(user.rolle > 0){
+            db.createDamage([
+              req.params.autoname,
+              (posMax+1),
+              req.body.beschreibung,
+              req.body.prio,
+              req.body.typ,
+              req.body.kosten
+            ], (err) => {
+              console.log(err)
+              if (err) return ausgabe.res.status(500).send('Error on the server.')
+              return ausgabe.res.status(200).send({success: true})
             })
-          })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
+          }
+          else{
+            return ausgabe.res.status(401).send('Unauthorized access')  
+          }
+        })
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
    }else{
        return res.status(404).send('Requested resource is not available')
    }  
@@ -616,86 +592,66 @@ router.post('/car/:autoname/schaeden', (req, res) => {
 
 router.get('/rent/', (req, res) => {
   let token = req.cookies.jwt
-  if (token) {
-    // verify secret
-    jwt.verify(token, config.secret, function (err, decoded) {
-      if (err) {
-        res.clearCookie('jwt')
-        return res.status(401).send('Unauthorized access')
-      }
-      db.selectById(decoded.id, (err, user) => {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(500).send('Error on the server.')
-        }
-        if (!user) {
-          res.clearCookie('jwt')
-          return res.status(404).send('Invalid User')
-        }
-        userr = ({vorname: user.vorname, nachname: user.nachname, user: user.user, adresse: user.adresse, telefon: user.telefon})
-        return res.status(200).send({user: userr})
-      })
-    })
-  } else {
-    return res.status(403).send('Forbidden Access')
-  }
+  //Wenn Token vorhanden, Verifizerung, ob Token gültig
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      user = ausgabe.user
+      userr = ({vorname: user.vorname, nachname: user.nachname, user: user.user, adresse: user.adresse, telefon: user.telefon})
+      return ausgabe.res.status(200).send({user: userr}) 
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
 // bestellung erstellen
 router.post('/rent/', (req, res) => {
-    let token = req.cookies.jwt
-    if (token) {
-      // verify secret
-      jwt.verify(token, config.secret, function (err, decoded) {
-        if (err) {
-          res.clearCookie('jwt')
-          return res.status(401).send('Unauthorized access')
-        }
-        db.selectById(decoded.id, (err, user) => {
-          if (err) {
-            res.clearCookie('jwt')
-            return res.status(500).send('Error on the server.')
-          }
-          if (!user) {
-            res.clearCookie('jwt')
-            return res.status(404).send('Invalid User')
-          }
-          // nur kunde darf bestellung erstellen
-          if(user.rolle == 0){
-            db.getCustomerOrders(user.id, (err, bestellungen) => {
+  let token = req.cookies.jwt
+  //Wenn Token vorhanden, Verifizerung, ob Token gültig
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      user = ausgabe.user
+       // nur kunde darf bestellung erstellen
+      if(user.rolle == 0){
+        db.getCustomerOrders(user.id, (err, bestellungen) => {
+          if (err) return res.status(500).send('Error on the server.')
+          // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3) ist
+          if (bestellungen.length > 0) return res.status(500).send('You are already having an active order.\nGo into the account tab for more information on your orders')
+          timestamp = moment.utc() //erstellzeitraum bestellung, damit mitarbeiter danach filtern kann
+          db.createOrder([
+            user.id,
+            req.body.auto,
+            req.body.start,
+            req.body.ende,
+            0,
+            moment(timestamp).format('YYYY/MM/DD'),
+          ], (err, value) => {
+            if (err || !value) return res.status(500).send('Error on the server.')
+            db.addCost([
+              value,
+              0,
+              req.body.kosten,
+              0,
+              'Standardkosten',
+            ], (err) => {
               if (err) return res.status(500).send('Error on the server.')
-              // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3) ist
-              if (bestellungen.length > 0) return res.status(500).send('You are already having an active order.\nGo into the account tab for more information on your orders')
-              timestamp = moment.utc() //erstellzeitraum bestellung, damit mitarbeiter danach filtern kann
-              db.createOrder([
-                user.id,
-                req.body.auto,
-                req.body.start,
-                req.body.ende,
-                0,
-                moment(timestamp).format('YYYY/MM/DD'),
-              ], (err, value) => {
-                if (err || !value) return res.status(500).send('Error on the server.')
-                db.addCost([
-                  value,
-                  0,
-                  req.body.kosten,
-                  0,
-                  'Standardkosten',
-                ], (err) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-                })
-              })
+              return res.status(200).send({success: true})
             })
-        }else{
-          return res.status(401).send('Unauthorized access')
-        }
-      })
-    })
-  } else {
-    return res.status(403).send('Forbidden Access')
-  }
+          })
+        })
+      }else{
+        return res.status(401).send('Unauthorized access')
+      } 
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
 })
 
 
@@ -703,263 +659,245 @@ router.post('/rent/', (req, res) => {
 router.get('/order/:bnr', (req, res) => {
  if(req.params.bnr != null){
   let token = req.cookies.jwt
-      if (token) {
-        // verify secret
-        jwt.verify(token, config.secret, function (err, decoded) {
-          if (err) {
-            res.clearCookie('jwt')
-            return res.status(401).send('Unauthorized access')
-          }
-          db.selectById(decoded.id, (err, user) => {
-            if (err) {
-              res.clearCookie('jwt')
-              return res.status(500).send('Error on the server.')
-            }
-            if (!user) {
-              res.clearCookie('jwt')
-              return res.status(404).send('Invalid User')
-            }
-            // wenn mind. mitarbeiter
-            if (user.rolle > 0){
-              if (req.params.bnr == "alle") {
-                // alle bestellungen holen
-                db.getAllOpenOrders((err, orders) => {
-                  console.log(orders)
-                  if (err) return res.status(500).send('Error on the server.')
-                  if (!orders) return res.status(404).send('No Orders available')
-                  return res.status(200).send({orders: orders})
-                })
-              }
-              else{
-                // sucht spezifische Bestellung mit bnr
-                db.getOrderbyBnr(req.params.bnr, (err, order) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  if (!order) return res.status(404).send('Order not available')
-                  return res.status(200).send({order: order})
-                })
-              } 
-            } 
-            // wenn kunde
-            else{
-              if (req.params.bnr == "alle") {
-                // alle bestellungen holen
-                db.getCustomerOrders(user.id, (err, orders) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  if (!orders) return res.status(404).send('No Orders available')
-                  return res.status(200).send({orders: orders})
-                })
-              }
-              else{
-                // sucht spezifische Bestellung mit bnr
-                db.getCustomerOrderbyBnr(user.id, req.params.bnr, (err, order) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  if (!order) return res.status(404).send('Order not available')
-                  return res.status(200).send({order: order})
-                })
-              } 
-            }
+  //Wenn Token vorhanden, Verifizerung, ob Token gültig
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      user = ausgabe.user
+      // wenn mind. mitarbeiter
+      if (user.rolle > 0){
+        if (req.params.bnr == "alle") {
+          // alle bestellungen holen
+          db.getAllOpenOrders((err, orders) => {
+            console.log(orders)
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
           })
-        })
-    } else {
-        return res.status(403).send('Forbidden Access')
+        }
+        else{
+          // sucht spezifische Bestellung mit bnr
+          db.getOrderbyBnr(req.params.bnr, (err, order) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!order) return res.status(404).send('Order not available')
+            return res.status(200).send({order: order})
+          })
+        } 
+      } 
+      // wenn kunde
+      else{
+        if (req.params.bnr == "alle") {
+          // alle bestellungen holen
+          db.getCustomerOrders(user.id, (err, orders) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
+          })
+        }
+        else{
+          // sucht spezifische Bestellung mit bnr
+          db.getCustomerOrderbyBnr(user.id, req.params.bnr, (err, order) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!order) return res.status(404).send('Order not available')
+            return res.status(200).send({order: order})
+          })
+        } 
       }
-  }else{
-      return res.status(404).send('Requested resource is not available')
-  }  
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
+ }else{
+    return res.status(404).send('Requested resource is not available')
+ }  
 })
 
 // testen, ob bestellung mit auto u. bnr vorhanden
 router.get('/order/:bnr/:autoname', (req, res) => {
  if(req.params.bnr != null){
   let token = req.cookies.jwt
-      if (token) {
-        // verify secret
-        jwt.verify(token, config.secret, function (err, decoded) {
-          if (err) {
-            res.clearCookie('jwt')
-            return res.status(401).send('Unauthorized access')
-          }
-          db.selectById(decoded.id, (err, user) => {
-            if (err) {
-              res.clearCookie('jwt')
-              return res.status(500).send('Error on the server.')
-            }
-            if (!user) {
-              res.clearCookie('jwt')
-              return res.status(404).send('Invalid User')
-            }
-            // wenn mind. mitarbeiter
-            if (user.rolle > 0){
-              console.log(req.params.bnr, req.params.autoname)
-              db.getOrderbyBnrAndCar(req.params.bnr, req.params.autoname, (err, order) => {
-                console.log(err)
-                console.log(order)
-                if (err) return res.status(500).send('Error on the server.')
-                if (!order) return res.status(200).send({success: false})
-                return res.status(200).send({success: true})
-              })
-            } 
-            else{
-              res.status(401).send('Unauthorized access')
-            }
-          })
+  //Wenn Token vorhanden, Verifizerung, ob Token gültig
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      user = ausgabe.user
+      // wenn mind. mitarbeiter
+      if (user.rolle > 0){
+        console.log(req.params.bnr, req.params.autoname)
+        db.getOrderbyBnrAndCar(req.params.bnr, req.params.autoname, (err, order) => {
+          console.log(err)
+          console.log(order)
+          if (err) return res.status(500).send('Error on the server.')
+          if (!order) return res.status(200).send({success: false})
+          return res.status(200).send({success: true})
         })
-    } else {
-        return res.status(403).send('Forbidden Access')
+      } 
+      else{
+        res.status(401).send('Unauthorized access')
       }
-  }else{
+    }else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
+ }else{
       return res.status(404).send('Requested resource is not available')
-  }  
+ }  
 })
 
-// bestellungen abbrechen 
+// bestellungen status aktualisieren z.B. bei abbrechen 
 router.put('/order/:bnr/updateStatus', (req, res) => {
   if(req.params.bnr != null && req.body.status != null){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             }
-             // kunde darf nur eigene bestellungen bearbeiten
-             if(user.rolle = 0){
-              db.getCustomerOrderbyBnr(user.id, req.param.bnr, (err, orders) => {
-                if (err) return res.status(500).send('Error on the server.')
-                if (!orders) return res.status(404).send('No Orders available') // abbruch, wenn fremde bestellung angefragt
-                db.updateStatusOrder(req.params.bnr, req.body.status, (err) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-                })    
-              })
-             }
-            else{
-              db.updateStatusOrder(req.params.bnr, req.body.status, (err) => {
-                if (err) return res.status(500).send('Error on the server.')
-                console.log("jennsgknk")
-                return res.status(200).send({success: true})
-              })    
-            }
-           })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
-   }else{
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // kunde darf nur eigene bestellungen bearbeiten
+        if(user.rolle = 0){
+          db.getCustomerOrderbyBnr(user.id, req.param.bnr, (err, orders) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available') // abbruch, wenn fremde bestellung angefragt
+            db.updateStatusOrder(req.params.bnr, req.body.status, (err) => {
+              if (err) return res.status(500).send('Error on the server.')
+              return res.status(200).send({success: true})
+            })    
+          })
+        }
+        else{
+          db.updateStatusOrder(req.params.bnr, req.body.status, (err) => {
+            if (err) return res.status(500).send('Error on the server.')
+            return res.status(200).send({success: true})
+          })    
+        }
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+  }else{
        return res.status(404).send('Requested resource is not available')
-   }  
+  }  
 })
 
 //kosten holen
 router.get('/order/:bnr/cost', (req, res) => {
   if(req.params.bnr != null){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             }
-             db.getOrderCost(req.params.bnr, (err, costs) => {
-              if (err || !costs) return res.status(500).send('Error on the server.')
-              //Kunde darf nur auf eigene Bestellungen zugreifen
-              if(user.rolle == 0 && (user.id != costs[0].user_fk)){
-                  res.status(401).send('Unauthorized access')
-              }
-              return res.status(200).send({costs: costs})
-            })    
-           })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
-   }else{
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        db.getOrderCost(req.params.bnr, (err, costs) => {
+          if (err || !costs) return res.status(500).send('Error on the server.')
+          //Kunde darf nur auf eigene Bestellungen zugreifen
+          if(user.rolle == 0 && (user.id != costs[0].user_fk)){
+              res.status(401).send('Unauthorized access')
+          }
+          return res.status(200).send({costs: costs})
+        })  
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+  }else{
        return res.status(404).send('Requested resource is not available')
-   }  
+  }  
 })
 
 //kosten holen
 router.post('/order/:bnr/cost', (req, res) => {
   if(req.params.bnr != null && req.body.typ != null && req.body.kosten){
-   let token = req.cookies.jwt
-       if (token) {
-         // verify secret
-         jwt.verify(token, config.secret, function (err, decoded) {
-           if (err) {
-             res.clearCookie('jwt')
-             return res.status(401).send('Unauthorized access')
-           }
-           db.selectById(decoded.id, (err, user) => {
-             if (err) {
-               res.clearCookie('jwt')
-               return res.status(500).send('Error on the server.')
-             }
-             if (!user) {
-               res.clearCookie('jwt')
-               return res.status(404).send('Invalid User')
-             } 
-             db.getOrderCost(req.params.bnr, (err, costs) => {
-              if (err || !costs) return res.status(500).send('Error on the server.')
-              //Kunde darf nur auf eigene Bestellungen zugreifen
-              if(user.rolle == 0 && (user.id != costs[0].user_fk)){
-                  res.status(401).send('Unauthorized access')
-              }
-              // letzte positionszahl erhalten
-              let posMax = 0
-              if(costs.length == 1){
-                posMax = costs[0].pos
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        db.getOrderCost(req.params.bnr, (err, costs) => {
+          if (err || !costs) return res.status(500).send('Error on the server.')
+          //Kunde darf nur auf eigene Bestellungen zugreifen
+          if(user.rolle == 0 && (user.id != costs[0].user_fk)){
+              res.status(401).send('Unauthorized access')
+          }
+          // letzte positionszahl erhalten
+          let posMax = 0
+          if(costs.length == 1){
+            posMax = costs[0].pos
+          }
+          else{
+            for(let i=0;i<costs.length-1;i++){
+              if(costs[i].pos > costs[i+1].pos){
+                posMax = costs[i].pos
               }
               else{
-                for(let i=0;i<costs.length-1;i++){
-                  if(costs[i].pos > costs[i+1].pos){
-                    posMax = costs[i].pos
-                  }
-                  else{
-                    posMax = costs[i+1].pos
-                  }
-                }
-             }
-              db.addOrderCost(
-                [req.params.bnr, 
-                  (posMax+1), 
-                  req.body.kosten,
-                  req.body.typ,
-                  req.body.beschreibung
-                ], (err) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-              })    
-            })    
-           })
-         })
-     } else {
-         return res.status(403).send('Forbidden Access')
-       }
-   }else{
-       return res.status(404).send('Requested resource is not available')
-   }  
+                posMax = costs[i+1].pos
+              }
+            }
+         }
+          db.addOrderCost(
+            [req.params.bnr, 
+              (posMax+1), 
+              req.body.kosten,
+              req.body.typ,
+              req.body.beschreibung
+            ], (err) => {
+              if (err) return res.status(500).send('Error on the server.')
+              return res.status(200).send({success: true})
+          })    
+        })
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+  }else{
+      return res.status(404).send('Requested resource is not available')
+  }  
 })
 
+//Wenn Token vorhanden, Verifizerung, ob Token gültig
+//Danach werden entschlüsselte Daten aus Token geholt, um Person in DB zu suchen
+//Wird Zugriffsrecht Person zurückgegeben, sonst Fehler
+function confirmToken (token, res, callback)
+{
+  if (token) {
+    jwt.verify(token, config.secret, function (err, decoded) {
+      if (err) {
+        res.clearCookie('jwt')
+        callback({auth: 401, role: -1, res: res})
+        return
+      }
+      //Aus Token Infos über Person (ID) lesen und diese aus DB holen
+      db.selectById(decoded.id, (err, user) => {
+        if (err) {
+          res.clearCookie('jwt')
+          callback({auth: 500, role: -1, res: res})
+          return
+        }
+        //Wenn Nutzer vorhanden ist, dann Rücksenden der Zugrissrechte (Rolle)
+        //sonst Fehler
+        if (!user) {
+          res.clearCookie('jwt')
+          callback({auth: 404, role: -1, res: res})
+          return
+        } 
+        callback({auth: true, role: user.rolle, user: user, res: res})
+      })
+    })
+  } else {
+    callback({auth: 403, role: -1, res: res})
+  }
+}
 
 
 app.use(router)

@@ -40,10 +40,10 @@
         <input type="email" placeholder="Email" v-model="email" required autofocus/>
         <input type="password" placeholder="Password" v-model="password" required/>
         <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
-        <button type="submit" @click="login">
+        <button type="submit" @click="login" :disabled="disabled">
                     Einloggen
         </button>
-         <button type="cancel" @click="back">
+         <button type="cancel" @click="back" :disabled="disabled">
                     Zurueck
         </button>
       </form>
@@ -66,7 +66,8 @@ export default {
       adresse: '',
       telefon: '',
       is_admin: null,
-      signUp: false
+      signUp: false,
+      disabled: false
     }
   },
   methods: {
@@ -129,6 +130,7 @@ export default {
     //Identifizierung und Speicherung der Zugriffsrechte der Person
     login (e) {
       e.preventDefault()
+      this.disabled = true
       /* Regex: Strong Password
       Special Characters - Not Allowed
       Spaces - Not Allowed
@@ -155,6 +157,7 @@ export default {
               sessionStorage.setItem('auth', response.data.auth)
 
               if (sessionStorage.getItem('auth') == 'true') {
+                this.disabled = false
                 if (this.$route.params.nextUrl != null) {
                   this.$router.push(this.$route.params.nextUrl)
                 } else {
@@ -171,12 +174,14 @@ export default {
               this.password = ''
               this.email = ''
               Helper.handle(error)
+              this.disabled = false
             })
         }
       } else {
         this.password = ''
         this.email = ''
         alert('Credentials invalid')
+        this.disabled = false
       }
     }
 
