@@ -172,14 +172,12 @@ export default {
             })
             .catch((error) => {
               this.password = ''
-              this.email = ''
               Helper.handle(error)
               this.disabled = false
             })
         }
       } else {
         this.password = ''
-        this.email = ''
         alert('Credentials invalid')
         this.disabled = false
       }

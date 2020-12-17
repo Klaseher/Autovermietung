@@ -92,11 +92,15 @@ export default {
                             .then((response) =>{
                         if(response.data.success){
                             alert("Bestellung wurde erfolgreich abgebrochen.")
+                            this.ausgewaehlt = false;
+                            this.msg = "Alle Bestellungen"
                             Helper.redirect("/dashboard/bestellungen");
                         }
                         })
                         .catch((error) => {
                             Helper.handle(error)
+                            this.ausgewaehlt = false;
+                            this.msg = "Alle Bestellungen"
                             Helper.redirect("/dashboard/bestellungen");
                         })
                     }
@@ -117,17 +121,23 @@ export default {
                                             .then((response) =>{
                                                 if(response.data.success){
                                                     alert("Bestellung wurde abgebrochen. Jedoch muessen Sie eine Strafe zahlen")
+                                                    this.ausgewaehlt = false;
+                                                    this.msg = "Alle Bestellungen"
                                                     Helper.redirect("/dashboard/bestellungen");
                                                 }
                                             })
                                             .catch((error) => {
                                                 Helper.handle(error)
+                                                this.ausgewaehlt = false;
+                                                this.msg = "Alle Bestellungen"
                                                 Helper.redirect("/dashboard/bestellungen");
                                              })
                                     }
                                  })
                                  .catch((error) => {
                                     Helper.handle(error)
+                                    this.ausgewaehlt = false;
+                                    this.msg = "Alle Bestellungen"
                                     Helper.redirect("/dashboard/bestellungen");
                             })
                          }
@@ -139,11 +149,15 @@ export default {
                     .then((response) =>{
                         if(response.data.success){
                             alert("Bestellung wurde erfolgreich abgebrochen.")
+                            this.ausgewaehlt = false;
+                            this.msg = "Alle Bestellungen"
                             Helper.redirect("/dashboard/bestellungen");
                         }
                     })
                     .catch((error) => {
                         Helper.handle(error)
+                        this.ausgewaehlt = false;
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/dashboard/bestellungen");
                     })
                 }
@@ -165,6 +179,8 @@ export default {
             })
             .catch((error) => {
                 Helper.handle(error)
+                this.ausgewaehlt = false;
+                this.msg = "Alle Bestellungen"
                 Helper.redirect("/dashboard/bestellungen/");
             })
         },
@@ -244,13 +260,15 @@ export default {
                         })
                         .catch((error) => {
                             Helper.handle(error)
+                            this.ausgewaehlt = false;
+                            this.msg = "Alle Bestellungen"
                             Helper.redirect("/dashboard/bestellungen/");
                         })
                 })
                 .catch((error) => {
                     Helper.handle(error);
                     this.ausgewaehlt = false;
-                    this.msg = ""
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen")
                 })
         }
