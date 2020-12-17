@@ -231,7 +231,7 @@ export default {
  
 </script>
 
-<style >
+<style scoped>
 p{
     color:white;
     text-align: center;

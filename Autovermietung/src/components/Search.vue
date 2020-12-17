@@ -203,7 +203,7 @@
 </template>
 
 <script>
-import DatepickerLite from "vue3-datepicker-lite";
+import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 export default ({
@@ -490,15 +490,15 @@ h2{
 h3{
   color: aqua;
 }
-input[type=text], select {
+/* input[type=text], select {
   width: 25%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid #ccc;
+  border: 1px solid rgb(139, 62, 62);
   border-radius: 4px;
   box-sizing: border-box;
-}
+} */
 
 .search{
   background-color:#443dac;
@@ -517,10 +517,10 @@ input[type=text], select {
 /* .search:hover {
 	background-color:#342abf;
 } */
-.search:active {
+/* .search:active {
 	position:relative;
 	top:1px;
-}
+} */
 button{
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
@@ -531,10 +531,11 @@ button{
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
-	font-size:19px;
-	padding:12px 37px;
+  text-align: center;
+	font-size:12px;
+	padding:12px 39px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-}  
+  align-content: center; 
+} 
 </style>

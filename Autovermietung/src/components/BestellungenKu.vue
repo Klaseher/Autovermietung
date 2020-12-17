@@ -285,7 +285,7 @@ table, th, td {
   width: 100%;
 }
 button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
+    box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
 	border-radius:10px;
@@ -298,7 +298,8 @@ button{
 	padding:20px 40px 20px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  width: 20%;
+    align-content: center;
+    width: 20%;
 }
+
 </style>

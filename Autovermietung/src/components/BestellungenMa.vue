@@ -1,5 +1,5 @@
 <template>
-    <div id="ma">
+    <div class="ma">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
             <button @click="update()">Aktualisieren</button>
@@ -362,13 +362,13 @@ export default {
 </script>
 
 <style scoped>
-#ma{
+/* .ma{
     background-color: cornflowerblue;
     background-size: 100% 100%;
     min-height: 200%;
 
 
-}
+} */
 
 p{
     color:white;
@@ -394,12 +394,12 @@ table, th, td {
 }
 button{
   box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	/* background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
 	border-radius:10px;
 	border:1px solid #4e6096;
 	display:inline-block;
-	cursor:pointer;
+	cursor:pointer; */
 	color:#ffffff;
 	font-family:Arial;
 	font-size:14px;
@@ -407,25 +407,7 @@ button{
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
-  width: 10%;
-}
-h1{
-    color: rgb(106, 167, 26);
-}
-h2{
-  color:burlywood
-}
-h3{
-  color: aqua;
-}
-input[type=text], select {
-  width: 25%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  width: 20%;
 }
 
 </style>

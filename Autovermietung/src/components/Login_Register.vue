@@ -21,10 +21,10 @@
 
         <input type="text" placeholder="Vorname*" v-model="name" required autofocus/>
         <input type="text" placeholder="Name*" v-model="vorname" required autofocus/>
-        <input type="email" placeholder="Email*" v-model="email" required/>
+        <input type="email" placeholder="Email*" v-model="email" required autofocus/>
         <input type="text" placeholder="Adresse*" v-model="adresse" required autofocus/>
         <input type="tel" placeholder="Telefonnummer" v-model="telefon"/>
-         <input type="password" placeholder="Password*" v-model="password" required/>
+        <input type="password" placeholder="Password*" v-model="password" required/>
         <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
         <button type="cancel" @click="back">
                     Zurueck
@@ -249,12 +249,13 @@ export default {
     border: 1px solid #009345;
     background-color: #009345;
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.5rem;
     font-weight: bold;
-    padding: 10px 40px;
+    padding: 10px 10px;
     letter-spacing: 1px;
     text-transform: uppercase;
     cursor: pointer;
+    width: 30%;
     transition: transform .1s ease-in;
     &:active {
       transform: scale(.9);
@@ -289,6 +290,7 @@ export default {
       padding: 8px 15px;
       margin: 6px 0;
       width: calc(100% - 30px);
+      align-content: center;
       border-radius: 15px;
       border-bottom: 1px solid #ddd;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4), 
@@ -296,8 +298,8 @@ export default {
                         0 1px 0 #fff;
       overflow: hidden;
       &:focus {
-        outline: none;
-        background-color: #fff;
+      outline: none;
+      background-color: #fff;
       }
     }
   }
