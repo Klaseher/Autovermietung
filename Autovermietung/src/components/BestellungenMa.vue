@@ -2,7 +2,6 @@
     <div class="ma">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
-            <button @click="update()">Aktualisieren</button>
             <select v-model="bestellungsauswahl">
                 <option value="" disabled selected>Filter Bestellungen</option>
                 <option
@@ -12,7 +11,32 @@
                 >
                     {{bestellung}}
                 </option>
-            </select> 
+            </select>
+            <button @click="update()">Aktualisieren</button>
+            <div>
+                <datepicker-lite 
+                :value-attr="datepickerSetting.value"
+                :year-minus="datepickerSetting.yearMinus"
+                :from="datepickerSetting.from"
+                :to="datepickerSetting.to"
+                :disabled-date="datepickerSetting.disabledDate"
+                :locale="datepickerSetting.locale"
+                @value-changed="datepickerSetting.changeEvent"
+                />
+                <datepicker-lite 
+                :value-attr="datepickerSetting2.value"
+                :year-minus="datepickerSetting2.yearMinus"
+                :from="datepickerSetting2.from"
+                :to="datepickerSetting2.to"
+                :disabled-date="datepickerSetting2.disabledDate"
+                :locale="datepickerSetting2.locale"
+                @value-changed="datepickerSetting2.changeEvent"
+                />
+                <input type="text" placeholder="Nach BNR suchen" v-model="bnr">
+                <input type="text" placeholder="Nach Vorname suchen" v-model="vorname">
+                <input type="text" placeholder="Nach Nachname suchen" v-model="nachname">
+                <button @click="suchen()">Suchen</button>
+            </div>
             <br /> 
             <br />  
             <table>
@@ -30,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(bestellung, index) in bestellungen" :key="index" :class="getClass(bestellung)">
+                    <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
                         <td>{{bestellung.bnr}}</td>
                         <td>{{bestellung.startdatum}}</td>
                         <td>{{bestellung.enddatum}}</td>
@@ -69,25 +93,134 @@
 import UserService from "../services/user.service";
 import Auth from "../services/auth.service";
 import Helper from "../services/helper.service";
+import DatepickerLite from "./DatepickerLite.vue";
 export default {
     data(){
         return{
             ausgewaehlt: false,
             msg: '',
             bestellungen: [],
+            gesuchteBestellungen: [],
             gewaehlteBestellung: '',
             schaeden: [],
             class: '',
             bestellungsauswahl: '',
-            bestellungstypen: []
+            bestellungstypen: [],
+            bnr: '',
+            vorname: '',
+            nachname: '',
+            erstelldatum: '',
+            start: '',
+            ende: '',
+            datepickerSetting : {
+                value:"",
+                yearMinus: 0,
+                from: "",
+                to: "1999/01/01",
+                disabledDate: [],
+                locale: {
+                format: "YYYY/MM/DD",
+                weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
+                todayBtn: "Heute",
+                clearBtn: "Löschen",
+                closeBtn: "Schliessen",
+                },
+                changeEvent: (value) => {
+                    this.start = value
+                }
+            },
+            //enddatum
+            datepickerSetting2 : {
+                value: "",
+                yearMinus: 0,
+                from: "",
+                to: "1999/01/01",
+                disabledDate: [],
+                locale: {
+                format: "YYYY/MM/DD",
+                weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
+                todayBtn: "Heute",
+                clearBtn: "Löschen",
+                closeBtn: "Schliessen",
+                },
+                changeEvent: (value) => {
+                    this.ende = value
+                }
+            }
         }
     },
+    components: {
+        DatepickerLite
+    },
     methods: {
-        // daten neu laden
+        // daten neu laden bzw. bestimmte bestellungstypen anzeigen
         update(){
-            this.$mount();
+            if(this.bestellungsauswahl == ''){
+                alert("Bitte waehlen Sie einen Filter aus")
+                return
+            }
+            this.bestellungen = []
+            let typ = -1
+            if (this.bestellungsauswahl == "Offene Bestellanfragen") typ = 0
+            else if(this.bestellungsauswahl == "Bestellungshistorie") typ = 7 //3 u. 4
+            else if(this.bestellungsauswahl == "Offene Bezahlung") typ = 2
+            else if(this.bestellungsauswahl == "Ueberzogene Bestellungen") typ = 5
+            else if(this.bestellungsauswahl =="Laufende Bestellungen") typ = 1
+            else if(this.bestellungsauswahl == "Doppelte Bestellungen") typ = 6
+            else if(this.bestellungsauswahl == "Alle Bestellungen") typ = 8
+            this.holeBestellungen(typ)
         },
-        
+        // bestimmte bestellungen suchen
+        suchen(){
+            this.gesuchteBestellungen = this.bestellungen.filter((bestellung) => {
+                let bnr = false;
+                let name = false
+                let datum = false
+                let startdatum = new Date(this.start)
+                let enddatum = new Date(this.ende)
+                let zeitstempel = new Date(bestellung.zeitstempel)
+                if (this.bnr == "") {
+                    bnr = true;
+                } else {
+                    bnr = bestellung.bnr == this.bnr;
+                }
+
+                if (this.vorname == "" || this.nachname == "") {
+                    name = true
+                } else name = (
+                    this.vorname.toLowerCase().split(" ").every((v) => bestellung.vorname.toLowerCase().includes(v)) &&
+                    this.nachname.toLowerCase().split(" ").every((v) => bestellung.nachname.toLowerCase().includes(v))
+                )
+                if((this.start == '' && this.ende == '') || (startdatum.getTime() > enddatum.getTime())){
+                    datum = true
+                }
+                else if(this.ende == ''){
+                    if(startdatum.getTime() == zeitstempel.getTime()){
+                        datum = true
+                    }
+                    else{
+                        datum = false
+                    }
+                }
+                else if(this.start == ''){
+                    if(enddatum.getTime() == zeitstempel.getTime()){
+                        datum = true
+                    }
+                    else{
+                        datum = false
+                    }
+                }
+                else{
+                    if((startdatum.getTime() <= zeitstempel.getTime()) && (enddatum.getTime() >= zeitstempel.getTime())){
+                        datum = true
+                    }
+                    else{
+                        datum = false
+                    }
+                }
+                return (bnr && name && datum)
+            })
+        },
         // zurueck zur allgemeinen Bestellueubersicht
         back() {
             this.ausgewaehlt = false;
@@ -302,15 +435,41 @@ export default {
             this.$router.push("/admin/bestellungen/" + bnr)
         },
         // alle bestellungen von backend holen
-        holeBestellungen(){
+        holeBestellungen(typ){
             if (this.bestellungen.length < 1) {
-                UserService.getOrder("alle")
+                let bestelltyp = ''
+                if(typ == 7){
+                    bestelltyp = "geschlossen"
+                }
+                else if(typ == 6){
+                    bestelltyp = "offen " + 0
+                }
+                else if(typ == 8){
+                    bestelltyp = "alle"
+                }
+                else{
+                    bestelltyp = "offen " + typ
+                }
+                UserService.getOrder(bestelltyp)
                 .then((response) => {
                     response.data.orders.forEach((order) => {
                         order.doppelt = false
                         this.bestellungen.push(order)
+                        this.gesuchteBestellungen = this.bestellungen;
+                        // filter automatisch auf geladene datensaetze angewandt
+                        this.suchen()
                     })
-                    this.testdoppelt()
+                    if(typ == 0 || typ == 6) this.testdoppelt()
+                    //nur doppelte anzeigen
+                    if(typ == 6){
+                        let bestellungen = []
+                        for(let i=0;i<this.bestellungen.length;i++){
+                             if(this.bestellungen[i].doppelt){
+                                 bestellungen.push(this.bestellungen[i])
+                             }
+                        }
+                        this.bestellungen = bestellungen
+                    }
                 })
                 .catch((error) => Helper.handle(error));
             }
@@ -334,8 +493,11 @@ export default {
            }
         }   
     },
-    beforeMount(){                  //0                       3,4                   2                        doppelt = true          5                              1
-        this.bestellungstypen = ["Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Doppelte Bestellungen", "Ueberzogene Bestellungen", "Laufende Bestellungen"];
+    beforeMount(){     
+        let heute = new Date()
+        this.datepickerSetting.value = Helper.formatDate(heute)
+                                                            //0                       3,4                   2                           5                   doppelt = true              1
+        this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen"];
         if (this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
@@ -354,7 +516,7 @@ export default {
         else{
             this.ausgewaehlt = false
             this.msg = "Alle Bestellungen"
-            this.holeBestellungen()
+            this.holeBestellungen(0)
         }
     }
 }

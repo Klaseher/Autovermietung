@@ -181,10 +181,23 @@ class Db {
   }
 
   //Alle Bestellungen Kunde erhalten, die offen sind
-  getCustomerOrders (id, callback) {
+  getOpenCustomerOrders (id, callback) {
     let orders = []
     return this.db.all(
       `SELECT * FROM bestellung WHERE user_fk = ? AND status <> 3 AND status <> 4`,
+      [id], function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Alle Bestellungen Kunde erhalten, die geschlossen sind
+  getCustomerOrdersHistory (id, callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT * FROM bestellung WHERE user_fk = ? AND status = 3 AND status = 4`,
       [id], function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)
@@ -211,11 +224,37 @@ class Db {
      })
  }
 
-  //Alle offenen Bestellungen Kunde erhalten (0, also die noch zu bestaetigen sind), wenn mitarbeiter zuerst bestellungen anzeigt
-  getAllOpenOrders (callback) {
+  //Mitarbeiter: Alle  Bestellungen holen
+  getAllOrders (callback) {
     let orders = []
     return this.db.all(
-      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 0`,
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id`,
+        function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Mitarbeiter: Alle offenen Bestellungen eines bestimmten Typ (0,1,2,5)
+  getAllOpenOrders (typ, callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = ?`,
+      [typ],function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Mitarbeiter: Alle abgeschlossenen Bestellungen erhalten (status 3,4)
+  getOrderHistory (callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 3 AND status = 4`,
       function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)

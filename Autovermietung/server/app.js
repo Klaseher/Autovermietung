@@ -616,9 +616,9 @@ router.post('/rent/', (req, res) => {
       user = ausgabe.user
        // nur kunde darf bestellung erstellen
       if(user.rolle == 0){
-        db.getCustomerOrders(user.id, (err, bestellungen) => {
+        db.getOpenCustomerOrders(user.id, (err, bestellungen) => {
           if (err) return res.status(500).send('Error on the server.')
-          // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3) ist
+          // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3,4) ist
           if (bestellungen.length > 0) return res.status(500).send('You are already having an active order.\nGo into the account tab for more information on your orders')
           timestamp = moment.utc() //erstellzeitraum bestellung, damit mitarbeiter danach filtern kann
           db.createOrder([
@@ -665,9 +665,28 @@ router.get('/order/:bnr', (req, res) => {
       user = ausgabe.user
       // wenn mind. mitarbeiter
       if (user.rolle > 0){
-        if (req.params.bnr == "alle") {
-          // alle bestellungen holen
-          db.getAllOpenOrders((err, orders) => {
+        if (req.params.bnr.includes("alle")) {
+          // alle bestellungen jeden typs holen
+          db.getAllOrders((err, orders) => {
+            console.log(orders)
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
+          })
+        }
+        else if (req.params.bnr.includes("offen")) {
+          // alle offenen bestellungen bestimmten typs holen
+          let typ = req.params.bnr.split(" ")[1]
+          db.getAllOpenOrders(typ, (err, orders) => {
+            console.log(orders)
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
+          })
+        }
+        // alle geschlossenen bestellungen holen
+        else if(req.params.bnr == "geschlossen"){
+          db.getOrderHistory((err, orders) => {
             console.log(orders)
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
@@ -687,7 +706,7 @@ router.get('/order/:bnr', (req, res) => {
       else{
         if (req.params.bnr == "alle") {
           // alle bestellungen holen
-          db.getCustomerOrders(user.id, (err, orders) => {
+          db.getOpenCustomerOrders(user.id, (err, orders) => {
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})
