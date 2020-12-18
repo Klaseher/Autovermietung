@@ -34,7 +34,7 @@ export default {
   data(){
     return{
      msg: ' Welcome to HEYRJP',
-     actColor: 'rgb(199, 62, 20)',
+     actColor: 'rgb(68, 20, 199)',
      block: 'full'
     }
   }
@@ -45,7 +45,7 @@ export default {
 <style scoped>
 #app-home{
   padding: 5px;
-  background-color:rgb(199, 62, 20);
+  background-color:rgb(68, 20, 199);
   /* -webkit-text-size-adjust:auto; */
   background-size: cover;
 }

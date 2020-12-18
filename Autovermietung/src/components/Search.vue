@@ -1,4 +1,5 @@
 <template>
+
   <div>
     <h1>Unsere Autos</h1>
     <main class="search" v-if="!ausgewaehlt">
@@ -165,21 +166,21 @@
             <td>{{ auto.kraftstoff }}</td>
 
             <td>Leistung:</td>
-            <td>{{ auto.leistung }} PS</td>
+            <td>{{ auto.leistung }}</td>
           </tr>
 
           <tr>
             <td>Verbrauch:</td>
-            <td>{{ auto.verbrauch }}l/100km  </td>
+            <td>{{ auto.verbrauch }}</td>
 
             <td>Tankvolumen:</td>
-            <td>{{ auto.tankvolumen }} Liter</td>
+            <td>{{ auto.tankvolumen }}</td>
           </tr>
           <tr>
             <td>Getriebe:</td>
             <td>{{ auto.getriebe }}</td>
             <td>Preis:</td>
-            <td>{{ auto.preis }} €/Tag</td>
+            <td>{{ auto.preis }}</td>
             <td>Modell:</td>
             <td>{{ auto.modelbezeichnung }}</td>
           </tr>
@@ -198,12 +199,14 @@
       >
         Jetzt {{ gewaehltesauto.name }} verbindlich mieten
       </button>
+
     </div>
   </div>
 </template>
 
 <script>
-import DatepickerLite from "vue3-datepicker-lite";
+
+import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 export default ({
@@ -374,6 +377,7 @@ export default ({
         this.msg = this.autoname;
       }
     },
+
     //Filter, um Autos zu finden, deren Buchungsdaten sich mit dem gesuchten Zeitraum überschneiden
     zeitFilter(auto){
       let index = 0
@@ -393,6 +397,7 @@ export default ({
         }
       }
       if(!gefunden){
+
         return true
       }
       for(buchung of this.zeiten[index].times){
@@ -433,11 +438,13 @@ export default ({
       }
     },
 
+
     buchen() {
       this.$router.push("/rent/" + this.gewaehltesauto.name);
       //request an backend, um buchung abzuschließen
       //dazu in db eine bestellung erstellt werden
       //employee kann es dann abrufen in account
+
     },
     back() {
       this.ausgewaehlt = false;
@@ -445,6 +452,7 @@ export default ({
       this.$router.push("/search");
     }
   },
+
   beforeMount() {
     let from = new Date()
     let to = new Date();
@@ -481,14 +489,71 @@ export default ({
 
 
 <style scoped>
-h1 {
-  color: brown;
+h1{
+    color: rgb(106, 167, 26);
 }
-input {
-  padding: 5px;
-  width: fit-content;
+
+h2{
+  color:burlywood
 }
-button {
-  padding: 10 10px;
+h3{
+  color: aqua;
+}
+/* input[type=text], select {
+  width: 25%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(139, 62, 62);
+  border-radius: 4px;
+  box-sizing: border-box;
+} */
+
+.search{
+  background-color:#443dac;
+	border-radius:28px;
+	border:1px solid #162f9b;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #2f6627;
+  -webkit-text-size-adjust:auto;
+}
+/* .search:hover {
+	background-color:#342abf;
+} */
+/* .search:active {
+	position:relative;
+	top:1px;
+} */
+
+button{
+  box-shadow: 0px 0px 0px 2px #9fb4f2;
+	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
+	background-color:#7892c2;
+	border-radius:10px;
+	border:1px solid #4e6096;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+
+  text-align: center;
+	font-size:12px;
+	padding:12px 39px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #283966;
+  align-content: center; 
+} 
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
 }
 </style>

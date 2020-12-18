@@ -21,14 +21,15 @@
 
         <input type="text" placeholder="Vorname*" v-model="name" required autofocus/>
         <input type="text" placeholder="Name*" v-model="vorname" required autofocus/>
-        <input type="email" placeholder="Email*" v-model="email" required/>
+        <input type="email" placeholder="Email*" v-model="email" required autofocus/>
         <input type="text" placeholder="Adresse*" v-model="adresse" required autofocus/>
         <input type="tel" placeholder="Telefonnummer" v-model="telefon"/>
-         <input type="password" placeholder="Password*" v-model="password" required/>
+        <input type="password" placeholder="Password*" v-model="password" required/>
         <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
         <button type="cancel" @click="back">
                     Zurueck
         </button>
+        <br />
         <button type="submit" @click="register">
                     Erstellen
         </button>
@@ -39,10 +40,10 @@
         <input type="email" placeholder="Email" v-model="email" required autofocus/>
         <input type="password" placeholder="Password" v-model="password" required/>
         <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
-        <button type="submit" @click="login">
+        <button type="submit" @click="login" :disabled="disabled">
                     Einloggen
         </button>
-         <button type="cancel" @click="back">
+         <button type="cancel" @click="back" :disabled="disabled">
                     Zurueck
         </button>
       </form>
@@ -65,7 +66,8 @@ export default {
       adresse: '',
       telefon: '',
       is_admin: null,
-      signUp: false
+      signUp: false,
+      disabled: false
     }
   },
   methods: {
@@ -128,6 +130,7 @@ export default {
     //Identifizierung und Speicherung der Zugriffsrechte der Person
     login (e) {
       e.preventDefault()
+      this.disabled = true
       /* Regex: Strong Password
       Special Characters - Not Allowed
       Spaces - Not Allowed
@@ -154,6 +157,7 @@ export default {
               sessionStorage.setItem('auth', response.data.auth)
 
               if (sessionStorage.getItem('auth') == 'true') {
+                this.disabled = false
                 if (this.$route.params.nextUrl != null) {
                   this.$router.push(this.$route.params.nextUrl)
                 } else {
@@ -169,11 +173,13 @@ export default {
             .catch((error) => {
               this.password = ''
               Helper.handle(error)
+              this.disabled = false
             })
         }
       } else {
         this.password = ''
         alert('Credentials invalid')
+        this.disabled = false
       }
     }
 
@@ -246,7 +252,7 @@ export default {
     font-size: 1rem;
   }
   button {
-    border-radius: 20px;
+   border-radius: 20px;
     border: 1px solid #009345;
     background-color: #009345;
     color: #fff;
@@ -290,6 +296,7 @@ export default {
       padding: 8px 15px;
       margin: 6px 0;
       width: calc(100% - 30px);
+      align-content: center;
       border-radius: 15px;
       border-bottom: 1px solid #ddd;
       box-shadow: inset 0 1px 2px rgba(0, 0, 0, .4), 
@@ -297,8 +304,8 @@ export default {
                         0 1px 0 #fff;
       overflow: hidden;
       &:focus {
-        outline: none;
-        background-color: #fff;
+      outline: none;
+      background-color: #fff;
       }
     }
   }

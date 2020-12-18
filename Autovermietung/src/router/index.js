@@ -25,6 +25,7 @@ import Search from '../components/Search.vue'
 import UserBoard from '@/components/UserBoard.vue'
 import Admin from '@/components/Admin.vue'
 import EmployeeEdit from '@/components/EmployeeEdit.vue'
+import CreateNewEmployee from '@/components/CreateNewEmployee.vue'
 import UserService from '../services/user.service'
 import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
@@ -111,6 +112,15 @@ const routes = [
     }
   },
   {
+    path: '/admin/newEmployee',
+    name: 'newEmployee',
+    component: CreateNewEmployee,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
     path: '/admin/editEmployee/:id',
     name: 'editEmployee',
     component: EmployeeEdit,
@@ -120,6 +130,7 @@ const routes = [
     }
   },
   {
+
     // uebersicht schaeden auto
     path: '/admin/:autoname/schaden/:bnr?',
     name: 'carDamage',
@@ -140,6 +151,7 @@ const routes = [
       is_employee: true
     }
   },
+
    {
       path: "/:catchAll(.*)", //alle ungülitgen Routen führen zu Homepage
       component: Home
