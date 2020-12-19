@@ -2,14 +2,26 @@
     <div class="newEmployee">
         <h4>New Employee</h4>
           <form>
-                <label for="vorname">Vorname</label>
-                <div>
-                  <input id="vorname" type="text" v-model="vorname" required autofocus>
-                </div>
                 <label for="name">Name</label>
                 <div>
                   <input id="name" type="text" v-model="name" required autofocus>
                 </div>
+
+                <label for="vorname">Vorname</label>
+                <div>
+                  <input id="vorname" type="text" v-model="vorname" required autofocus>
+                </div>
+                
+                <label for="adress">Addresse</label>
+                <div>
+                  <input id="addresse" type="text" v-model="adresse" required autofocus>
+                </div>
+
+                <label for="telefon">Telefon</label>
+                <div>
+                  <input id="telefon" type="text" v-model="telefon" required autofocus>
+                </div>
+
                 <label for="username">Username</label>
                 <div>
                   <input id="username" type="text" v-model="username" required autofocus>

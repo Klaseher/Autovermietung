@@ -363,6 +363,7 @@ export default {
 
 <style scoped>
 /* .ma{
+    
     background-color: cornflowerblue;
     background-size: 100% 100%;
     min-height: 200%;
@@ -400,7 +401,7 @@ button{
 	border:1px solid #4e6096;
 	display:inline-block;
 	cursor:pointer; */
-	color:#ffffff;
+	color:#070231;
 	font-family:Arial;
 	font-size:14px;
 	padding:20px 40px 20px;

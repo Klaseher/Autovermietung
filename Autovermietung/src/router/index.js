@@ -31,6 +31,9 @@ import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
 import BestellungenKu from '../components/BestellungenKu.vue'
 import CarDamage from '../components/CarDamage.vue'
+import CarManage from '../components/CarManage.vue'
+import EmployeeManage from '../components/EmployeeManage.vue'
+import CustomerManage from '../components/CustomerManage.vue'
 
 const routes = [
   {
@@ -110,6 +113,33 @@ const routes = [
       requiresAuth: true,
       is_employee: true
     }
+  },
+  {
+    path: '/admin/func/showEmployee',
+      name: 'showEmp',
+      component: EmployeeManage,
+      meta: {
+        requiresAuth: true,
+      is_employee: true
+      }
+  },
+  {
+    path: '/admin/func/showCus',
+      name: 'showCus',
+      component: CustomerManage,
+      meta: {
+        requiresAuth: true,
+      is_employee: true
+      }
+  },
+  {
+    path: '/admin/func/showCar',
+      name: 'showCar',
+      component: CarManage,
+      meta: {
+        requiresAuth: true,
+      is_employee: true
+      }
   },
   {
     path: '/admin/newEmployee',
