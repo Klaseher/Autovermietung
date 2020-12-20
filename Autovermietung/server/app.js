@@ -515,7 +515,28 @@ router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
         if(user.rolle > 0){
           db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
             if (err) return ausgabe.res.status(500).send('Error on the server.')
-            return ausgabe.res.status(200).send({success: true})
+            //schauen, ob noch offene fatale schaeden vorhanden --> wenn nicht, dann wird autostatus geupdated zu verfuebar
+            db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
+              if (err) return ausgabe.res.status(500).send('Error on the server.')
+              let fatal = false
+              for(let i=0;i<cardamage.length;i++){
+                if(cardamage[i].prioritaet == 0){
+                  fatal = true
+                  break
+                }
+              }
+              // auto wieder verfuegbar
+              if (cardamage.length == 0 || !fatal){
+                db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
+                  console.log(err)
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  return res.status(200).send({success: true, verfuegbar: true})
+                })
+              } 
+              else{
+                return res.status(200).send({success: true})
+              }
+            })
           })
         }
         else{
@@ -571,7 +592,17 @@ router.post('/car/:autoname/schaeden', (req, res) => {
             ], (err) => {
               console.log(err)
               if (err) return ausgabe.res.status(500).send('Error on the server.')
-              return res.status(200).send({success: true, pos: posMax+1})
+              // wenn schaden prioritaet 0, dann wird auto fuer weitere bestellungen gesperrt
+              if( req.body.prio == 0){
+                db.updateVerfuegbarkeit(req.params.autoname, 0, (err) => {
+                  console.log(err)
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  return res.status(200).send({success: true, pos: posMax+1, verfuegbar: false})
+                })
+              }
+              else{
+                return res.status(200).send({success: true, pos: posMax+1})
+              }
             })
           }
           else{

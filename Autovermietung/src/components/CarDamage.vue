@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1> {{msg}} </h1>
-         <textarea v-model="beschreibung" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
+         <textarea v-model="beschreibung" placeholder="Beschreibung des Schadens" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
           <input
           type="text"
           placeholder="Kosten"
@@ -9,13 +9,16 @@
           required
           autofocus
          />
-         <input
-          type="text"
-          placeholder="Prioritaet"
-          v-model="prio"
-          required
-          autofocus
-        />
+        <select v-model="auswahlPrio">
+          <option value="" disabled selected>Schadensausmaß</option>
+          <option
+            v-for="(typ, index) in prioTypen"
+            :key="index"
+            :value="typ"
+          >
+          {{typ}}
+          </option>
+        </select>
         <select v-model="auswahl">
           <option value="" disabled selected>Schadenstyp</option>
           <option
@@ -42,8 +45,8 @@
                 <tbody>
                     <tr v-for="(schaden, index) in schaeden" :key="index">
                         <td>{{schaden.beschreibung}}</td>
-                        <td>{{schaden.typ}}</td>
-                        <td>{{schaden.prioritaet}}</td>
+                        <td>{{reverseTyp(schaden.typ)}}</td>
+                        <td>{{reversePrio(schaden.prioritaet)}}</td>
                         <td>{{schaden.hoehe}}</td>
                         <td><button @click="updateCheck(schaden)">Problem beheben</button></td>
                         <td><button @click="loescheSchaden">Loeschen</button></td>
@@ -87,17 +90,18 @@ export default {
         return{
             msg: '',
             auswahl: '',
+            auswahlPrio: '',
             beschreibung: '',
-            prio: '',
             kosten: '',
             allgemein: '',
             schaeden: [],
-            schadenstypen: []
+            schadenstypen: [],
+            prioTypen: []
         }
     },
     methods: {
         back() {
-            this.$router.push("/admin")
+            this.$router.push("/admin/bestellungen")
         },
         // nur schaden wird allgemein geloescht
         loescheSchaden(){
@@ -120,11 +124,14 @@ export default {
                             let index = this.schaeden.indexOf(schaden)
                             this.schaeden.splice(index, 1);
                             alert("Schaden wurde erfolgreich behoben")
+                            if(response.data.verfuegbar){
+                                alert("Das Auto ist wieder fuer die Vermietung verfuegbar")
+                            }
                         }
                     })
                     .catch((error) => {
                         Helper.handle(error)
-                        Helper.redirect("/admin/admin");
+                        Helper.redirect("/admin");
                     })
                 }
         },
@@ -135,27 +142,70 @@ export default {
             else if(status == 'Sauberkeit'){
                 return 2
             }
-            else if(status == 'Schaden'){
+            else if(status == 'Beschaedigung'){
                 return 4
             }
         }, 
+        reverseTyp(typ){
+           if(typ == 1){
+              return 'Tank'
+           }
+           else if(typ == 2){
+               return 'Sauberkeit'
+           }
+           else if(typ == 4){
+               return 'Beschaedigung'
+           }
+        },
+        prio(typ) {
+            if(typ == 'Gering'){
+                return 3
+            }
+            else if(typ == 'Mittel'){
+                return 2
+            }
+            else if(typ == 'Groß'){
+                return 1
+            }
+            else if(typ == "Fatal"){
+                return 0
+            }
+        }, 
+        reversePrio(prio){
+           if(prio == 0){
+              return 'Fatal'
+           }
+           else if(prio == 1){
+               return 'Groß'
+           }
+           else if(prio == 2){
+               return 'Mittel'
+           }
+           else if(prio == 3){
+               return 'Gering'
+           }
+        },
         erstelleSchaden(){
-            if(this.auswahl != '' && this.beschreibung != '' && this.prio != '' && this.kosten != ''){
+            if(this.auswahl != '' && this.beschreibung != '' && this.auswahlPrio != '' && this.kosten != ''){
                 var zahlentester = new RegExp("^[0-9 ]*$")
-                if(zahlentester.test(this.prio) && zahlentester.test(this.kosten)){
-                     Auth.addSchaden(this.$route.params.autoname, this.beschreibung, this.prio, this.status(this.auswahl), this.kosten)
+                let val = this.prio(this.auswahlPrio)
+                if(zahlentester.test(this.kosten) && this.kosten >= 0){
+                    Auth.addSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten)
                     .then((response) =>{
                         if(response.data.success){
+                            if(response.data.verfuegbar == false){
+                                alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                            }
                             // wenn bnr vorhanden, dann werden auch noch dazu kosten hinzugefuegt
                             if(!this.allgemein){
                               Auth.addCost(this.$route.params.bnr, this.status(this.auswahl), this.kosten, this.beschreibung)
                                 .then((response) =>{
                                     if(response.data.success){
-                                        this.prio = ''
+                                        this.auswahlPrio = ''
                                         this.kosten = ''
                                         this.beschreibung = ''
                                         this.auswahl = ''
-                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
+                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
                                         alert("Schaden erfolgreich hinzugefuegt")
                                        }
                                 })
@@ -165,8 +215,8 @@ export default {
                                 })
                             }
                             else{
-                                this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio, typ:this.status(this.auswahl), hoehe: this.kosten})
-                                this.prio = ''
+                                this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
+                                this.auswahlPrio = ''
                                 this.kosten = ''
                                 this.beschreibung = ''
                                 this.auswahl = ''
@@ -180,9 +230,8 @@ export default {
                     })
                 }
                 else{
-                    this.prio = ''
                     this.kosten = ''
-                    alert("Prioritaet/Kosten muss Zahl sein")
+                    alert("Kosten muss positive Zahl sein")
                 }
             }
             else{
@@ -203,7 +252,8 @@ export default {
             this.msg = "Uebersicht Schaeden Auto: " + this.$route.params.autoname + " BNR: " + this.$route.params.bnr
             //hier noch testen, ob es zu bnr auch noch bestellung mit passender auto_fk gibt -->
         }
-          this.schadenstypen = ["Tank", "Sauberkeit", "Schaden"]
+          this.prioTypen = ["Gering", "Mittel", "Groß", "Fatal"]
+          this.schadenstypen = ["Beschaedigung", "Tank", "Sauberkeit"]
           //hier schaeden holen fuer auto
             UserService.getSchaeden(this.$route.params.autoname)
             .then((response) =>{

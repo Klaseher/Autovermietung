@@ -80,7 +80,7 @@
             <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
             <button type="cancel" @click="back">Zurueck zur Suche</button>
-            <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
+            <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
             <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
             <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
          </div>
@@ -160,6 +160,7 @@ export default {
                 return
             }
             this.bestellungen = []
+            this.gesuchteBestellungen = []
             let typ = -1
             if (this.bestellungsauswahl == "Offene Bestellanfragen") typ = 0
             else if(this.bestellungsauswahl == "Bestellungshistorie") typ = 7 //3 u. 4
@@ -225,7 +226,6 @@ export default {
         back() {
             this.ausgewaehlt = false;
             this.msg = "Alle Bestellungen"
-            this.holeBestellungen();
             this.$router.push("/admin/bestellungen")
         },
         home() {
@@ -241,15 +241,24 @@ export default {
                  Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
             }
         },
-          abbrechen(bnr) {
-            if(confirm("Moechten Sie die Bestellung BNR: " + bnr + " wirklich abbrechen?")){
-                this.gewaehlteBestellung.status = 3
+          abbrechen(bnr, skip) {
+            let bestaetigen = false 
+            if(!skip){
+                bestaetigen = confirm("Moechten Sie die Bestellung BNR: " + bnr + " wirklich abbrechen?")
+            } 
+            else{
+                bestaetigen = true  
+            }
+            if(bestaetigen){
                 Auth.updateStatusOrder(bnr, 3)
                 .then(response =>{
                     if(response.data.success){
+                        if(this.$route.params.bnr != ""){
+                            this.gewaehlteBestellung.status = 3
+                        }
                         this.bestellungen.find(
                         (element) => element.bnr == bnr).status = 3
-                        alert("Bestellung wurde erfolgreich abgebrochen.")
+                        if(!skip) alert("Bestellung wurde erfolgreich abgebrochen.")
                         Helper.redirect("/admin/bestellungen");
                         return
                     }
@@ -263,109 +272,105 @@ export default {
         },
         //Bestellung akzeptieren --> 0 zu 1
         acceptOrder(bnr){
-            // wegen async erst daten laden, danach bei 2tem click funktioniert es erst, wenn direkt auf bestellung via bnr zugegriffen wird
-            if(this.bestellungen.length<1){
-                this.holeBestellungen()
-                alert("Die Daten muessen nachgeladen werden. Versuchen Sie es erneut")
-            }
-            else{
-                let bestellung = this.bestellungen.find(
-                (element) => element.bnr == bnr)
-                let date = bestellung
-                //ueberpruefung, ob doppelte bestellungen
-                if(bestellung.doppelt){
-                    let doppelt = [bestellung]
-                    for(let i=0;i<this.bestellungen.length;i++){
-                        if(bestellung.bnr == this.bestellungen[i].bnr){
-                            continue
-                        }
-                        else if(bestellung.auto_fk == this.bestellungen[i].auto_fk && this.bestellungen[i].doppelt){
-                            doppelt.push(this.bestellungen[i])
-                        }
+            let bestellung = this.bestellungen.find(
+            (element) => element.bnr == bnr)
+            let date = bestellung
+            //ueberpruefung, ob doppelte bestellungen
+            if(bestellung.doppelt){
+                let doppelt = [bestellung]
+                for(let i=0;i<this.bestellungen.length;i++){
+                    if(bestellung.bnr == this.bestellungen[i].bnr){
+                        continue
                     }
-                    for(let i=1;i<doppelt.length;i++){
-                        alert("Die Bestellung BNR: " + doppelt[i].bnr + " ueberschneidet sich mit dieser Bestellung")
+                    else if(bestellung.auto_fk == this.bestellungen[i].auto_fk && this.bestellungen[i].doppelt){
+                        doppelt.push(this.bestellungen[i])
                     }
-                    for(let i=1;i<doppelt.length-1;i++){
-                        let d1 = new Date(doppelt[i].zeitstempel) 
-                        let d2 = new Date(doppelt[i+1].zeitstempel) 
-                        if(d1.getTime() < d2.getTime()){
-                            date = doppelt[i]
-                        }
-                        else{
-                            date = doppelt[i+1]
-                        }
-                    }
-                    if(confirm("Soll die frueheste Bestellung BNR: " +  date.bnr +" akzeptiert und automatisch die anderen Anfragen abgebrochen werden?")){
-                        doppelt.forEach(async (item) => {
-                            if(item.bnr == date.bnr){
-                                return
-                            }
-                            await this.abbrechen(item.bnr)
-                        })
-                    }   
                 }
-                UserService.getSchaeden(date.auto_fk)
-                    .then((response) => {
-                        // wenn kein schaden, dann kann bestellung bestaetigt werden
-                        if(response.data.success){
-                            Auth.updateStatusOrder(date.bnr, 1)
-                            .then((response) =>{
-                                if(response.data.success){
-                                    this.bestellungen.find(
-                                    (element) => element.bnr == date.bnr).status = 1
-                                    alert("Bestellung wurde erfolgreich bestaetigt.")
-                                    Helper.redirect("/admin/bestellungen");
-                                    return
-                                }
-                            })
-                             .catch((error) => {
-                                Helper.handle(error)
+                for(let i=1;i<doppelt.length;i++){
+                    alert("Die Bestellung BNR: " + doppelt[i].bnr + " ueberschneidet sich mit dieser Bestellung")
+                }
+                for(let i=1;i<doppelt.length-1;i++){
+                    let d1 = new Date(doppelt[i].zeitstempel) 
+                    let d2 = new Date(doppelt[i+1].zeitstempel) 
+                    if(d1.getTime() < d2.getTime()){
+                        date = doppelt[i]
+                    }
+                    else{
+                        date = doppelt[i+1]
+                    }
+                }
+                if(confirm("Soll die frueheste Bestellung BNR: " +  date.bnr +" akzeptiert und automatisch die anderen Anfragen abgebrochen werden?")){
+                    doppelt.forEach(async (item) => {
+                        if(item.bnr == date.bnr){
+                            return
+                        }
+                        await this.abbrechen(item.bnr, 1)
+                    })
+                }
+                else{
+                    return
+                }   
+            }
+            UserService.getSchaeden(date.auto_fk)
+                .then((response) => {
+                    // wenn kein schaden, dann kann bestellung bestaetigt werden
+                    if(response.data.success){
+                        Auth.updateStatusOrder(date.bnr, 1)
+                        .then((response) =>{
+                            if(response.data.success){
+                                this.bestellungen.find(
+                                (element) => element.bnr == date.bnr).status = 1
+                                alert("Bestellung wurde erfolgreich bestaetigt.")
                                 Helper.redirect("/admin/bestellungen");
                                 return
-                            })
-                        }
-                        // offene schaeden sind vorhanden
-                        else{
-                            let val = false
-                            this.schaeden.push.apply(this.schaeden, response.data.cardamage)
-                            for(let i=0;i<this.schaeden.length;i++){
-                                 if(this.schaeden[i].prioritaet == 0){
-                                    if(confirm("Das Auto kann nicht ausgeleihen werden wegen offener fataler Probleme.\nMoechten Sie diese jetzt bearbeiten?")){
-                                        val = true
-                                        Helper.redirect("/admin/" + date.auto_fk + "/schaden");
-                                        return
-                                    }
+                            }
+                        })
+                            .catch((error) => {
+                            Helper.handle(error)
+                            Helper.redirect("/admin/bestellungen");
+                            return
+                        })
+                    }
+                    // offene schaeden sind vorhanden
+                    else{
+                        let val = false
+                        this.schaeden.push.apply(this.schaeden, response.data.cardamage)
+                        for(let i=0;i<this.schaeden.length;i++){
+                                if(this.schaeden[i].prioritaet == 0){
+                                if(confirm("Das Auto kann nicht ausgeleihen werden wegen offener fataler Probleme.\nMoechten Sie diese jetzt bearbeiten?")){
                                     val = true
+                                    Helper.redirect("/admin/" + date.auto_fk + "/schaden");
                                     return
                                 }
-                            }
-                            if(!val){
-                                if(confirm("Es bestehen noch offene Probleme, die aber nicht fatal sind. Moechten Sie die Bestellung bestaetigen")){    
-                                    Auth.updateStatusOrder(date.bnr, 1)
-                                        .then((response) =>{
-                                            if(response.data.success){
-                                                this.bestellungen.find(
-                                                (element) => element.bnr == date.bnr).status = 1
-                                                alert("Bestellung wurde erfolgreich bestaetigt.")
-                                                Helper.redirect("/admin/bestellungen");
-                                                return
-                                            }
-                                        })
-                                        .catch((error) => {
-                                            Helper.handle(error)
-                                            Helper.redirect("/admin/bestellungen");
-                                            return
-                                        })
-                                }
+                                val = true
+                                return
                             }
                         }
-                    })
-                    .catch((error) => {
-                        Helper.handle(error)
-                        Helper.redirect("/admin/bestellungen");
-                    })
-            }
+                        if(!val){
+                            if(confirm("Es bestehen noch offene Probleme, die aber nicht fatal sind. Moechten Sie die Bestellung bestaetigen")){    
+                                Auth.updateStatusOrder(date.bnr, 1)
+                                    .then((response) =>{
+                                        if(response.data.success){
+                                            this.bestellungen.find(
+                                            (element) => element.bnr == date.bnr).status = 1
+                                            alert("Bestellung wurde erfolgreich bestaetigt.")
+                                            Helper.redirect("/admin/bestellungen");
+                                            return
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        Helper.handle(error)
+                                        Helper.redirect("/admin/bestellungen");
+                                        return
+                                    })
+                            }
+                        }
+                    }
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    Helper.redirect("/admin/bestellungen");
+                })
         },
         // test, ob bestellungen mehrfach vorhanden sind
         testdoppelt(){
@@ -411,6 +416,16 @@ export default {
                 }
             }
         },
+        // geladene Bestellungen werden geprueft, ob sie offen, aber schon abgelaufen sind --> automatisch abgebrochen
+        testAbgelaufen(){
+            this.bestellungen.forEach(async (item) => {
+                let heute = new Date()
+                let start = new Date(item.startdatum)
+                if(start.getTime() <= heute.getTime() && item.status == '0'){
+                    await this.abbrechen(item.bnr, 1)
+                }
+            })
+        },
         // faerbe tabelle, wenn doppelte bestellung
         getClass(bestellung) {
               if (bestellung.doppelt) {
@@ -444,7 +459,7 @@ export default {
                 else if(typ == 6){
                     bestelltyp = "offen " + 0
                 }
-                else if(typ == 8){
+                else if(typ == 8 || typ == 9){
                     bestelltyp = "alle"
                 }
                 else{
@@ -455,11 +470,10 @@ export default {
                     response.data.orders.forEach((order) => {
                         order.doppelt = false
                         this.bestellungen.push(order)
-                        this.gesuchteBestellungen = this.bestellungen;
-                        // filter automatisch auf geladene datensaetze angewandt
-                        this.suchen()
                     })
-                    if(typ == 0 || typ == 6) this.testdoppelt()
+                    if(typ == 0 || typ == 6){
+                        this.testdoppelt()
+                    } 
                     //nur doppelte anzeigen
                     if(typ == 6){
                         let bestellungen = []
@@ -470,6 +484,16 @@ export default {
                         }
                         this.bestellungen = bestellungen
                     }
+                    // wenn einzelne bestellung angesehen wird, muessen alle bestellungen geladen werden
+                    //um moegliche konflikte zu sehen u. auch spezifische bestellung zu finden
+                    if(typ == 9){
+                        this.gewaehlteBestellung = this.bestellungen.find(
+                        (element) => element.bnr == this.$route.params.bnr)
+                    }
+                    this.testAbgelaufen()
+                    this.gesuchteBestellungen = this.bestellungen
+                     // filter automatisch auf geladene datensaetze angewandt
+                    this.suchen()
                 })
                 .catch((error) => Helper.handle(error));
             }
@@ -496,22 +520,12 @@ export default {
     beforeMount(){     
         let heute = new Date()
         this.datepickerSetting.value = Helper.formatDate(heute)
-                                                            //0                       3,4                   2                           5                   doppelt = true              1
+                                                           //0                       3,4                   2                           5                   doppelt = true              1
         this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen"];
         if (this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
-            UserService.getOrder(this.$route.params.bnr)
-                .then((response) => {
-                    response.data.order.doppelt = false
-                    this.gewaehlteBestellung = response.data.order
-                })
-                .catch((error) => {
-                    Helper.handle(error);
-                    this.ausgewaehlt = false;
-                    this.msg = ""
-                    Helper.redirect("/admin/bestellungen")
-                })
+            this.holeBestellungen(9)
         }
         else{
             this.ausgewaehlt = false

@@ -117,6 +117,15 @@ class Db {
       })
   }
 
+  //Verfuegbarkeit Auto anpassen
+  updateVerfuegbarkeit (auto, status, callback) {
+    return this.db.get(
+      `UPDATE auto SET verfuegbar = ? WHERE name = ?`,
+      [status, auto], function (err, row) {
+        callback(err, row)
+      })
+  }
+
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,
@@ -197,7 +206,7 @@ class Db {
   getCustomerOrdersHistory (id, callback) {
     let orders = []
     return this.db.all(
-      `SELECT * FROM bestellung WHERE user_fk = ? AND status = 3 AND status = 4`,
+      `SELECT * FROM bestellung WHERE user_fk = ? AND (status = 3 OR status = 4)`,
       [id], function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)
@@ -254,7 +263,7 @@ class Db {
   getOrderHistory (callback) {
     let orders = []
     return this.db.all(
-      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 3 AND status = 4`,
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 3 OR status = 4`,
       function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)

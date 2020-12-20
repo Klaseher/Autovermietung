@@ -155,11 +155,10 @@ export default {
               let is_admin = response.data.role
               sessionStorage.setItem('role', JSON.stringify(response.data.role))
               sessionStorage.setItem('auth', response.data.auth)
-
               if (sessionStorage.getItem('auth') == 'true') {
                 this.disabled = false
-                if (this.$route.params.nextUrl != null) {
-                  this.$router.push(this.$route.params.nextUrl)
+                if (this.$route.params.redirect != '') {
+                  this.$router.push("/" + this.$route.params.redirect.replace(/_/g, "/"))
                 } else {
                   // eslint-disable-next-line camelcase
                   if (is_admin >= 1) {
