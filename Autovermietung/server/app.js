@@ -884,6 +884,7 @@ router.post('/order/:bnr/cost', (req, res) => {
           }
           else{
             for(let i=0;i<costs.length-1;i++){
+              console.log(costs[i])
               if(costs[i].pos > costs[i+1].pos){
                 posMax = costs[i].pos
               }
@@ -892,16 +893,42 @@ router.post('/order/:bnr/cost', (req, res) => {
               }
             }
          }
-          db.addOrderCost(
-            [req.params.bnr, 
-              (posMax+1), 
-              req.body.kosten,
-              req.body.typ,
-              req.body.beschreibung
-            ], (err) => {
-              if (err) return res.status(500).send('Error on the server.')
-              return res.status(200).send({success: true})
-          })    
+         // wenn kosten wegen verspaeteter abgabe schauen, ob bereits vorhanden
+         let vorhanden = false
+         let kosten = ''
+         if(req.body.typ == 3){
+          for(let i=0;i<costs.length;i++){
+            if(costs[i].typ == 3){
+              vorhanden = true
+              kosten = costs[i]
+              break
+            }
+          }
+         }
+         if(vorhanden){
+          db.updateCost(req.body.kosten, kosten.bnr_fk, kosten.pos, req.body.beschreibung, (err) => {
+            console.log(err)
+            if (err) return res.status(500).send('Error on the server.')
+            return res.status(200).send({success: true, changed: true, pos : kosten.pos})
+          })
+         }
+         else{
+            db.addOrderCost(
+              [req.params.bnr, 
+                (posMax+1), 
+                req.body.kosten,
+                req.body.typ,
+                req.body.beschreibung
+              ], (err) => {
+                let cost = ({bnr_fk: req.params.bnr, 
+                  pos: (posMax+1), 
+                  menge: req.body.kosten,
+                  typ: req.body.typ,
+                  beschreibung: req.body.beschreibung})
+                if (err) return res.status(500).send('Error on the server.')
+                return res.status(200).send({success: true, changed: false, cost: cost})
+            })    
+          }
         })
       } else {
         if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')

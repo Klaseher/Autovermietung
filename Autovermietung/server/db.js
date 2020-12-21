@@ -169,7 +169,7 @@ class Db {
   // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
   //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
   //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist --> wenn auto noch nicht zurueckgegeben, aber zahlung noch offen
-
+ 
 
   //Bestellung Kunde erstellen
   createOrder (order, callback) {
@@ -306,6 +306,15 @@ class Db {
       'INSERT INTO kosten (bnr_fk, pos, menge, typ, beschreibung) VALUES (?,?,?,?,?)',
       standard, function (err) {
         callback(err)
+      })
+  }
+
+  //Kosten Hoehe updaten
+  updateCost(menge, bnr_fk, pos, beschreibung, callback){
+    return this.db.get(
+      `UPDATE kosten SET menge = ? WHERE bnr_fk = ? AND pos = ? AND beschreibung = ?`,
+      [menge, bnr_fk, pos, beschreibung], function (err, row) {
+        callback(err, row)
       })
   }
    //Alle offenen Bestellungen Kunde erhalten

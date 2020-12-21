@@ -79,10 +79,35 @@
             <br /> <h3>Adresse: {{gewaehlteBestellung.adresse}}</h3>
             <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kosten</th>
+                        <th>Beschreibung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(kosten, index) in bestellkosten" :key="index">
+                        <td>{{kosten.menge}}€</td>
+                        <td>{{kosten.beschreibung}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
             <button type="cancel" @click="back">Zurueck zur Suche</button>
-            <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
-            <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
+            <div v-if="gewaehlteBestellung.status==0">
+                <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
+                <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
+            </div>   
+            <div v-if="gewaehlteBestellung.status==5">
+                <button @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
+            </div>
+            <div v-if="gewaehlteBestellung.status==1 || gewaehlteBestellung.status==2">
+                <button @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
+            </div>
+            <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
+                <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
+            </div>
          </div>
     </div>
 </template>
@@ -103,6 +128,7 @@ export default {
             gesuchteBestellungen: [],
             gewaehlteBestellung: '',
             schaeden: [],
+            bestellkosten: [],
             class: '',
             bestellungsauswahl: '',
             bestellungstypen: [],
@@ -237,7 +263,7 @@ export default {
                 Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden");
             }
             // offene oder zeitlich ueberfaellige bestellungen
-            else if(bestellung.status == 1 || bestellung.status == 5){
+            else if(bestellung.status == 1 || bestellung.status == 5 || bestellung.status == 2){
                  Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
             }
         },
@@ -259,12 +285,16 @@ export default {
                         this.bestellungen.find(
                         (element) => element.bnr == bnr).status = 3
                         if(!skip) alert("Bestellung wurde erfolgreich abgebrochen.")
+                        this.ausgewaehlt = false
+                        this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                         return
                     }
                 })
                 .catch((error) => {
                     Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen");
                     return
                 })
@@ -321,12 +351,16 @@ export default {
                                 this.bestellungen.find(
                                 (element) => element.bnr == date.bnr).status = 1
                                 alert("Bestellung wurde erfolgreich bestaetigt.")
+                                this.ausgewaehlt = false
+                                this.msg = "Alle Bestellungen"
                                 Helper.redirect("/admin/bestellungen");
                                 return
                             }
                         })
                             .catch((error) => {
                             Helper.handle(error)
+                            this.ausgewaehlt = false
+                            this.msg = "Alle Bestellungen"
                             Helper.redirect("/admin/bestellungen");
                             return
                         })
@@ -355,11 +389,15 @@ export default {
                                             (element) => element.bnr == date.bnr).status = 1
                                             alert("Bestellung wurde erfolgreich bestaetigt.")
                                             Helper.redirect("/admin/bestellungen");
+                                            this.ausgewaehlt = false
+                                            this.msg = "Alle Bestellungen"
                                             return
                                         }
                                     })
                                     .catch((error) => {
                                         Helper.handle(error)
+                                        this.ausgewaehlt = false
+                                        this.msg = "Alle Bestellungen"
                                         Helper.redirect("/admin/bestellungen");
                                         return
                                     })
@@ -369,16 +407,47 @@ export default {
                 })
                 .catch((error) => {
                     Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
                     Helper.redirect("/admin/bestellungen");
                 })
+        },
+
+        finishOrder(){
+        
+        },
+        // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
+        rueckgabe(bnr){
+            Auth.updateStatusOrder(bnr, 2)
+            .then((response) =>{
+                if(response.data.success){
+                    this.bestellungen.find(
+                    (element) => element.bnr == bnr).status = 2
+                    alert("Auto wurde erfolgreich zurueckgegeben")
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
+                    Helper.redirect("/admin/bestellungen");
+                    return
+                }
+            })
+            .catch((error) => {
+            Helper.handle(error)
+            this.ausgewaehlt = false
+            this.msg = "Alle Bestellungen"
+            Helper.redirect("/admin/bestellungen");
+            return
+            })  
         },
         // test, ob bestellungen mehrfach vorhanden sind
         testdoppelt(){
              let verglichen = []
              for(let i=0; i < this.bestellungen.length-1; i++){
                 let value = false
+                if (this.bestellungen[i].status != 0){
+                    continue
+                }
                 for(let j=0; j < verglichen.length; j++){
-                    if( verglichen[j].auto_fk == this.bestellungen[i].auto_fk){
+                    if(verglichen[j].auto_fk == this.bestellungen[i].auto_fk){
                         value = true
                         break
                     }
@@ -387,9 +456,9 @@ export default {
                     continue
                 }
                 verglichen.push(this.bestellungen[i]) 
-                if(this.bestellungen[i].status != 3 && this.bestellungen[i].status != 4){
+                if(this.bestellungen[i].status == 0){
                         for(let h=i+1; h < this.bestellungen.length; h++){
-                            if(this.bestellungen[i].auto_fk == this.bestellungen[h].auto_fk){
+                            if((this.bestellungen[i].auto_fk == this.bestellungen[h].auto_fk) && (this.bestellungen[h].status == 0)){
                                 verglichen.push(this.bestellungen[h])
                                 let startdatum = new Date(this.bestellungen[i].startdatum)
                                 let enddatum = new Date(this.bestellungen[i].enddatum)
@@ -417,7 +486,7 @@ export default {
             }
         },
         // geladene Bestellungen werden geprueft, ob sie offen, aber schon abgelaufen sind --> automatisch abgebrochen
-        testAbgelaufen(){
+        async testAbgelaufen(){
             this.bestellungen.forEach(async (item) => {
                 let heute = new Date()
                 let start = new Date(item.startdatum)
@@ -425,6 +494,93 @@ export default {
                     await this.abbrechen(item.bnr, 1)
                 }
             })
+            return
+        },
+        // geladene Bestellungen werden geprueft, ob sie laufend sind, aber es zu Verspätung bei Autoabgabe durch Kunden kam
+        async testVerspeatung(){
+            this.bestellungen.forEach(async (item) => {
+                let heute = new Date()
+                let enddatum = new Date(item.enddatum) 
+                // nur bestellungen, wo auto noch nicht abgegeben wurde
+                if(enddatum.getTime() < heute.getTime() && (item.status == '1' || item.status == '5')){
+                    let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+                    let diffDays = Math.floor((heute.getTime() - enddatum.getTime())/(oneDay))
+                    await this.setzeVerspaetung(item.bnr, diffDays, item.auto_fk)
+                }
+            })
+            .catch((error) => {
+                Helper.handle(error);
+                this.ausgewaehlt = false
+                this.msg = "Alle Bestellungen"
+                Helper.redirect("/admin/bestellungen");
+            });
+            return
+        },
+        // Preis anpassen je nach ueberzogener Tage
+        async setzeVerspaetung(bnr, tage, autoname){
+            UserService.getCar(autoname)
+                .then(response =>{
+                   let auto = response.data.car
+                   let ueberzugsgebuehren = auto.preis * tage       
+                    Auth.addCost(bnr, 3, ueberzugsgebuehren, tage + ' Tage Verspaetete Abgabe Auto')
+                    .then(response =>{
+                        if(response.data.success){
+                            if(response.data.changed){
+                             let kosten = this.bestellkosten.find(
+                                    (element) => element.bnr == bnr && element.pos == response.data.pos)
+                             kosten.menge = ueberzugsgebuehren
+                             kosten.beschreibung = tage + ' Tage Verspaetete Abgabe Auto'
+                            }
+                            else{
+                                this.bestellkosten.push(response.data.cost)
+                            }
+                            Auth.updateStatusOrder(bnr, 5)
+                            .then((response) =>{
+                                if(response.data.success){
+                                    this.bestellungen.find(
+                                    (element) => element.bnr == bnr).status = 5
+                                    return
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                this.ausgewaehlt = false
+                                this.msg = "Alle Bestellungen"
+                                Helper.redirect("/admin/bestellungen");
+                                return
+                            })  
+                        }
+                    })
+                    .catch((error) => {
+                        Helper.handle(error)
+                        this.ausgewaehlt = false
+                        this.msg = "Alle Bestellungen"
+                        Helper.redirect("/admin/bestellungen");
+                        return
+                    })
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
+                    Helper.redirect("/admin/bestellungen");
+                    return
+                })
+        },
+        holeKosten(bnr){
+            this.bestellkosten = []
+            UserService.getOrderCost(bnr)
+                .then((response) => {
+                    response.data.costs.forEach((cost) => {
+                        this.bestellkosten.push(cost)
+                    })
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
+                    Helper.redirect("/admin/bestellungen/");
+                })
         },
         // faerbe tabelle, wenn doppelte bestellung
         getClass(bestellung) {
@@ -447,6 +603,7 @@ export default {
             this.msg = "Bestellung: " + bnr
             this.gewaehlteBestellung = this.bestellungen.find(
             (element) => element.bnr == bnr)
+            this.holeKosten(bnr)
             this.$router.push("/admin/bestellungen/" + bnr)
         },
         // alle bestellungen von backend holen
@@ -471,7 +628,7 @@ export default {
                         order.doppelt = false
                         this.bestellungen.push(order)
                     })
-                    if(typ == 0 || typ == 6){
+                    if(typ == 0 || typ == 6|| typ == 8){
                         this.testdoppelt()
                     } 
                     //nur doppelte anzeigen
@@ -489,13 +646,23 @@ export default {
                     if(typ == 9){
                         this.gewaehlteBestellung = this.bestellungen.find(
                         (element) => element.bnr == this.$route.params.bnr)
+                        this.holeKosten(this.$route.params.bnr)
                     }
-                    this.testAbgelaufen()
                     this.gesuchteBestellungen = this.bestellungen
-                     // filter automatisch auf geladene datensaetze angewandt
-                    this.suchen()
+                    this.testAbgelaufen().then(
+                        this.testVerspeatung().then(
+                            this.gesuchteBestellungen = this.bestellungen,
+                            // filter automatisch auf geladene datensaetze angewandt
+                            this.suchen()
+                        )
+                    )
+                   
                 })
-                .catch((error) => Helper.handle(error));
+                .catch((error) => {
+                    Helper.handle(error)
+                    Helper.redirect("/admin")
+                })
+               
             }
         },
          // status in text umwandeln
@@ -515,7 +682,25 @@ export default {
            else if(status == 4){
                return 'Erfolgreich abgeschlossene Bestellung'
            }
+           else if(status == 5){
+               return 'Überfällige Bestellung'
+           }
         }   
+    },
+
+    computed: {
+        gesamtkosten(){
+            if(this.bestellkosten.length > 0){
+                let gesamt = 0
+                for(let i=0; i<this.bestellkosten.length;i++){
+                    gesamt += this.bestellkosten[i].menge
+                }
+                return gesamt
+            }
+            else{
+                return ''
+            }
+        }
     },
     beforeMount(){     
         let heute = new Date()
