@@ -106,8 +106,8 @@ class Auth {
     return axios.delete(API_URL + 'order/' + bnr + '/cost/' + pos + '/' + typ)
   }
 
-   //auto schaden hinzufuegen
-   addSchaden (autoname, beschreibung, prio, typ, kosten) {
+  //auto schaden hinzufuegen
+  addSchaden (autoname, beschreibung, prio, typ, kosten) {
     return axios.post(API_URL + 'car/' + autoname + '/schaeden', {
       beschreibung: beschreibung,
       prio: prio,
@@ -116,11 +116,28 @@ class Auth {
     })
   }
 
+  deleteSchaden (autoname, pos) {
+    return axios.delete(API_URL + 'car/' + autoname + '/schaeden/' + pos) 
+  }
+
+  //bestellung kosten hinzufuegen
+  addBnrToSchaden (autoname, beschreibung, prio, typ, kosten, bnr, pos) {
+    return axios.post(API_URL + 'car/' + autoname + '/schaeden', {
+      beschreibung: beschreibung,
+      prio: prio,
+      typ: typ,
+      kosten: kosten,
+      bnr: bnr,
+      pos: pos
+    })
+  }
+
    //schaden auto prioritaet updaten
-   updatePriority (auto, pos, status) {
+   updatePriority (auto, pos, status, bnr) {
     return axios.put(API_URL + 'car/' + auto + '/schaeden/updateStatus', {
       pos: pos,
-      status: status
+      status: status,
+      bnr: bnr
     })
   }
 }

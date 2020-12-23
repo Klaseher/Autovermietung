@@ -237,6 +237,15 @@ class Db {
       })
   }
 
+  //Schaeden holen, die zu Bestellung gehoeren
+  getDamagebyCar (auto, pos, callback) {
+    return this.db.get(
+      `SELECT * FROM schaden WHERE auto_fk = ? AND pos = ?`,
+      [auto,pos], function (err, row) {
+        callback(err, row)
+      })
+  }
+
   //Mitarbeiter: Alle  Bestellungen holen
   getAllOrders (callback) {
     let orders = []
@@ -388,20 +397,38 @@ class Db {
   //schaden hinzufuegen
   createDamage (damage, callback) {
     return this.db.run(
-      'INSERT INTO schaden (auto_fk, pos, beschreibung, prioritaet, typ, hoehe) VALUES (?,?,?,?,?,?)',
+      'INSERT INTO schaden (auto_fk, pos, beschreibung, prioritaet, typ, hoehe, bnr_fk, pos_fk) VALUES (?,?,?,?,?,?,?,?)',
       damage, (err) => {
         callback(err)
       })
   }
 
-    //schaden hinzufuegen
-    updatePriority (update, callback) {
-      return this.db.run(
-        `UPDATE schaden SET prioritaet = ? WHERE auto_fk = ? AND pos = ?`,
-        update, (err) => {
-          callback(err)
-        })
-    }
+   //schaden loeschen
+   deleteDamage (auto, pos, callback) {
+    return this.db.run(
+      `DELETE FROM schaden WHERE auto_fk = ? AND pos = ?`,
+      [auto, pos], function (err) {
+        callback(err)
+      })
+  }
+
+  //schaden hinzufuegen
+  updatePriority (update, callback) {
+    return this.db.run(
+      `UPDATE schaden SET prioritaet = ? WHERE auto_fk = ? AND pos = ?`,
+      update, (err) => {
+        callback(err)
+      })
+  }
+
+  //schaden bnr_fk updaten
+  updateBnrDamage (bnr, auto, pos, callback) {
+  return this.db.run(
+    `UPDATE schaden SET bnr_fk = ? WHERE auto_fk = ? AND pos = ?`,
+    bnr,auto,pos, (err) => {
+      callback(err)
+    })
+  }
 
 
 }

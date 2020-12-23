@@ -296,7 +296,7 @@ export default {
                     //Strafe in Form von 30% der Bestellkosten des zu mietenden Autos 
                     let kosten = 0
                     for(let i =0; i< bestellkosten.length; i++){
-                        if(bestellkosten[i].typ == 0){
+                        if(bestellkosten[i].typ != 0){
                             kosten = bestellkosten[i].menge
                         }
                     }
@@ -305,7 +305,7 @@ export default {
                     Auth.updateStatusOrder(bnr, 2)
                         .then((response) =>{
                             if(response.data.success){
-                                    Auth.addCost(bnr, 5, ((kosten/100)*30), 'Strafkosten fuer Problem bei Abholung des Autos')
+                                    Auth.addCost(bnr, 2, ((kosten/100)*30), 'Strafkosten fuer Problem bei Abholung des Autos')
                                     .then((response) =>{
                                         if(response.data.success){
                                             if(this.$route.params.bnr == ! ''){
@@ -489,8 +489,60 @@ export default {
                 })
         },
 
-        finishOrder(){
-        
+        finishOrder(bnr){
+            if(confirm("Moechten Sie die Bestellung wirklich abschliessen? Haben Sie auch das Auto auf neue Schaeden begutachtet?")){
+                let zusatz = 0
+                let bestaetigen = false
+                for(let i=0; i<this.bestellkosten.length;i++){
+                    if(this.bestellkosten[i].typ != 0){
+                        zusatz += this.bestellkosten[i].menge
+                    }
+                }
+                if(zusatz > 0){
+                    if(confirm("Es sind noch offene Zusatzkosten in Hoehe von " + zusatz + "€ zu zahlen.\nWurden diese bezahlt?")){
+                        bestaetigen = true
+                    }
+                    else{
+                        bestaetigen = false
+                    }
+                }
+                else{
+                    bestaetigen = true
+                }
+                if(bestaetigen){
+                    Auth.updateStatusOrder(bnr, 4)
+                    .then((response) =>{
+                        if(response.data.success){
+                            Auth.updateAusleiheAuto(this.auto.name, 0)
+                            .then((response) =>{
+                                if(response.data.success){
+                                    this.gewaehlteBestellung.status = 4
+                                    this.auto.ausgeliehen = 0
+                                    alert("Auto wurde erfolgreich zurueckgegeben")
+                                    return
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                this.ausgewaehlt = false
+                                this.msg = "Alle Bestellungen"
+                                Helper.redirect("/admin/bestellungen");
+                                return
+                            })  
+                        }
+                    })
+                    .catch((error) => {
+                        Helper.handle(error)
+                        this.ausgewaehlt = false
+                        this.msg = "Alle Bestellungen"
+                        Helper.redirect("/admin/bestellungen");
+                        return
+                    })  
+                }
+                else{
+                    this.rueckgabe(bnr)
+                }
+            }
         },
         // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
         rueckgabe(bnr){
@@ -501,8 +553,7 @@ export default {
                     Auth.updateAusleiheAuto(this.auto.name, 0)
                     .then((response) =>{
                         if(response.data.success){
-                            this.bestellungen.find(
-                            (element) => element.bnr == bnr).status = 2
+                            this.gewaehlteBestellung.status = 2
                             this.auto.ausgeliehen = 0
                             alert("Auto wurde erfolgreich zurueckgegeben")
                             return
@@ -518,11 +569,11 @@ export default {
                 }
             })
             .catch((error) => {
-            Helper.handle(error)
-            this.ausgewaehlt = false
-            this.msg = "Alle Bestellungen"
-            Helper.redirect("/admin/bestellungen");
-            return
+                Helper.handle(error)
+                this.ausgewaehlt = false
+                this.msg = "Alle Bestellungen"
+                Helper.redirect("/admin/bestellungen");
+                return
             })  
           }
         },
@@ -669,45 +720,47 @@ export default {
             UserService.getCar(autoname)
                 .then(response =>{
                    let auto = response.data.car
-                   let ueberzugsgebuehren = auto.preis * tage       
-                    Auth.addCost(bnr, 3, ueberzugsgebuehren, tage + ' Tage Verspaetete Abgabe Auto')
-                    .then(response =>{
-                        if(response.data.success){
-                            if(response.data.changed){
-                                if(this.bestellkosten.length > 0){
-                                    let kosten = this.bestellkosten.find(
-                                            (element) => element.bnr == bnr && element.pos == response.data.pos)
-                                    kosten.menge = ueberzugsgebuehren
-                                    kosten.beschreibung = tage + ' Tage Verspaetete Abgabe Auto'
+                   let ueberzugsgebuehren = auto.preis * tage
+                   if(auto.ausgeliehen){       
+                        Auth.addCost(bnr, 3, ueberzugsgebuehren, tage + ' Tage Verspaetete Abgabe Auto')
+                        .then(response =>{
+                            if(response.data.success){
+                                if(response.data.changed){
+                                    if(this.bestellkosten.length > 0){
+                                        let kosten = this.bestellkosten.find(
+                                                (element) => element.bnr == bnr && element.pos == response.data.pos)
+                                        kosten.menge = ueberzugsgebuehren
+                                        kosten.beschreibung = tage + ' Tage Verspaetete Abgabe Auto'
+                                    }
                                 }
-                            }
-                            else{
-                                this.bestellkosten.push(response.data.cost)
-                            }
-                            Auth.updateStatusOrder(bnr, 5)
-                            .then((response) =>{
-                                if(response.data.success){
-                                    this.bestellungen.find(
-                                    (element) => element.bnr == bnr).status = 5
+                                else{
+                                    this.bestellkosten.push(response.data.cost)
+                                }
+                                Auth.updateStatusOrder(bnr, 5)
+                                .then((response) =>{
+                                    if(response.data.success){
+                                        this.bestellungen.find(
+                                        (element) => element.bnr == bnr).status = 5
+                                        return
+                                    }
+                                })
+                                .catch((error) => {
+                                    Helper.handle(error)
+                                    this.ausgewaehlt = false
+                                    this.msg = "Alle Bestellungen"
+                                    Helper.redirect("/admin/bestellungen");
                                     return
-                                }
-                            })
-                            .catch((error) => {
-                                Helper.handle(error)
-                                this.ausgewaehlt = false
-                                this.msg = "Alle Bestellungen"
-                                Helper.redirect("/admin/bestellungen");
-                                return
-                            })  
-                        }
-                    })
-                    .catch((error) => {
-                        Helper.handle(error)
-                        this.ausgewaehlt = false
-                        this.msg = "Alle Bestellungen"
-                        Helper.redirect("/admin/bestellungen");
-                        return
-                    })
+                                })  
+                            }
+                        })
+                        .catch((error) => {
+                            Helper.handle(error)
+                            this.ausgewaehlt = false
+                            this.msg = "Alle Bestellungen"
+                            Helper.redirect("/admin/bestellungen");
+                            return
+                        })
+                   }
                 })
                 .catch((error) => {
                     Helper.handle(error)
@@ -815,8 +868,8 @@ export default {
                         this.holeAuto(this.gewaehlteBestellung.auto_fk)
                     }
                     this.gesuchteBestellungen = this.bestellungen
-                    this.testAbgelaufen().then(
-                        this.testVerspeatung().then(
+                     this.testVerspeatung().then(
+                        this.testAbgelaufen().then(
                             this.testNichtAngetreten().then()(
                                 this.gesuchteBestellungen = this.bestellungen,
                                 // filter automatisch auf geladene datensaetze angewandt

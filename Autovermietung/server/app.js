@@ -503,7 +503,54 @@ router.get('/car/:autoname/schaeden', (req, res) => {
    }  
 })
 
-// bestellungen abbrechen 
+//schaeden auto loeschen
+router.delete('/car/:autoname/schaeden/:pos', (req, res) => {
+  if(req.params.autoname != null){
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // nur mitarbeiter darf auf schaeden zugreifen
+        if(user.rolle > 0){
+          db.getDamagebyCar(req.params.autoname, req.params.pos, (err, schaden) =>{
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            if (!schaden) return res.status(404).send('No Damage available')
+            db.deleteDamage(req.params.autoname, req.params.pos, (err) => {
+              if (err) return ausgabe.res.status(500).send('Error on the server.')
+              // schauen, ob es zu schaden bestellung gibt u. wenn ja, dann kosten auch dazu loeschen, falls noch offene bestellung
+              if(schaden.bnr_fk != null && schaden.pos_fk != null){
+                db.getOrderbyBnr(schaden.bnr_fk, (err, order) =>{
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  if (!order || order.status == 3 || order.status == 4) return res.status(200).send({success: true, cost: false})
+                  db.deleteOrderCost (schaden.bnr_fk, schaden.pos_fk, (err) => {
+                    if (err) return ausgabe.res.status(500).send('Error on the server.')
+                    return ausgabe.res.status(200).send({success: true, cost: true})
+                  })
+                })
+              }
+              else{
+                return ausgabe.res.status(200).send({success: true})
+              }
+            })
+          })
+        }
+        else{
+          return ausgabe.res.status(401).send('Unauthorized access')  
+        }
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+   }else{
+       return res.status(404).send('Requested resource is not available')
+   }  
+})
+
+// schaden fixen 
 router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
   if(req.body.status != null &&  req.body.pos != null){
     let token = req.cookies.jwt
@@ -513,29 +560,34 @@ router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
         user = ausgabe.user
         // nur mitarbeiter
         if(user.rolle > 0){
-          db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
+          // kann nur autoschaeden fixen, wenn auto auch in laden vorhanden ist (d.h. nicht ausgeliehen)
+          db.getCar(req.params.autoname, (err, auto) =>{
             if (err) return ausgabe.res.status(500).send('Error on the server.')
-            //schauen, ob noch offene fatale schaeden vorhanden --> wenn nicht, dann wird autostatus geupdated zu verfuebar
-            db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
+            if (!auto || auto.ausgeliehen) return res.status(404).send('Cant fix damage when car is rented')
+            db.updatePriority([req.body.status, req.params.autoname, req.body.pos], (err) => {
               if (err) return ausgabe.res.status(500).send('Error on the server.')
-              let fatal = false
-              for(let i=0;i<cardamage.length;i++){
-                if(cardamage[i].prioritaet == 0){
-                  fatal = true
-                  break
+              //schauen, ob noch offene fatale schaeden vorhanden --> wenn nicht, dann wird autostatus geupdated zu verfuebar
+              db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                let fatal = false
+                for(let i=0;i<cardamage.length;i++){
+                  if(cardamage[i].prioritaet == 0){
+                    fatal = true
+                    break
+                  }
                 }
-              }
-              // auto wieder verfuegbar
-              if (cardamage.length == 0 || !fatal){
-                db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
-                  console.log(err)
-                  if (err) return ausgabe.res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true, verfuegbar: true})
-                })
-              } 
-              else{
-                return res.status(200).send({success: true})
-              }
+                // auto wieder verfuegbar
+                if (cardamage.length == 0 || !fatal){
+                  db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
+                    console.log(err)
+                    if (err) return ausgabe.res.status(500).send('Error on the server.')
+                    return res.status(200).send({success: true, verfuegbar: true})
+                  })
+                } 
+                else{
+                  return res.status(200).send({success: true})
+                }
+              })
             })
           })
         }
@@ -611,13 +663,21 @@ router.post('/car/:autoname/schaeden', (req, res) => {
           }
           // nur mitarbeiter darf schaeden hinzufuegen
           if(user.rolle > 0){
+            let bnr = null
+            let pos = null
+            if(req.body.bnr != null && req.body.pos != null){
+              bnr = req.body.bnr
+              pos = req.body.pos
+            }
             db.createDamage([
               req.params.autoname,
               (posMax+1),
               req.body.beschreibung,
               req.body.prio,
               req.body.typ,
-              req.body.kosten
+              req.body.kosten,
+              bnr,
+              pos
             ], (err) => {
               console.log(err)
               if (err) return ausgabe.res.status(500).send('Error on the server.')
@@ -821,11 +881,16 @@ router.get('/order/:bnr/car/:autoname', (req, res) => {
       user = ausgabe.user
       // wenn mind. mitarbeiter
       if (user.rolle > 0){
-        db.getDamagebyBnrAndCar(req.params.bnr, req.params.autoname, (err, schaeden) => {
-          console.log(schaeden)
+        // test, ob es bestellung mit bnr gibt, die noch offen ist
+        db.getOrderbyBnr(req.params.bnr, (err, order) => {
           if (err) return res.status(500).send('Error on the server.')
-          if (!schaeden) return res.status(404).send('No Orders available')
-          return res.status(200).send({success: true, schaeden: schaeden})
+          if (!order || order.status == 3 || order.status == 4) return res.status(200).send({success:false})
+          db.getDamagebyBnrAndCar(req.params.bnr, req.params.autoname, (err, schaeden) => {
+            console.log(schaeden)
+            if (err) return res.status(500).send('Error on the server.')
+            if (!schaeden) return res.status(404).send('No Orders available')
+            return res.status(200).send({success: true, schaeden: schaeden})
+          })
         })
       } 
       else{
@@ -908,9 +973,9 @@ router.get('/order/:bnr/cost', (req, res) => {
   }  
 })
 
-//kosten holen
+//kosten erstellen
 router.post('/order/:bnr/cost', (req, res) => {
-  if(req.params.bnr != null && req.body.typ != null && req.body.kosten){
+  if(req.params.bnr != null && req.body.typ != null && req.body.kosten != null){
     let token = req.cookies.jwt
     //Wenn Token vorhanden, Verifizerung, ob Token gültig
     confirmToken(token,res, function(ausgabe){
