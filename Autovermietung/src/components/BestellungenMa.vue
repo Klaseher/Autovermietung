@@ -95,14 +95,19 @@
             </table>
             <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
             <button type="cancel" @click="back">Zurueck zur Suche</button>
+            <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1) && auto.ausgeliehen ==0">
+                <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">Abbrechen</button>
+            </div>
             <div v-if="gewaehlteBestellung.status==0">
-                <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
                 <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            </div>   
-            <div v-if="gewaehlteBestellung.status==5">
+            </div>
+            <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
+                <button @click="ausleihen(auto.name)">Auto ausleihen</button>
+            </div> 
+            <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
                 <button @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
             </div>
-            <div v-if="gewaehlteBestellung.status==1 || gewaehlteBestellung.status==2">
+            <div v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==1) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
                 <button @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
             </div>
             <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
@@ -132,6 +137,7 @@ export default {
             class: '',
             bestellungsauswahl: '',
             bestellungstypen: [],
+            auto: '',
             bnr: '',
             vorname: '',
             nachname: '',
@@ -267,7 +273,7 @@ export default {
                  Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
             }
         },
-          abbrechen(bnr, skip) {
+          abbrechen(bnr, skip, auto, bestellkosten) {
             let bestaetigen = false 
             if(!skip){
                 bestaetigen = confirm("Moechten Sie die Bestellung BNR: " + bnr + " wirklich abbrechen?")
@@ -276,28 +282,98 @@ export default {
                 bestaetigen = true  
             }
             if(bestaetigen){
-                Auth.updateStatusOrder(bnr, 3)
-                .then(response =>{
-                    if(response.data.success){
-                        if(this.$route.params.bnr != ""){
-                            this.gewaehlteBestellung.status = 3
+                let bestellung = 0
+                 if(this.$route.params.bnr == ! ''){
+                    bestellung = this.gewaehlteBestellung
+                    bestellkosten = this.bestellkosten
+                    auto = this.auto
+                }
+                else{
+                    bestellung = this.bestellungen.find((element) => element.bnr == bnr)
+                }             
+                // wenn vor ausleihe des autos vor ort probleme mit kunden (z.b. kann nicht bezahlen), dann abbruch mit strafzahlung
+                if(auto.ausgeliehen == 0 && bestellung.status == 1){
+                    //Strafe in Form von 30% der Bestellkosten des zu mietenden Autos 
+                    let kosten = 0
+                    for(let i =0; i< bestellkosten.length; i++){
+                        if(bestellkosten[i].typ == 0){
+                            kosten = bestellkosten[i].menge
                         }
-                        this.bestellungen.find(
-                        (element) => element.bnr == bnr).status = 3
-                        if(!skip) alert("Bestellung wurde erfolgreich abgebrochen.")
+                    }
+                    if(!skip) alert("Es wird wegen der kurzfristign Absage eine Strafzahlung in Hoehe von " + ((kosten/100)*30) + "€ faellig")
+                    bestellung.status = 2
+                    Auth.updateStatusOrder(bnr, 2)
+                        .then((response) =>{
+                            if(response.data.success){
+                                    Auth.addCost(bnr, 5, ((kosten/100)*30), 'Strafkosten fuer Problem bei Abholung des Autos')
+                                    .then((response) =>{
+                                        if(response.data.success){
+                                            if(this.$route.params.bnr == ! ''){
+                                                // daten aktualisieren, indem in array eingefuegt
+                                                this.bestellkosten.push(response.data.cost)
+                                            }
+                                            // Standarkosten loeschen, da Kunde nie auto ausgeliehen hat
+                                            Auth.deleteCost(bnr, 0, null)
+                                            .then((response) =>{
+                                                if(response.data.success){
+                                                     if(this.$route.params.bnr == ! ''){
+                                                        // daten aktualisieren, indem aus array geloescht 
+                                                        for(let i=0; i<this.bestellkosten.length;i++){
+                                                            if(this.bestellkosten[i].typ == 0){
+                                                                this.bestellkosten.splice(i,1)
+                                                                break
+                                                            }
+                                                        }
+                                                     }
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                Helper.handle(error)
+                                                this.ausgewaehlt = false;
+                                                this.msg = "Alle Bestellungen"
+                                                Helper.redirect("/admin/bestellungen");
+                                            })
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        Helper.handle(error)
+                                        this.ausgewaehlt = false;
+                                        this.msg = "Alle Bestellungen"
+                                        Helper.redirect("/admin/bestellungen");
+                                        })
+                            }
+                            })
+                            .catch((error) => {
+                            Helper.handle(error)
+                            this.ausgewaehlt = false;
+                            this.msg = "Alle Bestellungen"
+                            Helper.redirect("/admin/bestellungen");
+                    })
+                }
+                else{
+                    Auth.updateStatusOrder(bnr, 3)
+                    .then(response =>{
+                        if(response.data.success){
+                            if(this.$route.params.bnr != ""){
+                                this.gewaehlteBestellung.status = 3
+                            }
+                            this.bestellungen.find(
+                            (element) => element.bnr == bnr).status = 3
+                            if(!skip) alert("Bestellung wurde erfolgreich abgebrochen.")
+                            this.ausgewaehlt = false
+                            this.msg = "Alle Bestellungen"
+                            Helper.redirect("/admin/bestellungen");
+                            return
+                        }
+                    })
+                    .catch((error) => {
+                        Helper.handle(error)
                         this.ausgewaehlt = false
                         this.msg = "Alle Bestellungen"
                         Helper.redirect("/admin/bestellungen");
                         return
-                    }
-                })
-                .catch((error) => {
-                    Helper.handle(error)
-                    this.ausgewaehlt = false
-                    this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen");
-                    return
-                })
+                    })
+                }
             }
         },
         //Bestellung akzeptieren --> 0 zu 1
@@ -371,7 +447,7 @@ export default {
                         this.schaeden.push.apply(this.schaeden, response.data.cardamage)
                         for(let i=0;i<this.schaeden.length;i++){
                                 if(this.schaeden[i].prioritaet == 0){
-                                if(confirm("Das Auto kann nicht ausgeleihen werden wegen offener fataler Probleme.\nMoechten Sie diese jetzt bearbeiten?")){
+                                if(confirm("Das Auto kann nicht ausgeliehen werden wegen offener fataler Probleme.\nMoechten Sie diese jetzt bearbeiten?")){
                                     val = true
                                     Helper.redirect("/admin/" + date.auto_fk + "/schaden");
                                     return
@@ -418,16 +494,27 @@ export default {
         },
         // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
         rueckgabe(bnr){
+          if(confirm("Wurde das Auto wirklick vom Kunden zurueckgegeben?")){                
             Auth.updateStatusOrder(bnr, 2)
             .then((response) =>{
                 if(response.data.success){
-                    this.bestellungen.find(
-                    (element) => element.bnr == bnr).status = 2
-                    alert("Auto wurde erfolgreich zurueckgegeben")
-                    this.ausgewaehlt = false
-                    this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen");
-                    return
+                    Auth.updateAusleiheAuto(this.auto.name, 0)
+                    .then((response) =>{
+                        if(response.data.success){
+                            this.bestellungen.find(
+                            (element) => element.bnr == bnr).status = 2
+                            this.auto.ausgeliehen = 0
+                            alert("Auto wurde erfolgreich zurueckgegeben")
+                            return
+                        }
+                    })
+                    .catch((error) => {
+                        Helper.handle(error)
+                        this.ausgewaehlt = false
+                        this.msg = "Alle Bestellungen"
+                        Helper.redirect("/admin/bestellungen");
+                        return
+                    })  
                 }
             })
             .catch((error) => {
@@ -437,6 +524,31 @@ export default {
             Helper.redirect("/admin/bestellungen");
             return
             })  
+          }
+        },
+        // mitarbeiter bestaetigt dies, wenn auto ausgeliehen u. kunde standarkosten vor ort bezahlt hat
+        ausleihen(auto){
+            let gesamt = 0
+            for(let i=0; i<this.bestellkosten.length;i++){
+                gesamt += this.bestellkosten[i].menge
+            }
+            if(confirm("Wurden die Kosten in Hoehe von " + gesamt + "€ bezahlt und ist das Auto bereit fuer die Ausleihe?")){
+                Auth.updateAusleiheAuto(auto, 1)
+                .then((response) =>{
+                    if(response.data.success){
+                        alert("Das Auto kann nun ausgeliehen werden")
+                        this.auto.ausgeliehen = 1
+                        return
+                    }
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
+                    Helper.redirect("/admin/bestellungen");
+                    return
+                })  
+            }
         },
         // test, ob bestellungen mehrfach vorhanden sind
         testdoppelt(){
@@ -496,6 +608,42 @@ export default {
             })
             return
         },
+        // geladene Bestellungen werden geprueft, ob sie laufend sind, aber auto noch nicht abgeholt wurde sind --> automatisch abgebrochen mit strafe
+        async testNichtAngetreten(){
+            this.bestellungen.forEach(async (item) => {
+                let heute = new Date()
+                let start = new Date(item.startdatum)
+                start.setDate(start.getDate() + 1);
+                UserService.getCar(item.auto_fk)
+                .then(response =>{
+                    let auto = response.data.car 
+                    if(start.getTime() <= heute.getTime() && item.status == '1' && auto.ausgeliehen == 0){
+                         let bestellkosten = []
+                         UserService.getOrderCost(item.bnr)
+                        .then((response) => {
+                            response.data.costs.forEach((cost) => {
+                                bestellkosten.push(cost)
+                            })
+                            this.abbrechen(item.bnr, 1, auto, bestellkosten)
+                        })
+                        .catch((error) => {
+                            Helper.handle(error)
+                            this.ausgewaehlt = false
+                            this.msg = "Alle Bestellungen"
+                            Helper.redirect("/admin/bestellungen/");
+                        })
+                    }
+                })
+                .catch((error) => {
+                    Helper.handle(error)
+                    this.ausgewaehlt = false
+                    this.msg = "Alle Bestellungen"
+                    Helper.redirect("/admin/bestellungen/");
+                })
+                
+            })
+            return
+        },
         // geladene Bestellungen werden geprueft, ob sie laufend sind, aber es zu Verspätung bei Autoabgabe durch Kunden kam
         async testVerspeatung(){
             this.bestellungen.forEach(async (item) => {
@@ -526,10 +674,12 @@ export default {
                     .then(response =>{
                         if(response.data.success){
                             if(response.data.changed){
-                             let kosten = this.bestellkosten.find(
-                                    (element) => element.bnr == bnr && element.pos == response.data.pos)
-                             kosten.menge = ueberzugsgebuehren
-                             kosten.beschreibung = tage + ' Tage Verspaetete Abgabe Auto'
+                                if(this.bestellkosten.length > 0){
+                                    let kosten = this.bestellkosten.find(
+                                            (element) => element.bnr == bnr && element.pos == response.data.pos)
+                                    kosten.menge = ueberzugsgebuehren
+                                    kosten.beschreibung = tage + ' Tage Verspaetete Abgabe Auto'
+                                }
                             }
                             else{
                                 this.bestellkosten.push(response.data.cost)
@@ -566,6 +716,19 @@ export default {
                     Helper.redirect("/admin/bestellungen");
                     return
                 })
+        },
+        
+        async holeAuto(autoname){
+            UserService.getCar(autoname)
+            .then(response =>{
+                this.auto = response.data.car 
+            })
+            .catch((error) => {
+                Helper.handle(error)
+                this.ausgewaehlt = false
+                this.msg = "Alle Bestellungen"
+                Helper.redirect("/admin/bestellungen/");
+            })
         },
         holeKosten(bnr){
             this.bestellkosten = []
@@ -604,7 +767,9 @@ export default {
             this.gewaehlteBestellung = this.bestellungen.find(
             (element) => element.bnr == bnr)
             this.holeKosten(bnr)
-            this.$router.push("/admin/bestellungen/" + bnr)
+            this.holeAuto(this.gewaehlteBestellung.auto_fk).then(
+                this.$router.push("/admin/bestellungen/" + bnr)
+            )
         },
         // alle bestellungen von backend holen
         holeBestellungen(typ){
@@ -647,16 +812,18 @@ export default {
                         this.gewaehlteBestellung = this.bestellungen.find(
                         (element) => element.bnr == this.$route.params.bnr)
                         this.holeKosten(this.$route.params.bnr)
+                        this.holeAuto(this.gewaehlteBestellung.auto_fk)
                     }
                     this.gesuchteBestellungen = this.bestellungen
                     this.testAbgelaufen().then(
                         this.testVerspeatung().then(
-                            this.gesuchteBestellungen = this.bestellungen,
-                            // filter automatisch auf geladene datensaetze angewandt
-                            this.suchen()
+                            this.testNichtAngetreten().then()(
+                                this.gesuchteBestellungen = this.bestellungen,
+                                // filter automatisch auf geladene datensaetze angewandt
+                                this.suchen()
+                            )
                         )
-                    )
-                   
+                    ) 
                 })
                 .catch((error) => {
                     Helper.handle(error)

@@ -554,6 +554,35 @@ router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
    }  
 })
 
+router.put('/car/:autoname/updateAusleihe', (req, res) => {
+  if(req.body.status != null){
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // nur mitarbeiter
+        if(user.rolle > 0){
+          db.updateAutoAusleihe(req.body.status, req.params.autoname, (err) => {
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            return res.status(200).send({success: true})
+          })
+        }
+        else{
+          return ausgabe.res.status(401).send('Unauthorized access')  
+        }
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+   }else{
+       return res.status(404).send('Requested resource is not available')
+   }  
+})
+
 //schaeden auto erstellen
 router.post('/car/:autoname/schaeden', (req, res) => {
   console.log(req.body)
@@ -652,25 +681,43 @@ router.post('/rent/', (req, res) => {
           // darf nur eine aktive bestellung von kunden vorhanden sein --> aktiv = bestellung, deren status nicht "abgeschlossen" (3,4) ist
           if (bestellungen.length > 0) return res.status(500).send('You are already having an active order.\nGo into the account tab for more information on your orders')
           timestamp = moment.utc() //erstellzeitraum bestellung, damit mitarbeiter danach filtern kann
-          db.createOrder([
-            user.id,
-            req.body.auto,
-            req.body.start,
-            req.body.ende,
-            0,
-            moment(timestamp).format('YYYY/MM/DD'),
-          ], (err, value) => {
-            if (err || !value) return res.status(500).send('Error on the server.')
-            db.addCost([
-              value,
-              0,
-              req.body.kosten,
-              0,
-              'Standardkosten',
-            ], (err) => {
-              if (err) return res.status(500).send('Error on the server.')
-              return res.status(200).send({success: true})
-            })
+          // kunde darf nicht mehr als 3 Bestellungen an einem Tag abbrechen --> sonst koennte kunde
+          // staendig bestellung erstellen, sofort abbrechen (wdh.)
+          db.getCustomerOrdersHistory(user.id, (err, bestellungen) => {
+            if (err) return res.status(500).send('Error on the server.')
+            let heute = new Date()
+            let counter = 0
+            for(let i=0;i<bestellungen.length-1;i++){
+              let zeitstempel = new Date(bestellungen[i].zeitstempel)
+              if(heute.getTime() == zeitstempel.getTime()){
+                counter ++
+              }
+            }
+            if(counter > 3){
+              return res.status(500).send('We identified unusual behaviour on your account.\nTherefore you will not be able to do any more orders for today')
+            }
+            else{
+              db.createOrder([
+                user.id,
+                req.body.auto,
+                req.body.start,
+                req.body.ende,
+                0,
+                moment(timestamp).format('YYYY/MM/DD'),
+              ], (err, value) => {
+                if (err || !value) return res.status(500).send('Error on the server.')
+                db.addCost([
+                  value,
+                  0,
+                  req.body.kosten,
+                  0,
+                  'Standardkosten',
+                ], (err) => {
+                  if (err) return res.status(500).send('Error on the server.')
+                  return res.status(200).send({success: true})
+                })
+              })
+            }
           })
         })
       }else{
@@ -774,13 +821,11 @@ router.get('/order/:bnr/car/:autoname', (req, res) => {
       user = ausgabe.user
       // wenn mind. mitarbeiter
       if (user.rolle > 0){
-        console.log(req.params.bnr, req.params.autoname)
-        db.getOrderbyBnrAndCar(req.params.bnr, req.params.autoname, (err, order) => {
-          console.log(err)
-          console.log(order)
+        db.getDamagebyBnrAndCar(req.params.bnr, req.params.autoname, (err, schaeden) => {
+          console.log(schaeden)
           if (err) return res.status(500).send('Error on the server.')
-          if (!order) return res.status(200).send({success: false})
-          return res.status(200).send({success: true})
+          if (!schaeden) return res.status(404).send('No Orders available')
+          return res.status(200).send({success: true, schaeden: schaeden})
         })
       } 
       else{
@@ -906,7 +951,8 @@ router.post('/order/:bnr/cost', (req, res) => {
           }
          }
          if(vorhanden){
-          db.updateCost(req.body.kosten, kosten.bnr_fk, kosten.pos, req.body.beschreibung, (err) => {
+          db.updateCost(req.body.kosten, req.params.bnr, kosten.pos, req.body.beschreibung, (err) => {
+            console.log(req.body.beschreibung)
             console.log(err)
             if (err) return res.status(500).send('Error on the server.')
             return res.status(200).send({success: true, changed: true, pos : kosten.pos})
@@ -939,6 +985,49 @@ router.post('/order/:bnr/cost', (req, res) => {
     })
   }else{
       return res.status(404).send('Requested resource is not available')
+  }  
+})
+
+router.delete('/order/:bnr/cost/:pos/:typ', (req, res) => {
+  if(req.params.bnr != null){
+    let token = req.cookies.jwt
+    //Wenn Token vorhanden, Verifizerung, ob Token gültig
+    confirmToken(token,res, function(ausgabe){
+      if(ausgabe.role != -1) {
+        user = ausgabe.user
+        // zum testen, ob kunde kosten loeschen darf
+        db.getOrderCost(req.params.bnr, (err, costs) => {
+          if (err || !costs) return res.status(500).send('Error on the server.')
+          //Kunde darf nur auf eigene Bestellungen zugreifen
+          if(user.rolle == 0 && (user.id != costs[0].user_fk)){
+              res.status(401).send('Unauthorized access')
+          }
+          else{
+            if(req.params.pos != null && req.params.typ == null){
+              db.deleteOrderCost(req.params.bnr, req.params.pos, (err) => {
+                if (err ) return res.status(500).send('Error on the server.')
+                return res.status(200).send({success: true})
+              })
+            }
+            else{
+              console.log(req.params.bnr, req.params.typ, req.params.pos)
+              db.deleteFirstOrderCost(req.params.bnr, req.params.typ, (err) => {
+                console.log(err)
+                if (err ) return res.status(500).send('Error on the server.')
+                return res.status(200).send({success: true})
+              })
+            }
+          }
+        })  
+      } else {
+        if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+        else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+        else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+        else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+      }
+    })
+  }else{
+       return res.status(404).send('Requested resource is not available')
   }  
 })
 

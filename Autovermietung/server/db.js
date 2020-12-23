@@ -224,14 +224,18 @@ class Db {
       })
   }
 
-   //Bestellung testen, ob bnr u. autoname hat
-   getOrderbyBnrAndCar (bnr, autoname, callback) {
-    return this.db.get(
-     `SELECT * from bestellung WHERE bnr = ? AND auto_fk = ?`,
-     [bnr,autoname], function (err, row) {
-       callback(err, row)
-     })
- }
+   //Schaeden holen, die zu Bestellung gehoeren
+   getDamagebyBnrAndCar (bnr, autoname, callback) {
+    let schaeden = []
+    return this.db.all(
+      `SELECT * FROM schaden WHERE bnr_fk = ? AND auto_fk = ?`,
+      [bnr,autoname], function (err, rows) {
+        rows.forEach(function (row) {
+          schaeden.push(row)
+        })
+        callback(err, schaeden)
+      })
+  }
 
   //Mitarbeiter: Alle  Bestellungen holen
   getAllOrders (callback) {
@@ -284,6 +288,14 @@ class Db {
       })
   }
 
+  updateAutoAusleihe(status,auto, callback){
+    return this.db.get(
+      `UPDATE auto SET ausgeliehen = ? WHERE name = ?`,
+      [status, auto], function (err) {
+        callback(err)
+      })
+  }
+
   //Bestellungsstatus aendern
   updateStatusOrder(bnr,status,callback){
     return this.db.get(
@@ -309,12 +321,30 @@ class Db {
       })
   }
 
+  // bestimmten kosteneintrag loeschen
+  deleteOrderCost (bnr, pos, callback) {
+    return this.db.run(
+      `DELETE FROM kosten WHERE bnr_fk = ? AND pos = ?`,
+      [bnr, pos], function (err) {
+        callback(err)
+      })
+  }
+
+  // letztes Auftreten des Kostentyps loeschen
+  deleteFirstOrderCost (bnr, typ, callback) {
+    return this.db.run(
+      `DELETE FROM kosten WHERE bnr_fk = ? AND typ = ? AND pos = (SELECT MAX(pos) FROM kosten WHERE bnr_fk = ? AND typ = ?);`,
+      [bnr, typ, bnr, typ], function (err) {
+        callback(err)
+      })
+  }
+
   //Kosten Hoehe updaten
   updateCost(menge, bnr_fk, pos, beschreibung, callback){
-    return this.db.get(
-      `UPDATE kosten SET menge = ? WHERE bnr_fk = ? AND pos = ? AND beschreibung = ?`,
-      [menge, bnr_fk, pos, beschreibung], function (err, row) {
-        callback(err, row)
+    return this.db.run(
+      `UPDATE kosten SET menge = ?, beschreibung = ? WHERE bnr_fk = ? AND pos = ?`,
+      [menge, beschreibung, bnr_fk, pos], function (err) {
+        callback(err)
       })
   }
    //Alle offenen Bestellungen Kunde erhalten

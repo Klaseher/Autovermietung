@@ -83,7 +83,8 @@ export default {
             let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
             let diffDays = Math.floor((start.getTime() - heute.getTime())/(oneDay))
             if(confirm("Meochten Sie die Bestellung wirklich abbrechen?")){
-                if(diffDays < 8){
+                // nur moegliche strafkosten bei bereits von mitarbeiter bestaetigten bestellungen
+                if(diffDays < 8 && this.gewaehlteBestellung.status == 1){
                     let zeit = new Date(this.gewaehlteBestellung.zeitstempel)
                     diffDays = Math.floor((heute.getTime() - zeit.getTime())/(oneDay))
                     if(diffDays < 4){
@@ -120,10 +121,31 @@ export default {
                                           Auth.addCost(this.$route.params.bnr, 5, ((kosten/100)*10), 'Strafkosten fuer kurzfristiges Abbrechen')
                                             .then((response) =>{
                                                 if(response.data.success){
-                                                    alert("Bestellung wurde abgebrochen. Jedoch muessen Sie eine Strafe zahlen")
-                                                    this.ausgewaehlt = false;
-                                                    this.msg = "Alle Bestellungen"
-                                                    Helper.redirect("/dashboard/bestellungen");
+                                                    // daten aktualisieren, indem in array eingefuegt
+                                                    this.bestellkosten.push(response.data.cost)
+                                                    // Standarkosten loeschen, da Kunde nie auto ausgeliehen hat
+                                                    Auth.deleteCost(this.$route.params.bnr, 0, null)
+                                                    .then((response) =>{
+                                                        if(response.data.success){
+                                                            // daten aktualisieren, indem aus array geloescht 
+                                                            for(let i=0; i<this.bestellkosten.length;i++){
+                                                                if(this.bestellkosten[i].typ == 0){
+                                                                    this.bestellkosten.splice(i,1)
+                                                                    break
+                                                                }
+                                                            }
+                                                            alert("Bestellung wurde abgebrochen. Jedoch muessen Sie eine Strafe zahlen")
+                                                            this.ausgewaehlt = false;
+                                                            this.msg = "Alle Bestellungen"
+                                                            Helper.redirect("/dashboard/bestellungen");
+                                                        }
+                                                    })
+                                                    .catch((error) => {
+                                                        Helper.handle(error)
+                                                        this.ausgewaehlt = false;
+                                                        this.msg = "Alle Bestellungen"
+                                                        Helper.redirect("/dashboard/bestellungen");
+                                                    })
                                                 }
                                             })
                                             .catch((error) => {
@@ -219,7 +241,7 @@ export default {
         isDisabled() {
             let heute = new Date()
             let start = new Date(this.gewaehlteBestellung.startdatum)
-            if (start.getTime() <= heute.getTime() || this.gewaehlteBestellung.status != 0){
+            if (start.getTime() <= heute.getTime() || this.gewaehlteBestellung.status != 0 || this.gewaehlteBestellung.status != 1){
                 return true
             }
             else{
@@ -230,9 +252,6 @@ export default {
             if(this.bestellkosten.length > 0){
                 let gesamt = 0
                 for(let i=0; i<this.bestellkosten.length;i++){
-                    if(this.gewaehlteBestellung.status == 2 && this.bestellkosten[i].typ == 0){
-                        continue
-                    }
                     gesamt += this.bestellkosten[i].menge
                 }
                 return gesamt

@@ -86,6 +86,13 @@ class Auth {
     })
   }
 
+  // auto ausleihstatus anpassen
+  updateAusleiheAuto(auto, status){
+    return axios.put(API_URL + 'car/' + auto + '/updateAusleihe', {
+      status: status
+    })
+  }
+
   //bestellung kosten hinzufuegen
   addCost (bnr, typ, kosten, beschreibung) {
     return axios.post(API_URL + 'order/' + bnr + '/cost', {
@@ -93,6 +100,10 @@ class Auth {
       kosten: kosten,
       beschreibung: beschreibung
     })
+  }
+
+  deleteCost (bnr, typ, pos) {
+    return axios.delete(API_URL + 'order/' + bnr + '/cost/' + pos + '/' + typ)
   }
 
    //auto schaden hinzufuegen

@@ -165,6 +165,7 @@ export default {
 
                 }
             }
+
             //Hier Bestellung in Backend erstellen mit Status '0'
             //Hier auch noch prüfen, dass Kunde nur eine Bestellung gleichzeitig in DB haben darf 
             //--> sonst könnte ein Kunde einfach alles auf einmal mieten

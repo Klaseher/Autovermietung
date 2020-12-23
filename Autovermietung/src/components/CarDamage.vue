@@ -38,6 +38,7 @@
                         <th>Typ</th>
                         <th>Prioritaet</th>
                         <th>Kosten in €</th>
+                        <th>Bestellung</th>
                         <th>Abgearbeitet?</th>
                         <th>Loeschen</th>
                     </tr>
@@ -48,6 +49,7 @@
                         <td>{{reverseTyp(schaden.typ)}}</td>
                         <td>{{reversePrio(schaden.prioritaet)}}</td>
                         <td>{{schaden.hoehe}}</td>
+                        <td>{{schaden.bnr_fk}}</td>
                         <td><button @click="updateCheck(schaden)">Problem beheben</button></td>
                         <td><button @click="loescheSchaden">Loeschen</button></td>
                     </tr>
@@ -242,42 +244,39 @@ export default {
     },
     beforeMount(){
         // kann ohne oder mit bestellungsreferenz aufrufen --> mit referenz kann schaden hinzugefuegt werden
-        
+        this.prioTypen = ["Gering", "Mittel", "Groß", "Fatal"]
+        this.schadenstypen = ["Beschaedigung", "Tank", "Sauberkeit"]
         if(!this.$route.params.bnr){
             this.allgemein = true
             this.msg = "Uebersicht Schaeden Auto: " + this.$route.params.autoname
-        }
-        else{
-            this.allgemein = false
-            this.msg = "Uebersicht Schaeden Auto: " + this.$route.params.autoname + " BNR: " + this.$route.params.bnr
-            //hier noch testen, ob es zu bnr auch noch bestellung mit passender auto_fk gibt -->
-        }
-          this.prioTypen = ["Gering", "Mittel", "Groß", "Fatal"]
-          this.schadenstypen = ["Beschaedigung", "Tank", "Sauberkeit"]
-          //hier schaeden holen fuer auto
+            //hier schaeden holen fuer auto
             UserService.getSchaeden(this.$route.params.autoname)
             .then((response) =>{
                 this.schaeden.push.apply(this.schaeden, response.data.cardamage)    
-                if(!this.allgemein){
-                    UserService.testOrder(this.$route.params.bnr, this.$route.params.autoname)
-                    .then((response) => {
-                        if(!response.data.success){
-                            alert("Zum gewaehlten Auto gibt es die gewaehlte Bestellung nicht!")
-                            Helper.redirect("/admin")
-                        }
-                    })
-                    .catch((error) => {
-                        Helper.handle(error);
-                        this.ausgewaehlt = false;
-                        this.msg = ""
-                        Helper.redirect("/admin/bestellungen")
-                    })  
-                }
             })
             .catch((error) => {
                 Helper.handle(error)
                 Helper.redirect("/admin");
             })
+        }
+        else{
+            this.allgemein = false
+            this.msg = "Uebersicht Schaeden Auto: " + this.$route.params.autoname + " BNR: " + this.$route.params.bnr
+            //hier noch testen, ob es zu bnr auch noch bestellung mit passender auto_fk gibt
+            //--> nur schaden holen, die auch dazugehoerige (unabhaengige) kosten in kosten-tabelle haben
+            UserService.getDamageCost(this.$route.params.bnr, this.$route.params.autoname)
+            .then((response) => {
+                if(response.data.success){
+                    this.schaeden.push.apply(this.schaeden, response.data.schaeden)    
+                }
+            })
+            .catch((error) => {
+                Helper.handle(error);
+                this.ausgewaehlt = false;
+                this.msg = ""
+                Helper.redirect("/admin/bestellungen")
+            })  
+        }
     }
 }
  
