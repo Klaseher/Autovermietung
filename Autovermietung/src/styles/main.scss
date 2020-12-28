@@ -1,0 +1,39 @@
+.main-wrapper{
+  background: #392e6d;
+  background: linear-gradient(45deg, #392e6d, #2e3881);
+  header{
+    background: #fff;
+  }
+  hr {
+    border-color: #fff;
+    margin-top: 0;
+    max-width: 50%;
+  }
+}
+
+.content {
+  background: #392e6d;
+  background: linear-gradient(45deg, #392e6d, #2e3881);
+  padding: 15px 0;
+  h1 {
+    color: white;
+    text-align: center;
+  }
+
+  h2 {
+    color: white;
+    text-align: center
+  }
+
+
+}
+html, body {
+  height: 100%;
+  margin: 0;
+}
+#app{
+  height: 100%;
+}
+*{
+  color: #333;
+}

@@ -1,71 +1,81 @@
 <template>
   <div id="app-home">
-    <div class="home" v-bind:style="{ background: actColor}">
-      <h1>{{msg}}</h1>
-      <img alt="logo" src="../assets/logo.png">
-      <router-view/>  
-      <h2>Unsere Partner</h2>
+    <div class="home">
+      <div class="container">
+        <h1>{{ msg }}</h1>
+        <hr>
+      </div>
+      <router-view/>
+      <div class="container">
+        <h2 class="text-center">Unsere Partner</h2>
+        <hr>
+
+      </div>
       <div>
-          <img alt="partner" src="../assets/Marke/audi.png">     
-          <img alt="partner1" src="../assets/Marke/bmw.png">
-          <img alt="partner2" src="../assets/Marke/VW.png">
-          <img alt="partner3" src="../assets/Marke/Merc.png">
-          <img alt="partner4" src="../assets/Marke/opel.png">
-          <img alt="partner5" src="../assets/Marke/mazda.png">
-          <img alt="partner6" src="../assets/Marke/porsche.png">
+        <vueper-slides
+            :visible-slides="4"
+            class="no-shadow container partner-slider"
+            ref="vueperslides2"
+            @slide="$refs.vueperslides1.goToSlide($event.currentSlide.index, { emit: false })"
+            :bullets="false"
+            :touchable="false"
+            :gap="2.5"
+            :arrows="false"
+            :autoplay="true"
+            :duration="3000">
+          <vueper-slide
+              v-for="(slide, i) in slides"
+              :key="i"
+              :image="slide.image">
+          </vueper-slide>
+        </vueper-slides>
       </div>
     </div>
-    <app-footer></app-footer>
   </div>
 
-  
-  
+
 </template>
 
 <script>
 //Homepage-Komponente
-import Footer from './Footer.vue'
+import {VueperSlides, VueperSlide} from 'vueperslides'
+import 'vueperslides/dist/vueperslides.css'
+
 export default {
   name: 'out',
   components: {
-    'app-footer': Footer
-    
+    VueperSlides,
+    VueperSlide,
   },
-  data(){
-    return{
-     msg: ' Welcome to HEYRJP',
-     actColor: 'rgb(68, 20, 199)',
-     block: 'full'
+  data() {
+    return {
+      msg: ' Welcome to HEYRJP',
+      block: 'full',
+      slides: [
+        {image: require('@/assets/Marke/audi.png')},
+        {image: require('@/assets/Marke/bmw.png')},
+        {image: require('@/assets/Marke/VW.png')},
+        {image: require('@/assets/Marke/Merc.png')},
+        {image: require('@/assets/Marke/opel.png')},
+        {image: require('@/assets/Marke/mazda.png')},
+        {image: require('@/assets/Marke/porsche.png')},
+      ]
     }
   }
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-#app-home{
-  padding: 5px;
-  background-color:rgb(68, 20, 199);
-  /* -webkit-text-size-adjust:auto; */
-  background-size: cover;
-}
-h1{
-  font-size: 4rem;
-  color: white;
-}
-h2{
-  font-size: 3rem;
-  color:darkslategrey;
-}
-img{
-  height: 15pc;
-  width: 15pc;
-  padding: 10 10rem;
-  background-size: auto;
-}
-h3 {
-  margin: 40px 0 0;
+<style type="scss" scoped>
+.partner-slider .vueperslide {
+  box-sizing: border-box;
+  transition: 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
-
+.partner-slider .vueperslide--active {
+  opacity: 1;
+}
 </style>
