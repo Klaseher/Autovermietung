@@ -96,7 +96,7 @@
 
 <script>
 //Komponente für Mitarbeiter/Admin
-import UserService from '../services/user.service'
+//import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
 export default {
   data () {
@@ -127,31 +127,33 @@ export default {
     //laden aller Mitarbeiter aus Backend
 
     showEmployees () {
-      this.editEmployee = !this.editEmployee
-      if (this.editEmployee) {
-        UserService.getEmployee(-200)
-          .then(response => {
-            this.employees.push.apply(this.employees, response.data.employees)
-          })
-          .catch((error) => Helper.handle(error))
-      } else {
-        this.employees = []
-      }
+      this.$router.push('/admin/func/showEmployee')
+      // this.editEmployee = !this.editEmployee
+      // if (this.editEmployee) {
+      //   UserService.getEmployee(-200)
+      //     .then(response => {
+      //       this.employees.push.apply(this.employees, response.data.employees)
+      //     })
+      //     .catch((error) => Helper.handle(error))
+      // } else {
+      //   this.employees = []
+      // }
     },
     showCustomers () {
-     
+     this.$router.push('/admin/func/showCus')
     },
     showCars () {
-      this.editCar = !this.editCar
-      if (this.editCar) {
-        UserService.getCar('alle')
-          .then(response => {
-            this.cars.push.apply(this.cars, response.data.cars)
-          })
-          .catch((error) => Helper.handle(error))
-      } else {
-        this.cars = []
-      }
+      this.$router.push('/admin/func/showCar')
+      // this.editCar = !this.editCar
+      // if (this.editCar) {
+      //   UserService.getCar('alle')
+      //     .then(response => {
+      //       this.cars.push.apply(this.cars, response.data.cars)
+      //     })
+      //     .catch((error) => Helper.handle(error))
+      // } else {
+      //   this.cars = []
+      // }
     },
     //Pfad auf detaillierte Mitarbeiteranzeige erneuern
     createEmployee(){
