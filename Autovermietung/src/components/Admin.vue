@@ -23,15 +23,15 @@
             <p>Admin-Functions can be accessed from here</p>
             <div class="grid-container">
                 <button type="submit" @click="showEmployees">
-                        Show all Employees
+                        Alle Mitarbeiter anzeigen
                         
                 </button>
                 
                 <button type="submit" @click="showCustomers">
-                        Show all Customers
+                        Alle Kunden anzeigen
                 </button>
                 <button type="submit" @click="showCars">
-                        Show all Cars
+                        Alle Fahrzeuge anzeigen
                 </button>
                 
                 <br/>
