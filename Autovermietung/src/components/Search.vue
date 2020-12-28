@@ -1,141 +1,193 @@
 <template>
-
-  <div>
+  <div class="container">
     <h1>Unsere Autos</h1>
+    <hr>
     <main class="search" v-if="!ausgewaehlt">
       <h1>Suchergebnisse für: {{ msg }}</h1>
-      <span>
-        <input
-          type="text"
-          placeholder="Autoname"
-          v-model="autoname"
-          required
-          autofocus
-        />
-        <button type="submit" @click="searchCar()">Autosuche</button>
-      </span>
-      <br />
-      <br />
-      <datepicker-lite 
-        :value-attr="datepickerSetting.value"
-        :year-minus="datepickerSetting.yearMinus"
-        :from="datepickerSetting.from"
-        :to="datepickerSetting.to"
-        :disabled-date="datepickerSetting.disabledDate"
-        :locale="datepickerSetting.locale"
-        @value-changed="datepickerSetting.changeEvent"
-      />
-      <datepicker-lite 
-        :value-attr="datepickerSetting2.value"
-        :year-minus="datepickerSetting2.yearMinus"
-        :from="datepickerSetting2.from"
-        :to="datepickerSetting2.to"
-        :disabled-date="datepickerSetting2.disabledDate"
-        :locale="datepickerSetting2.locale"
-        @value-changed="datepickerSetting2.changeEvent"
-      />
-      <br />
-      <br />
-      <br />
+      <form>
+        <div class="form-row">
+          <div class="col">
+            <input
+                type="text"
+                placeholder="Autoname"
+                v-model="autoname"
+                required
+                autofocus
+                class="form-control"
+            />
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <datepicker-lite
+                  :value-attr="datepickerSetting.value"
+                  :year-minus="datepickerSetting.yearMinus"
+                  :from="datepickerSetting.from"
+                  :to="datepickerSetting.to"
+                  :disabled-date="datepickerSetting.disabledDate"
+                  :locale="datepickerSetting.locale"
+                  @value-changed="datepickerSetting.changeEvent"
+                  classAttr="form-control"
+                  placeholderAttr="Datum auswählen"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <datepicker-lite
+                :value-attr="datepickerSetting2.value"
+                :year-minus="datepickerSetting2.yearMinus"
+                :from="datepickerSetting2.from"
+                :to="datepickerSetting2.to"
+                :disabled-date="datepickerSetting2.disabledDate"
+                :locale="datepickerSetting2.locale"
+                @value-changed="datepickerSetting2.changeEvent"
+                classAttr="form-control"
+                placeholderAttr="Datum auswählen"
+            />
+          </div>
+          <div class="col">
+            <button class="btn btn-primary" type="submit" @click="searchCar()">Autosuche</button>
+          </div>
+        </div>
+      </form>
+
       <div v-on:click="seen = !seen">
-        <button>Erweiterte Suche</button>
-        <br />
+        <button class="btn btn-secondary">Erweiterte Suche</button>
+        <br/>
         <div>
           <h2></h2>
         </div>
       </div>
       <div v-if="seen">
-        <input
-          type="text"
-          placeholder="Mindestpreis (€)"
-          v-model="preis_min"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Höchstpreis (€)"
-          v-model="preis_max"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Anzahl Sitze"
-          v-model="platz"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Anzahl Türen"
-          v-model="tuer"
-          required
-          autofocus
-        />
-        <select v-model="typ">
-          <option value="" disabled selected>Autotyp (z.B. Kleinwagen)</option>
-          <option value="">Alle</option>
-          <option v-for="(typ, index) in autotypen" :key="index" :value="typ">
-            {{ typ }}
-          </option>
-        </select>
-        <select v-model="kraftstoff">
-          <option value="" disabled selected>Kraftstoff</option>
-          <option value="">Alle</option>
-          <option
-            v-for="(kraftstoff, index) in kraftstofftypen"
-            :key="index"
-            :value="kraftstoff"
-          >
-            {{ kraftstoff }}
-          </option>
-        </select>
-        <input
-          type="text"
-          placeholder="Co2-Ausstoß (g/km)"
-          v-model="c02"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Spritverbrauch (l/100km)"
-          v-model="verbrauch"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Tankvolumen (l)"
-          v-model="tankvolumen"
-          required
-          autofocus
-        />
-        <input
-          type="text"
-          placeholder="Leistung (PS)"
-          v-model="leistung"
-          required
-          autofocus
-        />
-        <select v-model="getriebe">
-          <option value="" disabled selected>Getriebeart</option>
-          <option value="">Alle</option>
-          <option
-            v-for="(getriebe, index) in getriebetypen"
-            :key="index"
-            :value="getriebe"
-          >
-            {{ getriebe }}
-          </option>
-        </select>
+        <form>
+          <div class="form-row  form-group">
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Mindestpreis (€)"
+                  v-model="preis_min"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Höchstpreis (€)"
+                  v-model="preis_max"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Anzahl Sitze"
+                  v-model="platz"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Anzahl Türen"
+                  v-model="tuer"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+          </div>
+          <div class="form-row  form-group">
+            <div class="col">
+              <select v-model="typ" class="form-control">
+                <option value="" disabled selected>Autotyp (z.B. Kleinwagen)</option>
+                <option value="">Alle</option>
+                <option v-for="(typ, index) in autotypen" :key="index" :value="typ">
+                  {{ typ }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <select v-model="kraftstoff" class="form-control">
+                <option value="" disabled selected>Kraftstoff</option>
+                <option value="">Alle</option>
+                <option
+                    v-for="(kraftstoff, index) in kraftstofftypen"
+                    :key="index"
+                    :value="kraftstoff"
+                >
+                  {{ kraftstoff }}
+                </option>
+              </select>
+            </div>
+            <div class="col">
+              <select v-model="getriebe" class="form-control">
+                <option value="" disabled selected>Getriebeart</option>
+                <option value="">Alle</option>
+                <option
+                    v-for="(getriebe, index) in getriebetypen"
+                    :key="index"
+                    :value="getriebe"
+                >
+                  {{ getriebe }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row form-group">
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Co2-Ausstoß (g/km)"
+                  v-model="c02"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Spritverbrauch (l/100km)"
+                  v-model="verbrauch"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Tankvolumen (l)"
+                  v-model="tankvolumen"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+            <div class="col">
+              <input
+                  type="text"
+                  placeholder="Leistung (PS)"
+                  v-model="leistung"
+                  required
+                  autofocus
+                  class="form-control"
+              />
+            </div>
+          </div>
+        </form>
       </div>
-      <h3>Suchergebnisse</h3>
+      <h2>Suchergebnisse</h2>
+      <hr>
 
-      <table v-for="auto in gesuchteAutos" :key="auto.name" id="auto">
-        <h2>{{ auto.name }}</h2>
-        <article>
+      <div v-for="auto in gesuchteAutos" :key="auto.name" class="auto form-group">
+        <h3>{{ auto.name }}</h3>
+        <table class="table table-sm">
           <tr>
             <!-- <td>{{auto.name}}</td> -->
 
@@ -146,9 +198,10 @@
             <td>Mieten:</td>
             <td>
               <button
-                type="submit"
-                @click="mieten(auto.name)"
-                :disabled="!verfuegbarkeit(auto.verfuegbar)"
+                  type="submit"
+                  @click="mieten(auto.name)"
+                  :disabled="!verfuegbarkeit(auto.verfuegbar)"
+                  class="btn btn-secondary"
               >
                 Mieten
               </button>
@@ -184,22 +237,26 @@
             <td>Modell:</td>
             <td>{{ auto.modelbezeichnung }}</td>
           </tr>
-        </article>
-      </table>
+        </table>
+      </div>
     </main>
-    <div v-else>
-      <button type="cancel" @click="back">Zurueck zur Suche</button>
-      <h1>Auto: {{ gewaehltesauto.name }}</h1>
-      <h1>Preis/Tag: {{ gewaehltesauto.preis }}</h1>
-      <h1>Verbrauch: {{ gewaehltesauto.verbrauch }}</h1>
+    <div v-else class="search-result">
+      <div class="text-center description">
+      <p>Auto: {{ gewaehltesauto.name }}</p>
+      <p>Preis/Tag: {{ gewaehltesauto.preis }}</p>
+      <p>Verbrauch: {{ gewaehltesauto.verbrauch }}</p>
+      </div>
+      <div class="actions">
+      <button type="cancel" class="btn btn-secondary" @click="back">Zurueck zur Suche</button>
       <button
-        type="submit"
-        @click="buchen()"
-        :disabled="!verfuegbarkeit(gewaehltesauto.verfuegbar)"
+          class="btn btn-primary"
+          type="submit"
+          @click="buchen()"
+          :disabled="!verfuegbarkeit(gewaehltesauto.verfuegbar)"
       >
         Jetzt {{ gewaehltesauto.name }} verbindlich mieten
       </button>
-
+      </div>
     </div>
   </div>
 </template>
@@ -209,6 +266,7 @@
 import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
+
 export default ({
   name: "App",
   components: {
@@ -217,42 +275,12 @@ export default ({
   data() {
     return {
       //startdatum
-       datepickerSetting : {
-        value:"",
-        yearMinus: 0,
-        from: "",
-        to: "1999/01/01",
-        disabledDate: [
-            
-        ],
-        locale: {
-          format: "YYYY/MM/DD",
-          weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
-          todayBtn: "Heute",
-          clearBtn: "Löschen",
-          closeBtn: "Schliessen",
-        },
-         changeEvent: (value) => {
-            let date = new Date()
-            let date2 = new Date(value)
-            if(date2.getTime() <= date.getTime()){
-                this.start = ''
-                alert('Ungültiges Startdatum')
-            }
-            else{
-                this.start = value
-            }
-         }
-      },
-      //enddatum
-      datepickerSetting2 : {
+      datepickerSetting: {
         value: "",
         yearMinus: 0,
         from: "",
         to: "1999/01/01",
-        disabledDate: [
-            
-        ],
+        disabledDate: [],
         locale: {
           format: "YYYY/MM/DD",
           weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
@@ -260,14 +288,38 @@ export default ({
           clearBtn: "Löschen",
           closeBtn: "Schliessen",
         },
-          changeEvent: (value) => {
+        changeEvent: (value) => {
           let date = new Date()
           let date2 = new Date(value)
-          if(date2.getTime() <= date.getTime()){
+          if (date2.getTime() <= date.getTime()) {
+            this.start = ''
+            alert('Ungültiges Startdatum')
+          } else {
+            this.start = value
+          }
+        }
+      },
+      //enddatum
+      datepickerSetting2: {
+        value: "",
+        yearMinus: 0,
+        from: "",
+        to: "1999/01/01",
+        disabledDate: [],
+        locale: {
+          format: "YYYY/MM/DD",
+          weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
+          todayBtn: "Heute",
+          clearBtn: "Löschen",
+          closeBtn: "Schliessen",
+        },
+        changeEvent: (value) => {
+          let date = new Date()
+          let date2 = new Date(value)
+          if (date2.getTime() <= date.getTime()) {
             this.ende = ''
             alert('Ungültiges Datum. Es wird bei der Suche ignoriert')
-          }
-          else{
+          } else {
             this.ende = value
           }
         }
@@ -302,29 +354,26 @@ export default ({
     ladeAutos() {
       if (this.autos.length < 1) {
         UserService.getCar("alle")
-          .then((response) => {
-            this.autos.push.apply(this.autos, response.data.cars)
-            this.zeiten.push.apply(this.zeiten, response.data.times)
-            this.gesuchteAutos = this.autos;
-          })
-          .catch((error) => Helper.handle(error));
+            .then((response) => {
+              this.autos.push.apply(this.autos, response.data.cars)
+              this.zeiten.push.apply(this.zeiten, response.data.times)
+              this.gesuchteAutos = this.autos;
+            })
+            .catch((error) => Helper.handle(error));
       }
     },
     searchCar() {
       this.ladeAutos();
       let startdatum = new Date(this.start)
       let enddatum = new Date(this.ende)
-      if(this.start == '' && this.ende == ''){
+      if (this.start == '' && this.ende == '') {
         alert('Start- und Enddatum werden für die Suche ignoriert')
-      }
-      else if(this.start == ''){
-          alert('Das Startdatum wird für die Suche ignoriert')
-      }
-      else if(this.ende == ''){
-          alert('Das Enddatum wird für die Suche ignoriert')
-      }
-      else if(startdatum.getTime() > enddatum.getTime()){
-          alert('Enddatum darf nicht hinter Startdatum liegen.\nDer Zeitraum wird bei der Suche ignoriert')
+      } else if (this.start == '') {
+        alert('Das Startdatum wird für die Suche ignoriert')
+      } else if (this.ende == '') {
+        alert('Das Enddatum wird für die Suche ignoriert')
+      } else if (startdatum.getTime() > enddatum.getTime()) {
+        alert('Enddatum darf nicht hinter Startdatum liegen.\nDer Zeitraum wird bei der Suche ignoriert')
       }
       this.gesuchteAutos = this.autos.filter((auto) => {
         let co2 = false;
@@ -353,22 +402,22 @@ export default ({
         }
         let zeit = this.zeitFilter(auto)
         return (
-          this.autoname
-            .toLowerCase()
-            .split(" ")
-            .every((v) => auto.name.toLowerCase().includes(v)) &&
-          tuer &&
-          platz &&
-          auto.typ.toLowerCase().match(this.typ.toLowerCase()) &&
-          co2 &&
-          verbrauch &&
-          auto.kraftstoff.toLowerCase().match(this.kraftstoff.toLowerCase()) &&
-          auto.tankvolumen >= this.tankvolumen &&
-          auto.leistung >= this.leistung &&
-          auto.preis >= this.preis_min &&
-          max &&
-          auto.getriebe.toLowerCase().match(this.getriebe.toLowerCase())
-          && zeit
+            this.autoname
+                .toLowerCase()
+                .split(" ")
+                .every((v) => auto.name.toLowerCase().includes(v)) &&
+            tuer &&
+            platz &&
+            auto.typ.toLowerCase().match(this.typ.toLowerCase()) &&
+            co2 &&
+            verbrauch &&
+            auto.kraftstoff.toLowerCase().match(this.kraftstoff.toLowerCase()) &&
+            auto.tankvolumen >= this.tankvolumen &&
+            auto.leistung >= this.leistung &&
+            auto.preis >= this.preis_min &&
+            max &&
+            auto.getriebe.toLowerCase().match(this.getriebe.toLowerCase())
+            && zeit
         );
       });
       if (this.autoname == "") {
@@ -379,54 +428,52 @@ export default ({
     },
 
     //Filter, um Autos zu finden, deren Buchungsdaten sich mit dem gesuchten Zeitraum überschneiden
-    zeitFilter(auto){
+    zeitFilter(auto) {
       let index = 0
       let gefunden = false
       let i = 0
       let buchung = ''
       let startdatum = new Date(this.start)
       let enddatum = new Date(this.ende)
-      if((this.start == '' && this.ende == '') || (startdatum.getTime() > enddatum.getTime())){
+      if ((this.start == '' && this.ende == '') || (startdatum.getTime() > enddatum.getTime())) {
         return true
       }
-      for(;i<this.zeiten.length;i++){
-        if(this.zeiten[i].auto == auto.name){
+      for (; i < this.zeiten.length; i++) {
+        if (this.zeiten[i].auto == auto.name) {
           index = i
           gefunden = true
           break
         }
       }
-      if(!gefunden){
+      if (!gefunden) {
 
         return true
       }
-      for(buchung of this.zeiten[index].times){
+      for (buchung of this.zeiten[index].times) {
         let von = new Date(buchung.from)
         let bis = new Date(buchung.to)
-        if(this.start == ''){
-          if((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())){
-            return false
-          } 
-        }
-        else if(this.ende == ''){
-           if((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())){
+        if (this.start == '') {
+          if ((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())) {
             return false
           }
-        }
-        else{
-          if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
-            ||((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
-            ||((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))){
-               return false
+        } else if (this.ende == '') {
+          if ((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())) {
+            return false
+          }
+        } else {
+          if (((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
+              || ((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
+              || ((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))) {
+            return false
           }
         }
       }
-     return true
+      return true
     },
     mieten(autoname) {
       this.ausgewaehlt = true;
       this.gewaehltesauto = this.autos.find(
-        (element) => element.name == autoname
+          (element) => element.name == autoname
       );
       this.$router.push("/search/" + autoname);
     },
@@ -470,15 +517,15 @@ export default ({
     if (this.$route.params.autoname != "") {
       this.ausgewaehlt = true;
       UserService.getCar(this.$route.params.autoname)
-        .then((response) => {
-          this.gewaehltesauto = response.data.car;
-        })
-        .catch((error) => {
-          Helper.handle(error);
-          this.ausgewaehlt = false;
-          this.msg = "";
-          Helper.redirect("/search");
-        });
+          .then((response) => {
+            this.gewaehltesauto = response.data.car;
+          })
+          .catch((error) => {
+            Helper.handle(error);
+            this.ausgewaehlt = false;
+            this.msg = "";
+            Helper.redirect("/search");
+          });
     } else {
       this.ausgewaehlt = false;
       this.ladeAutos();
@@ -488,72 +535,20 @@ export default ({
 </script>
 
 
-<style scoped>
-h1{
-    color: rgb(106, 167, 26);
-}
+<style lang="scss" scoped>
 
-h2{
-  color:burlywood
-}
-h3{
-  color: aqua;
-}
-/* input[type=text], select {
-  width: 25%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid rgb(139, 62, 62);
-  border-radius: 4px;
-  box-sizing: border-box;
-} */
-
-.search{
-  background-color:#443dac;
-	border-radius:28px;
-	border:1px solid #162f9b;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:17px;
-	padding:16px 31px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #2f6627;
-  -webkit-text-size-adjust:auto;
-}
-/* .search:hover {
-	background-color:#342abf;
-} */
-/* .search:active {
-	position:relative;
-	top:1px;
-} */
-
-button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-
-  text-align: center;
-	font-size:12px;
-	padding:12px 39px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-  align-content: center; 
-} 
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
+.search {
   width: 100%;
 }
+.search-result{
+  .description{
+    font-size: 2em;
+  }
+  .actions{
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+
 </style>

@@ -36,15 +36,14 @@ export default {
 
 <style lang="scss" scoped>
 footer {
-  color: #fff;
   display: flex;
   padding: 15px;
-  block-size: 150px;
+  min-height: 150px;
   hr{
     background: #fff;
   }
-  a, h3, p {
-    color: #fff;
+  a{
+    color: #333;
   }
   .logo{
     height: 110px;

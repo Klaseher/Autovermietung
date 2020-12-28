@@ -75,9 +75,6 @@
     <div class="content">
       <router-view/>
     </div>
-    <div class="container">
-      <hr>
-    </div>
   </div>
   <Footer/>
 </template>
@@ -179,8 +176,7 @@ header .container {
 }
 
 .main-wrapper {
-  min-height: 100%;
-  margin-bottom: -150px;
+  min-height: calc(100% - 150px);
 }
 
 @media (max-width: 991px) {
