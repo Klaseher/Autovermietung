@@ -50,11 +50,11 @@
                           <tr v-for="(employee, index) in employees" :key="index">
                               <td>{{employee.nachname}}</td>
                               <td>{{employee.user}}</td>
-                              <td><button @click="editingEmployee(employee.id)">Edit</button></td>
+                              <td><button @click="editingEmployee(employee.id)">Bearbeiten</button></td>
                           </tr>
                       </tbody>
                   </table>
-                  <button @click="createEmployee()">Create New Employee</button>     
+                  <button @click="createEmployee()">Neuen Mitarbeiter anlegen</button>     
                 </div>  
                 <br/>
                 <br/>
