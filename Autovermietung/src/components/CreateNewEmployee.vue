@@ -42,7 +42,7 @@
                     Go back
                 </button>
                 <button type="submit" @click="handleSubmit">
-                    Create new Employee
+                    Create
                 </button>
             </div>
           </form>
@@ -69,7 +69,7 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push('/admin')
+      this.$router.push('/admin/func/showEmployee')
     },
      //Registrieren neuer Mitarbeiter
     handleSubmit (e) {

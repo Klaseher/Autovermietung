@@ -10,7 +10,7 @@
             <th>Username</th>
             <th>Adresse</th>
             <th>Telefon</th>
-            <th>Edit</th>
+            <!-- <th>Edit</th> -->
           </tr>
           </thead>
           <tbody>
@@ -21,7 +21,10 @@
             </tr>
           </tbody>
       </table>
-      <button @click="createEmployee()">Create New Employee</button>     
+      <br />
+      <br />
+      <button @click="createEmployee()">Create New Employee</button>
+      <button @click="back()">back</button>     
     </div> 
      
                 <br/>
@@ -52,7 +55,7 @@ export default {
     }
   },
   methods:{
-    showEmployees () {
+    ladeEmployees () {
         UserService.getEmployee()
           .then(response => {
             this.employees.push.apply(this.employees, response.data.employees)
@@ -66,6 +69,10 @@ export default {
     createEmployee(){
       this.$router.push('/admin/newEmployee')
     },
+
+    back () {
+      this.$router.push('/admin')
+    },
     //Pfad auf detaillierte Mitarbeiteranzeige ändern
     editingEmployee (id) {
       this.$router.push('/admin/editEmployee/' + id)
@@ -75,14 +82,8 @@ export default {
       Helper.redirect(route)
     }
   },
-  beforeMount () {
-    let role = sessionStorage.getItem('role')
-    if (role == 1) {
-      this.admin = false
-    } else if (role == 2) {
-      this.admin = true
-    }
-  }
+  
+  
   
   
 }

@@ -120,7 +120,7 @@ const routes = [
       component: EmployeeManage,
       meta: {
         requiresAuth: true,
-      is_employee: true
+        is_admin: true
       }
   },
   {
@@ -129,7 +129,7 @@ const routes = [
       component: CustomerManage,
       meta: {
         requiresAuth: true,
-      is_employee: true
+        is_employee: true
       }
   },
   {
