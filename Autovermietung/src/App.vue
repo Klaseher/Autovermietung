@@ -8,7 +8,7 @@
           </a>
         </div>
         <div class="mobile-menu d-sm-block d-md-block d-xl-none d-lg-none">
-          <input type="checkbox" id="myInput" checked="{{isShowMobileMenu}}" onclick="menuButtonClick">
+          <input type="checkbox" id="myInput" v-model="isShowMobileMenu" @click="menuButtonClick">
           <label for="myInput">
             <span class="bar top"></span>
             <span class="bar middle"></span>
@@ -18,20 +18,21 @@
             <div class="aside-section aside-left">
               <ul class="aside-list">
                 <li>
-                  <router-link class="aside-anchor" to="/">Home</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/about">HEYRJP</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/search">Unsere Autos</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/login">{{ login }}</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
                 </li>
                 <li>
                   <div v-if="loggedIn">
-                    <router-link class="aside-anchor" @click="logout" to="/logout">Ausloggen</router-link>
+                    <router-link class="aside-anchor" @click="logout" to="/logout">Ausloggen
+                    </router-link>
                   </div>
                 </li>
               </ul>
@@ -39,16 +40,16 @@
             <div class="aside-section aside-right">
               <div class="aside-list">
                 <li>
-                  <router-link class="aside-anchor" to="/">Home</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/about">HEYRJP</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/search">Unsere Autos</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
                 </li>
                 <li>
-                  <router-link class="aside-anchor" to="/login">{{ login }}</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
                 </li>
                 <li v-if="loggedIn">
                   <div>
@@ -61,10 +62,10 @@
         </div>
         <div class="desktop-menu d-none d-xl-block d-lg-block">
           <ul class="nav aside-list">
-            <router-link class="aside-anchor" to="/">Home</router-link>
-            <router-link class="aside-anchor" to="/about">HEYRJP</router-link>
-            <router-link class="aside-anchor" to="/search">Unsere Autos</router-link>
-            <router-link class="aside-anchor" to="/login">{{ login }}</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
             <div v-if="loggedIn">
               <router-link class="aside-anchor" @click="logout" to="/logout">Ausloggen</router-link>
             </div>
@@ -107,6 +108,7 @@ export default {
     //werden können
     //können dann z.B. innerhalb der Komponente in <template></template> genutzt werden
     logout() { //ausloggen
+      this.isShowMobileMenu = false;
       Auth.logout()
     },
     clickMenu() { //ausloggen

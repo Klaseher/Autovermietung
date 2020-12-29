@@ -1,4 +1,5 @@
 .mobile-menu, .desktop-menu{
+  overflow: hidden;
   .aside-section {
     top: 0;
     bottom: 0;
@@ -19,6 +20,7 @@
   }
 
   .aside-right {
+    display: none;
     width: 100%;
     right: 0;
     background: #392e6d;
@@ -30,6 +32,9 @@
     transform: translateX(100%);
     transition: transform 0.4s ease-in-out;
     z-index: 40;
+    .aside-content, .aside-anchor{
+      color: #fff;
+    }
   }
 
   .aside-list {
@@ -106,6 +111,8 @@
 
   input[type="checkbox"]:checked ~ aside .aside-right {
     transform: translateX(0%);
+    //transition: transform 0.4s ease-in-out;
+    display: block;
   }
 
   input[type="checkbox"]:checked ~ label .bar {
@@ -183,10 +190,6 @@
     .aside-right {
       display: none;
     }
-    .aside-content, .aside-anchor{
-      color: #333;
-    }
-
   }
 }
 .desktop-menu{

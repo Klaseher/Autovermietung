@@ -58,4 +58,15 @@ footer {
     justify-content: space-around;
   }
 }
+@media (max-width: 991px) {
+  footer {
+    flex-direction: column;
+    >.col, .logo{
+      text-align: center;
+    }
+    .footer-menu{
+      align-items: center;
+    }
+  }
+}
 </style>

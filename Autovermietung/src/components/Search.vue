@@ -185,9 +185,9 @@
       <h2>Suchergebnisse</h2>
       <hr>
 
-      <div v-for="auto in gesuchteAutos" :key="auto.name" class="auto form-group">
+      <div v-for="auto in gesuchteAutos" :key="auto.name" class="auto form-group table-responsive">
         <h3>{{ auto.name }}</h3>
-        <table class="table table-sm">
+        <table class="table">
           <tr>
             <!-- <td>{{auto.name}}</td> -->
 
