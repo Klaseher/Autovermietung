@@ -1,13 +1,13 @@
 <template>
   <div class="EmpManage">
-    Show all Employees
+    <h1>Mitarbeiterübersicht</h1>
     <div >
       <table >                                    
         <thead>  
           <tr>                            
             <th>Name</th>
             <th>Vorname</th>
-            <th>Username</th>
+            <th>Benutzername</th>
             <th>Adresse</th>
             <th>Telefon</th>
             <!-- <th>Edit</th> -->
@@ -23,8 +23,8 @@
       </table>
       <br />
       <br />
-      <button @click="createEmployee()">Create New Employee</button>
-      <button @click="back()">back</button>     
+      <button @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
+      <button @click="back()">Zurück</button>     
     </div> 
      
                 <br/>

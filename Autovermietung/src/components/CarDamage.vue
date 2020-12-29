@@ -4,14 +4,14 @@
          <textarea v-model="beschreibung" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
           <input
           type="text"
-          placeholder="Kosten"
+          placeholder="Kostenvoranschlag in €"
           v-model="kosten"
           required
           autofocus
          />
          <input
           type="text"
-          placeholder="Prioritaet"
+          placeholder="Priorität"
           v-model="prio"
           required
           autofocus
@@ -26,17 +26,17 @@
           {{schaden}}
           </option>
         </select>
-        <button type="submit" @click="erstelleSchaden()">Erstellen</button>
+        <button type="submit" @click="erstelleSchaden()">Schaden aufnehmen</button>
         <div v-if="allgemein">
          <table>
                 <thead>
                     <tr>
-                        <th>Beschreibung</th>
+                        <th>Schadensbeschreibung</th>
                         <th>Typ</th>
-                        <th>Prioritaet</th>
-                        <th>Kosten in €</th>
-                        <th>Abgearbeitet?</th>
-                        <th>Loeschen</th>
+                        <th>Priorität</th>
+                        <th>Kostenvoranschlag in €</th>
+                        <th>Bereits repariert</th>
+                        <th>Löschen</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,8 +45,8 @@
                         <td>{{schaden.typ}}</td>
                         <td>{{schaden.prioritaet}}</td>
                         <td>{{schaden.hoehe}}</td>
-                        <td><button @click="updateCheck(schaden)">Problem beheben</button></td>
-                        <td><button @click="loescheSchaden">Loeschen</button></td>
+                        <td><button @click="updateCheck(schaden)">Problem behoben</button></td>
+                        <td><button @click="loescheSchaden">Löschen</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -73,7 +73,7 @@
                 </tbody>
             </table>
         </div>  
-        <button type="cancel" @click="back">Zurueck zum Start</button>
+        <button type="cancel" @click="back">Zurück zum Start</button>
     </div>
 </template>
 
@@ -196,7 +196,7 @@ export default {
         
         if(!this.$route.params.bnr){
             this.allgemein = true
-            this.msg = "Uebersicht Schaeden Auto: " + this.$route.params.autoname
+            this.msg = "Uebersicht aller Fahrzeugschäden: " + this.$route.params.autoname
         }
         else{
             this.allgemein = false

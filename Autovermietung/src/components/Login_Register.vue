@@ -5,7 +5,7 @@
         <div class="overlay">
           <div class="overlay-left">
             <h2>Herzlich Willkommen!</h2>
-            <p>Loggen Sie sich mit Ihren Infos ein! </p>
+            <p>Loggen Sie sich mit Ihren Benutzerdaten ein! </p>
             <button class="invert" id="signIn" @click="signUp = !signUp">Weiter</button>
           </div>
           <div class="overlay-right">
@@ -16,7 +16,7 @@
         </div>
       </div>
       <form class="sign-up">
-        <h2>Neues Konto</h2>
+        <h2>Neues Konto anlegen</h2>
         <div>Nutzen Sie Ihre Email zum Registrieren</div>
 
         <input type="text" placeholder="Vorname*" v-model="name" required autofocus/>
@@ -26,12 +26,10 @@
         <input type="tel" placeholder="Telefonnummer" v-model="telefon"/>
         <input type="password" placeholder="Password*" v-model="password" required/>
         <input type="password" placeholder="Password erneut eingeben" v-model="password_confirmation" required/>
-        <button type="cancel" @click="back">
-                    Zurueck
-        </button>
+        <button type="cancel" @click="back">Zurück</button>
         <br />
         <button type="submit" @click="register">
-                    Erstellen
+                    Bestätigen
         </button>
       </form>
       <form class="sign-in">

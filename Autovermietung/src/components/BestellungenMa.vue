@@ -18,15 +18,15 @@
             <table>
                 <thead>
                     <tr>
-                        <th>BNR</th>
+                        <th>Bestellnummer</th>
                         <th>Startdatum</th>
                         <th>Enddatum</th>
                         <th>Auto</th>
                         <th>Vorname</th>
                         <th>Nachname</th>
-                        <th>Erstelldatum</th>
-                        <th>Status</th>
-                        <th>Bearbeiten</th>
+                        <th>Buchungsdatum</th>
+                        <th>Buchungsstatus</th>
+                        <th>Bestellung Bearbeiten</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
             </table>
              <br /> 
             <br />  
-            <button @click="home()">Zurueck</button>
+            <button @click="home()">Zurück</button>
         </div>
         <div  v-else>
             <h1>{{msg}}</h1>
@@ -55,10 +55,10 @@
             <br /> <h3>Adresse: {{gewaehlteBestellung.adresse}}</h3>
             <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <button type="cancel" @click="back">Zurueck zur Suche</button>
-            <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Abbrechen</button>
-            <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
+            <button type="cancel" @click="back">Zurück zur Bestellübersicht</button>
+            <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung stornieren</button>
+            <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung freigeben</button>
+            <button @click="showDamage(gewaehlteBestellung)">Bekannte Fahrzeugschäden</button>
          </div>
     </div>
 </template>
@@ -353,7 +353,7 @@ export default {
         }
         else{
             this.ausgewaehlt = false
-            this.msg = "Alle Bestellungen"
+            this.msg = "Bestellübersicht"
             this.holeBestellungen()
         }
     }

@@ -1,32 +1,36 @@
 <template>
+<h1>{{msg}}</h1>
     <div class="administrator">
+    
+        <br/>
+        <br/>
 
        <div v-on:click="zeigeBestellungen()" class="control">
                 <button>
-                    Bestellungen
+                    Bestellungen verwalten
                 </button>
         </div>
+        <br/>
 
       <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
 
         <div v-if="admin">
               <div v-on:click="seen = !seen" class="control">
                 <button>
-                    Admin-Functions
+                    Admin Funktionen
                 </button>
               </div>
-        </div>
-        <h1>{{msg}}</h1>
-        
+        </div>        
          <!-- Anzeigen der Adminfunktionen -->
         <div v-if="seen">
-            <p>Admin-Functions can be accessed from here</p>
+            <br/>
             <div class="grid-container">
                 <button type="submit" @click="showEmployees">
                         Alle Mitarbeiter anzeigen
                         
                 </button>
                 
+
                 <button type="submit" @click="showCustomers">
                         Alle Kunden anzeigen
                 </button>
@@ -89,7 +93,8 @@
             </div>
         </div>
         <div v-else>
-            <p>Employee-Functions can be accessed from here</p>
+        <br/>
+        <br/>
         </div>
     </div>
 </template>

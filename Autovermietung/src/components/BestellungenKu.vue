@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="clientorder">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
             <table>
@@ -46,7 +46,7 @@
                 </tbody>
             </table>
             <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
-            <button type="cancel" @click="back">Zurueck zur Uebersicht</button>
+            <button type="cancel" @click="back">Zurück zur Übersicht</button>
             <button @click="abbrechen"  :disabled=isDisabled>Abbrechen</button>
          </div>
     </div>
@@ -283,27 +283,37 @@ export default {
 </script>
 
 <style scoped>
-p{
-    color:white;
-    text-align: center;
-    font-size: small;
+.clientorder{
+
+
+  background: lightblue;
+  
+}
+h1 {
+  
+  font-weight:bold;
+  color: mediumblue;
+  padding:20px;
+  text-align: center;
+        
+  font-size: 30px;
+  }
+
+h3{
+  color:#4e13bb;
+  }
+input, select {
+  width: 30%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
-.doppelt{
-    background-color: red
-}
-.normal {
-    background-color: white
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
 button{
-    box-shadow: 0px 0px 0px 2px #9fb4f2;
+  box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
 	border-radius:10px;
@@ -316,8 +326,29 @@ button{
 	padding:20px 40px 20px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
-    align-content: center;
-    width: 20%;
+  align-content: center;
+  width: 20%;
+}
+label{
+  color:indigo;
+}
+ul {
+  list-style-type: none;
+   padding: 0;
 }
 
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
+}
 </style>
