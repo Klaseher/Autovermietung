@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="damage">
         <h1> {{msg}} </h1>
          <textarea v-model="beschreibung" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
           <input
@@ -234,17 +234,33 @@ export default {
 </script>
 
 <style scoped>
-p{
-    color:white;
-    text-align: center;
-    font-size: small;
+.damage{
+
+
+  background: lightblue;
+  
 }
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
+h1 {
+  
+  font-weight:bold;
+  color: mediumblue;
+  padding:20px;
+  text-align: center;
+        
+  font-size: 30px;
+  }
+
+h3{
+  color:#00FF00;
+  }
+input, select {
+  width: 30%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 button{
   box-shadow: 0px 0px 0px 2px #9fb4f2;
@@ -256,31 +272,34 @@ button{
 	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
-	font-size:9px;
-	padding:20px 40px 20px;
+	font-size:14px;
+	padding:10px 60px 10px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  text-size-adjust: auto;
-  width: 20%;
+  align-content:space-between;
+  width: 30%;
 }
-h1{
-    color: rgb(106, 167, 26);
+label{
+  color:indigo;
 }
-h2{
-  color:burlywood
+ul {
+  list-style-type: none;
+   padding: 0;
 }
-h3{
-  color: aqua;
-}
-input[type=text], select {
-  width: 25%;
-  padding: 12px 20px;
-  margin: 8px 0;
+
+li {
   display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  border-spacing: 5px;
+  width: 100%;
 }
 
 </style>

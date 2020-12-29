@@ -186,7 +186,7 @@ export default {
 .administrator{
 
 
-  background: lightblue;
+  background:#443dac;
   
 }
 h1 {

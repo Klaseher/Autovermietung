@@ -1,8 +1,8 @@
 <template>
 
-  <div>
+  <div class="search">
     <h1>Unsere Autos</h1>
-    <main class="search" v-if="!ausgewaehlt">
+    <main  v-if="!ausgewaehlt">
       <h1>Suchergebnisse für: {{ msg }}</h1>
       <span>
         <input
@@ -499,7 +499,7 @@ h2{
 h3{
   color: aqua;
 }
-/* input[type=text], select {
+input[type=text], select {
   width: 25%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -507,10 +507,10 @@ h3{
   border: 1px solid rgb(139, 62, 62);
   border-radius: 4px;
   box-sizing: border-box;
-} */
+}
 
 .search{
-  background-color:#443dac;
+  background:#443dac;
 	border-radius:28px;
 	border:1px solid #162f9b;
 	display:inline-block;
@@ -521,15 +521,15 @@ h3{
 	padding:16px 31px;
 	text-decoration:none;
 	text-shadow:0px 1px 0px #2f6627;
-  -webkit-text-size-adjust:auto;
+  -webkit-text-size-adjust:none;
 }
 /* .search:hover {
 	background-color:#342abf;
-} */
-/* .search:active {
+}  */
+ .search:active {
 	position:relative;
 	top:1px;
-} */
+} 
 
 button{
   box-shadow: 0px 0px 0px 2px #9fb4f2;
@@ -549,6 +549,9 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center; 
 } 
+button:hover {
+	background-color:#2aa9bf;
+  }
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
