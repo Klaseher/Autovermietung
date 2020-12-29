@@ -1,4 +1,5 @@
 #app {
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 
@@ -28,7 +29,7 @@
 .content {
   padding: 15px 0;
 
-  p, td, th, h1, h2, h3 {
+  div, span, button, p, h1, h2, h3, h4, label, tr, th, td, table {
     color: #fff;
   }
 
@@ -51,4 +52,52 @@
 
 html, body, #app {
   height: 100%;
+}
+
+form {
+  .actions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  a {
+    color: #fff;
+  }
+}
+
+.hidden-for-animation {
+  height: 0;
+  visibility: hidden;
+}
+
+.slide-down {
+  animation-name: slide-down;
+  -webkit-animation-name: slide-down;
+
+  animation-duration: .5s;
+  -webkit-animation-duration: .5s;
+
+  animation-timing-function: ease-in-out;
+  -webkit-animation-timing-function: ease-in-out;
+
+  visibility: visible !important;
+  transform: translateX(0%);
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translatey(-5%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+@-webkit-keyframes slide-down {
+  0% {
+    transform: translatey(-5%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
 }

@@ -115,6 +115,9 @@
     display: block;
   }
 
+  input[type="checkbox"]:checked ~ label {
+    position: fixed;
+  }
   input[type="checkbox"]:checked ~ label .bar {
     background-color: #fff;
   }
@@ -151,7 +154,6 @@
     cursor: pointer;
     margin: 10px;
     z-index: 41;
-    position: fixed;
   }
 
   .bar {
