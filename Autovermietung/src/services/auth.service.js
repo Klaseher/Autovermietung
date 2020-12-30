@@ -2,7 +2,7 @@
 //bzw. die etwas mit Authentifizierung zu tun haben oder auch benötigen
 //siehe Endpunkte Backend für spezifische Funktionalitäten
 import axios from 'axios'
-import router from '../router'
+// import router from '../router'
 
 const API_URL = 'http://localhost:3000/'
 
@@ -10,9 +10,10 @@ class Auth {
   //hier wird Person abgemeldet, wobei Authentifizierungs-Paramter aus Browser 
   //entfernt werden --> Wenn Cookie vorhanden, ist Anmelden aber direkt wieder möglich
   logout () {
-    sessionStorage.removeItem('role')
-    sessionStorage.removeItem('auth')
-    router.push('/')
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('auth');
+    axios.post(API_URL + 'logout');
+    location.reload();
   }
 
   login (mail, pass) {

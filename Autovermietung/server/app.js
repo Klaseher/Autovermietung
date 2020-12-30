@@ -190,6 +190,12 @@ router.post('/login', (req, res) => {
       res.status(500).send('Error on the server.')
     }
   })
+});
+
+//Logout
+router.post('/logout', (req, res) => {
+  res.clearCookie("jwt");
+  res.send('Set Cookie');
 })
 
 //Anfrage Kunde, um Passwort ändern zu können
