@@ -1,80 +1,106 @@
 <template>
+  <div class="container">
+    <h1> {{ msg }} </h1>
+    <hr>
     <div>
-        <h1> {{msg}} </h1>
-         <textarea v-model="beschreibung" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
+      <div class="form-group">
+        <textarea class="form-control" v-model="beschreibung" name="text" cols="35"
+                  rows="4">Schaden hier beschreiben</textarea>
+      </div>
+      <form class="form-inline">
+
+        <div class="form-group">
           <input
-          type="text"
-          placeholder="Kosten"
-          v-model="kosten"
-          required
-          autofocus
-         />
-         <input
-          type="text"
-          placeholder="Prioritaet"
-          v-model="prio"
-          required
-          autofocus
-        />
-        <select v-model="auswahl">
-          <option value="" disabled selected>Schadenstyp</option>
-          <option
-            v-for="(schaden, index) in schadenstypen"
-            :key="index"
-            :value="schaden"
-          >
-          {{schaden}}
-          </option>
-        </select>
-        <button type="submit" @click="erstelleSchaden()">Erstellen</button>
-        <div v-if="allgemein">
-         <table>
-                <thead>
-                    <tr>
-                        <th>Beschreibung</th>
-                        <th>Typ</th>
-                        <th>Prioritaet</th>
-                        <th>Kosten in €</th>
-                        <th>Abgearbeitet?</th>
-                        <th>Loeschen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(schaden, index) in schaeden" :key="index">
-                        <td>{{schaden.beschreibung}}</td>
-                        <td>{{schaden.typ}}</td>
-                        <td>{{schaden.prioritaet}}</td>
-                        <td>{{schaden.hoehe}}</td>
-                        <td><button @click="updateCheck(schaden)">Problem beheben</button></td>
-                        <td><button @click="loescheSchaden">Loeschen</button></td>
-                    </tr>
-                </tbody>
-            </table>
+              type="text"
+              placeholder="Kosten"
+              v-model="kosten"
+              required
+              autofocus
+              class="form-control"
+          />
         </div>
-        <div v-else>
-                  <table>
-                <thead>
-                    <tr>
-                        <th>Beschreibung</th>
-                        <th>Typ</th>
-                        <th>Prioritaet</th>
-                        <th>Kosten in €</th>
-                        <th>Loeschen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(schaden, index) in schaeden" :key="index">
-                        <td>{{schaden.beschreibung}}</td>
-                        <td>{{schaden.typ}}</td>
-                        <td>{{schaden.prioritaet}}</td>
-                        <td>{{schaden.hoehe}}</td>
-                        <td><button @click="loescheSchaden">Loeschen</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>  
-        <button type="cancel" @click="back">Zurueck zum Start</button>
+        <div class="form-group mx-sm-3">
+          <input
+              type="text"
+              placeholder="Prioritaet"
+              v-model="prio"
+              required
+              autofocus
+              class="form-control"
+          />
+        </div>
+        <div class="form-group">
+          <select v-model="auswahl" class="form-control">
+            <option value="" disabled selected>Schadenstyp</option>
+            <option
+                v-for="(schaden, index) in schadenstypen"
+                :key="index"
+                :value="schaden"
+            >
+              {{ schaden }}
+            </option>
+          </select>
+        </div>
+
+      </form>
+      <div class="form-group text-right">
+        <button class="btn btn-primary" type="submit" @click="erstelleSchaden()">Erstellen</button>
+      </div>
     </div>
+    <div v-if="allgemein" class="table-responsive">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Beschreibung</th>
+          <th>Typ</th>
+          <th>Prioritaet</th>
+          <th>Kosten in €</th>
+          <th>Abgearbeitet?</th>
+          <th>Loeschen</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(schaden, index) in schaeden" :key="index">
+          <td>{{ schaden.beschreibung }}</td>
+          <td>{{ schaden.typ }}</td>
+          <td>{{ schaden.prioritaet }}</td>
+          <td>{{ schaden.hoehe }}</td>
+          <td>
+            <button class="btn btn-success" @click="updateCheck(schaden)">Problem beheben</button>
+          </td>
+          <td>
+            <button class="btn btn-warning" @click="loescheSchaden">Loeschen</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else class="table-responsive">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Beschreibung</th>
+          <th>Typ</th>
+          <th>Prioritaet</th>
+          <th>Kosten in €</th>
+          <th>Loeschen</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(schaden, index) in schaeden" :key="index">
+          <td>{{ schaden.beschreibung }}</td>
+          <td>{{ schaden.typ }}</td>
+          <td>{{ schaden.prioritaet }}</td>
+          <td>{{ schaden.hoehe }}</td>
+          <td>
+            <button class="btn btn-warning" @click="loescheSchaden">Loeschen</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zum Start</button>
+  </div>
 </template>
 
 
@@ -234,53 +260,5 @@ export default {
 </script>
 
 <style scoped>
-p{
-    color:white;
-    text-align: center;
-    font-size: small;
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
-button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:9px;
-	padding:20px 40px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  text-size-adjust: auto;
-  width: 20%;
-}
-h1{
-    color: rgb(106, 167, 26);
-}
-h2{
-  color:burlywood
-}
-h3{
-  color: aqua;
-}
-input[type=text], select {
-  width: 25%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
 
 </style>

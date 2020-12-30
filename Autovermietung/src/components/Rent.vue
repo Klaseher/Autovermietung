@@ -2,8 +2,6 @@
   <div class="container">
     <h1>Auto buchen</h1>
     <hr>
-
-
     <h3>{{ auto.name }}</h3>
     <h3>{{ user.vorname }} {{ user.nachname }}</h3>
     <h3>{{ user.adresse }}</h3>
