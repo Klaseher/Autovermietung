@@ -17,14 +17,14 @@
            <tr v-for="(employee, index) in employees" :key="index">
               <td>{{employee.nachname}}</td>
               <td>{{employee.user}}</td>
-              <td><button @click="editingEmployee(employee.id)">Edit</button></td>
+              <td><button class="button btn" @click="editingEmployee(employee.id)">Edit</button></td>
             </tr>
           </tbody>
       </table>
       <br />
       <br />
-      <button @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
-      <button @click="back()">Zurück</button>     
+      <button class="button btn" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
+      <button class="button btn" @click="back()">Zurück</button>     
     </div> 
      
                 <br/>
@@ -96,13 +96,14 @@ export default {
 .EmpManage{
 
 
-  background: lightblue;
+ background:#443dac;
+  color:rgb(205, 213, 214)
   
 }
 h1 {
   
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(221, 216, 149);
   padding:20px;
   text-align: center;
         
@@ -121,7 +122,8 @@ input, select {
   border-radius: 4px;
   box-sizing: border-box;
 }
-button{
+.button{
+  margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -137,6 +139,10 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
   width: 20%;
+}
+.btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
 }
 label{
   color:indigo;

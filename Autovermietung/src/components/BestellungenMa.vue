@@ -365,13 +365,13 @@ export default {
 .ma{
 
 
-  background: lightblue;
-  
+  background:#443dac;
+  color:rgb(205, 213, 214)
 }
 h1 {
   
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(230, 216, 20);
   padding:20px;
   text-align: center;
         
@@ -379,7 +379,7 @@ h1 {
   }
 
 h3{
-  color:#4e13bb;
+  color:#e6e5e9;
   }
 input, select {
   width: 30%;

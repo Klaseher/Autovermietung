@@ -27,6 +27,8 @@
           </option>
         </select>
         <button type="submit" @click="erstelleSchaden()">Schaden aufnehmen</button>
+        <br/>
+        <br/>
         <div v-if="allgemein">
          <table>
                 <thead>
@@ -73,7 +75,11 @@
                 </tbody>
             </table>
         </div>  
+        <br/>
+        <br/>
         <button type="cancel" @click="back">Zurück zum Start</button>
+        <br/>
+        <br/>
     </div>
 </template>
 
@@ -237,13 +243,14 @@ export default {
 .damage{
 
 
-  background: lightblue;
+  background:#443dac;
+  color:rgb(205, 213, 214)
   
 }
 h1 {
   
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(230, 220, 137);
   padding:20px;
   text-align: center;
         
@@ -279,21 +286,7 @@ button{
   align-content:space-between;
   width: 30%;
 }
-label{
-  color:indigo;
-}
-ul {
-  list-style-type: none;
-   padding: 0;
-}
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;

@@ -168,14 +168,13 @@ export default {
 </script>
 <style  scoped>
 .editEmployee{
-  background:lightblue;
-  padding:10%
-  
+  background:#443dac;
+  color:rgb(205, 213, 214)
 }
 h1 {
   
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(215, 221, 131);
   padding:20px;
   text-align: center;
         
@@ -191,6 +190,7 @@ input, select {
   box-sizing: border-box;
 }
 button{
+  margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -207,21 +207,7 @@ button{
   align-content: center;
   width: 20%;
 }
-label{
-  color:indigo;
-}
-ul {
-  list-style-type: none;
-   padding: 0;
-}
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;

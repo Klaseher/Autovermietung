@@ -6,7 +6,7 @@
         <br/>
 
        <div v-on:click="zeigeBestellungen()" class="control">
-                <button>
+                <button class="button btn">
                     Bestellungen verwalten
                 </button>
         </div>
@@ -16,7 +16,7 @@
 
         <div v-if="admin">
               <div v-on:click="seen = !seen" class="control">
-                <button>
+                <button class="button btn" >
                     Admin Funktionen
                 </button>
               </div>
@@ -25,16 +25,16 @@
         <div v-if="seen">
             <br/>
             <div class="grid-container">
-                <button type="submit" @click="showEmployees">
+                <button class="button btn" type="submit" @click="showEmployees">
                         Alle Mitarbeiter anzeigen
                         
                 </button>
                 
 
-                <button type="submit" @click="showCustomers">
+                <button class="button btn" type="submit" @click="showCustomers">
                         Alle Kunden anzeigen
                 </button>
-                <button type="submit" @click="showCars">
+                <button class="button btn" type="submit" @click="showCars">
                         Alle Fahrzeuge anzeigen
                 </button>
                 
@@ -58,7 +58,7 @@
                           </tr>
                       </tbody>
                   </table>
-                  <button @click="createEmployee()">Neuen Mitarbeiter anlegen</button>     
+                  <button  @click="createEmployee()">Neuen Mitarbeiter anlegen</button>     
                 </div>  
                 <br/>
                 <br/>
@@ -216,12 +216,14 @@ input, select {
   border-radius: 4px;
   box-sizing: border-box;
 }
-button{
+.button{
+  margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
 	border-radius:10px;
 	border:1px solid #4e6096;
+  padding:16px 32px;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff;
@@ -232,6 +234,10 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
   width: 20%;
+}
+.btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
 }
 label{
   color:indigo;
