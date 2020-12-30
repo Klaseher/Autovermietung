@@ -12,23 +12,23 @@
         <input class="form-control" id="name" type="text" v-model="name" required autofocus>
       </div>
       <div class="form-group">
-        <label for="username">Username</label>
+        <label for="username">Benutzername</label>
         <input class="form-control" id="username" type="text" v-model="username" required autofocus>
       </div>
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">Passwort</label>
         <input class="form-control" id="password" type="password" v-model="password" required autofocus>
       </div>
       <div class="form-group">
-        <label for="password-confirm">Confirm Password</label>
+        <label for="password-confirm">Passwort wiederholen</label>
         <input class="form-control" id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
       </div>
       <div class="form-group actions">
         <button class="btn btn-secondary" type="button" @click="back">
-          Go back
+          Zurück
         </button>
         <button type="submit" @click="handleSubmit" class="btn btn-primary">
-          Create new Employee
+          Neuen Mitarbeiter hinzufügen
         </button>
       </div>
     </form>

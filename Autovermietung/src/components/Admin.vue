@@ -1,10 +1,10 @@
 <template>
   <div class="administrator container">
-    <h1>{{ msg }}</h1>
+    <h1>Sie sind als Administrator angemeldet</h1>
     <hr>
     <div class="text-center form-group">
       <button class="btn-primary btn" v-on:click="zeigeBestellungen()">
-        Bestellungen
+        Bestellungen verwalten
       </button>
     </div>
 
@@ -13,7 +13,7 @@
     <div v-if="admin" class="form-group">
       <div class="text-center">
         <button class="btn btn-primary" v-on:click="seen = !seen">
-          Admin-Functions
+          Admin-Funktionen
         </button>
       </div>
     </div>
@@ -22,17 +22,17 @@
 
     <!-- Anzeigen der Adminfunktionen -->
     <div v-if="seen" class="form-group">
-      <p class="text-center">Admin-Functions can be accessed from here</p>
+      <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet werden.</p>
       <div class="actions form-group">
         <button class="btn btn-primary" type="submit" @click="showEmployees">
-          Show all Employees
+          Mitarbeiterübersicht
         </button>
 
         <button class="btn btn-primary" type="submit" @click="showCustomers">
-          Show all Customers
+          Kundenübersicht
         </button>
         <button class="btn btn-primary" type="submit" @click="showCars">
-          Show all Cars
+          Autoübersicht
         </button>
       </div>
       <div>
@@ -42,8 +42,8 @@
             <thead>
             <tr>
               <th>Name</th>
-              <th>Username</th>
-              <th>Edit</th>
+              <th>Benutzername</th>
+              <th>Daten bearbeiten</th>
             </tr>
             </thead>
             <tbody>
@@ -51,12 +51,12 @@
               <td>{{ employee.nachname }}</td>
               <td>{{ employee.user }}</td>
               <td>
-                <button class="btn btn-primary" @click="editingEmployee(employee.id)">Edit</button>
+                <button class="btn btn-primary" @click="editingEmployee(employee.id)">Daten bearbeiten</button>
               </td>
             </tr>
             </tbody>
           </table>
-          <button class="btn btn-success" @click="createEmployee()">Create New Employee</button>
+          <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
         </div>
 
         <div class="table-responsive" v-if="editCar">
@@ -77,14 +77,14 @@
               <th>Modell</th>
               <th>Preis</th>
               <!-->
-              <th>Edit</th>
+              <th>Bearbeiten</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="(car, index) in cars" :key="index">
               <td>{{ car.name }}</td>
               <td>
-                <button class="btn btn-primary" @click="editingCar(car.name)">Edit</button>
+                <button class="btn btn-primary" @click="editingCar(car.name)">Bearbeiten</button>
               </td>
             </tr>
             </tbody>
@@ -93,7 +93,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-center">Employee-Functions can be accessed from here</p>
+      <p class="text-center">In diesem Bereich können Sie auf erweiterte Administrator Funktionen zugreifen</p>
     </div>
   </div>
 </template>

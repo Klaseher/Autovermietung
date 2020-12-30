@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <h1>Edit Employee</h1>
+    <h1>Mitarbeiterdaten bearbeiten</h1>
     <hr>
     <div class="form-group">
       <form>
         <div class="form-group">
-          <label for="name"><b>Employee Last Name:</b> {{ name }}</label>
+          <label for="name"><b>Aktueller Name: </b> {{ name }}</label>
         </div>
         <div  class="form-inline">
         <div class="form-group">
@@ -13,7 +13,7 @@
         </div>
         <div class="form-group mx-sm-3">
           <button class="btn btn-primary" type="button" @click="updateName">
-            Change Last Name
+            Name ändern
           </button>
         </div>
         </div>
@@ -23,7 +23,7 @@
     <div class="form-group">
       <form >
         <div class="form-group">
-          <label for="username">Current Username: {{ username }} </label>
+          <label for="username">Aktueller Benutzername: {{ username }} </label>
         </div>
         <div class="form-inline">
         <div class="form-group">
@@ -31,7 +31,7 @@
         </div>
         <div class="form-group mx-sm-3">
           <button type="button" @click="updateUsername" class="btn btn-primary">
-            Change Username
+            Benutzername ändern
           </button>
         </div>
         </div>
@@ -40,26 +40,26 @@
     <div class="form-group">
       <form>
         <div class="form-group">
-          <label for="password">New Password</label>
+          <label for="password">Nesues Passwort</label>
           <input class="form-control" id="password" type="password" v-model="password" required>
         </div>
         <div class="form-group">
-          <label for="password">Confirm Password</label>
+          <label for="password">Passwort bestätigen</label>
           <input class="form-control" id="new_password" type="password" v-model="new_password" required>
         </div>
         <div class="form-group">
           <button class="btn btn-primary" type="button" @click="changePassword">
-            Change Password
+            Passwort ändern
           </button>
         </div>
       </form>
     </div>
     <div class="actions">
       <button class="btn btn-secondary" type="cancel" @click="back">
-        Go back
+        Zurück
       </button>
       <button class="btn btn-danger" type="button" @click="deleteEmployee">
-        Delete
+        Mitarbeiter entfernen
       </button>
     </div>
     <h2 class="text-center">{{ meldung }}</h2>
