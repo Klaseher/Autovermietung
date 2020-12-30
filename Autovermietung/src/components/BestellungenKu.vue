@@ -1,55 +1,70 @@
 <template>
-    <div>
-        <div v-if="!ausgewaehlt">
-            <h1>{{msg}}</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>BNR</th>
-                        <th>Startdatum</th>
-                        <th>Enddatum</th>
-                        <th>Auto</th>
-                        <th>Erstelldatum</th>
-                        <th>Status</th>
-                        <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(bestellung, index) in bestellungen" :key="index">
-                        <td>{{bestellung.bnr}}</td>
-                        <td>{{bestellung.startdatum}}</td>
-                        <td>{{bestellung.enddatum}}</td>
-                        <td>{{bestellung.auto_fk}}</td>
-                        <td>{{bestellung.zeitstempel}}</td>
-                        <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="showOrder(bestellung.bnr)">Weiter</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div v-else>
-            <h1>{{msg}}</h1>
-            <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
-            <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kosten</th>
-                        <th>Beschreibung</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(kosten, index) in bestellkosten" :key="index">
-                        <td>{{kosten.menge}}€</td>
-                        <td>{{kosten.beschreibung}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
-            <button type="cancel" @click="back">Zurueck zur Uebersicht</button>
-            <button @click="abbrechen"  :disabled=isDisabled>Abbrechen</button>
-         </div>
+  <div class="container">
+    <div v-if="ausgewaehlt">
+      <h1>{{ msg }}</h1>
+      <hr>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>BNR</th>
+            <th>Startdatum</th>
+            <th>Enddatum</th>
+            <th>Auto</th>
+            <th>Erstelldatum</th>
+            <th>Status</th>
+            <th>Details</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(bestellung, index) in bestellungen" :key="index">
+            <td>{{ bestellung.bnr }}</td>
+            <td>{{ bestellung.startdatum }}</td>
+            <td>{{ bestellung.enddatum }}</td>
+            <td>{{ bestellung.auto_fk }}</td>
+            <td>{{ bestellung.zeitstempel }}</td>
+            <td>{{ status(bestellung.status) }}</td>
+            <td>
+              <button @click="showOrder(bestellung.bnr)">Weiter</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+    <div v-else>
+      <h1>{{ msg }}</h1>
+      <hr>
+      <h3 class="form-group">Auto: {{ gewaehlteBestellung.auto_fk }}</h3>
+      <h3 class="form-group">Mietzeitraum: {{ gewaehlteBestellung.startdatum }} -
+        {{ gewaehlteBestellung.enddatum }}</h3>
+      <div class="table-responsive form-group">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Kosten</th>
+            <th>Beschreibung</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(kosten, index) in bestellkosten" :key="index">
+            <td>{{ kosten.menge }}€</td>
+            <td>{{ kosten.beschreibung }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <form>
+        <div class="form-group text-right">
+          <h3>Gesamtkosten: {{ gesamtkosten }}€</h3>
+        </div>
+        <div class="form-group actions">
+          <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Uebersicht</button>
+          <button class="btn btn-primary" @click="abbrechen" :disabled=isDisabled>Abbrechen</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 
@@ -283,41 +298,4 @@ export default {
 </script>
 
 <style scoped>
-p{
-    color:white;
-    text-align: center;
-    font-size: small;
-}
-
-.doppelt{
-    background-color: red
-}
-.normal {
-    background-color: white
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
-button{
-    box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:14px;
-	padding:20px 40px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-    align-content: center;
-    width: 20%;
-}
-
 </style>

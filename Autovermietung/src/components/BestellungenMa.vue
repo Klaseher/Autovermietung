@@ -1,7 +1,8 @@
 <template>
-    <div class="ma">
+    <div class="container">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
+            <hr>
             <button @click="update()">Aktualisieren</button>
             <select v-model="bestellungsauswahl">
                 <option value="" disabled selected>Filter Bestellungen</option>
@@ -362,52 +363,5 @@ export default {
 </script>
 
 <style scoped>
-/* .ma{
-    background-color: cornflowerblue;
-    background-size: 100% 100%;
-    min-height: 200%;
-
-
-} */
-
-p{
-    color:white;
-    text-align: center;
-    font-size: small;
-}
-
-.doppelt{
-    background-color: red
-}
-.bezahlen {
-    background-color: orange
-}
-.normal {
-    background-color: rgb(193, 197, 233)
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
-button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
-	/* background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer; */
-	color:#ffffff;
-	font-family:Arial;
-	font-size:14px;
-	padding:20px 40px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  width: 20%;
-}
 
 </style>

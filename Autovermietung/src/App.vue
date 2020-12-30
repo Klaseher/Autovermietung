@@ -29,8 +29,8 @@
                 <li>
                   <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
                 </li>
-                <li>
-                  <div v-if="loggedIn">
+                <li v-if="loggedIn">
+                  <div>
                     <router-link class="aside-anchor" @click="logout" to="/logout">Ausloggen
                     </router-link>
                   </div>
