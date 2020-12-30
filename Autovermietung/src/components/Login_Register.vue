@@ -1,13 +1,16 @@
 <template>
   <article>
     <div class="container" :class="{'sign-up-active' : signUp}">
-      <h1>Herzlich Willkommen!</h1>
       <hr>
       <div class="row">
         <div class="col-sm">
           <form class="sign-in" :class="{'hidden-for-animation' : signUp, 'slide-down' : !signUp}">
-
-            <p class="form-group text-center">Nutzen Sie Ihr Konto</p>
+            <br><br/>
+            <h3 class="text-center">Anmeldung mit Ihren Kundendaten</h3>
+            <br><br/>
+            <hr>
+            <br><br/>
+            <p class="form-group text-center">Melden Sie sich an und genießen Sie unseren Service</p>
             <div class="form-group">
               <label for="login-email">Email</label>
               <input id="login-email" class="form-control" type="email" v-model="email" required autofocus/>
@@ -17,11 +20,11 @@
               <input id="login-password" class="form-control" type="password" v-model="password" required/>
             </div>
             <div class="form-group">
-              <a href="/reset">Haben Sie Ihr Passwort vergessen?</a>
+              <a href="/reset">Passwort vergessen?</a>
             </div>
             <div class="form-group actions">
               <button class="btn btn-secondary" type="cancel" @click="back" :disabled="disabled">
-                Zurueck
+                Zurück
               </button>
               <button class="btn btn-info" id="signUp" @click="signUp = true">Registrieren</button>
               <button class="btn btn-primary" type="submit" @click="login" :disabled="disabled">
@@ -30,9 +33,11 @@
             </div>
           </form>
           <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}">
-            <h3 class="text-center">Neues Konto</h3>
+          <br><br/>
+            <h3 class="text-center">Neues Konto anlegen</h3>
+            <br><br/>
             <hr>
-            <div class="form-group text-center">Melden Sie sich an und genießen Sie unseren Service</div>
+            <br><br/>
             <div class="text-center form-group">Nutzen Sie Ihre Email zum Registrieren</div>
             <div class="form-group">
               <label for="reg-vorname">Vorname*</label>
@@ -67,11 +72,11 @@
             </div>
             <div class="form-group actions">
               <button class="btn btn-secondary" type="cancel" @click="back">
-                Zurueck
+                Zurück
               </button>
               <button class="btn btn-info" id="signIn" @click="signUp = false">Anmelden</button>
               <button class="btn btn-primary" type="submit" @click="register">
-                Erstellen
+                Kundenkonto Erstellen
               </button>
             </div>
           </form>
@@ -132,30 +137,30 @@ export default {
                   this.password = ''
                   this.password_confirmation = ''
 
-                  return alert('Password is not safe enough')
+                  return alert('Das Password ist nicht sicher')
                 }
               } else {
                 this.password = ''
                 this.password_confirmation = ''
 
-                return alert('Passwords do not match')
+                return alert('Die eingegebenen Passwörter stimmen nicht überein')
               }
             } else {
               this.telefon = ''
-              return alert('Telephone number is invalid')
+              return alert('Telefonnummer Zeile darf nicht leer bleiben')
             }
           } else {
             this.address = ''
-            return alert('Invalid Address format')
+            return alert('Adresszeile darf nicht leer bleiben')
           }
         } else {
           this.email = ''
-          return alert('Invalid Email format')
+          return alert('Falsches E-Mail Format')
         }
       } else {
         this.name = ''
         this.vorname = ''
-        return alert('Name too long or short or contains invalid symbols')
+        return alert('Bitte prüfen Sie Ihren Vor- und Nachnamen')
       }
     },
     //Anmelden des Kunden --> Verifizierung Anmeldedaten gegenüber Backend
