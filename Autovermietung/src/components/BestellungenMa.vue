@@ -54,7 +54,7 @@
         </table>
       </div>
       <div class="form-group">
-        <button class="btn btn-secondary" @click="home()">Zurueck</button>
+        <button class="btn btn-secondary" @click="home()">Zurück</button>
       </div>
     </div>
 

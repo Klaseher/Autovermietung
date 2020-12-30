@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Unsere Autos</h1>
+    <h1>Verfügbare Autos</h1>
     <hr>
     <main class="search" v-if="!ausgewaehlt">
       <h1>Suchergebnisse für: {{ msg }}</h1>

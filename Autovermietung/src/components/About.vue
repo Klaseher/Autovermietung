@@ -1,17 +1,17 @@
 <template>
   <div class="container">
-    <h1>About_us</h1>
+    <h1>ÜBER UNS</h1>
     <hr>
     <div>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pretium sem luctus, imperdiet quam a, consectetur
-        ipsum. Integer sollicitudin quam sem, in hendrerit diam pharetra at. Aliquam justo ex, faucibus et ligula non,
-        ultrices ornare sem. Aenean posuere velit et mauris vestibulum, eu auctor ligula imperdiet. Nullam magna tellus,
-        accumsan in facilisis et, varius eu neque. Curabitur pellentesque rhoncus elit et tincidunt. Aenean quis felis
-        eu
-        quam pulvinar finibus. Duis vitae nulla dui. Pellentesque habitant morbi tristique senectus et netus et
-        malesuada
-        fames ac turpis egestas.
+        Ob Sie einmaligen Bedarf haben oder an einer langfristigen Geschäftslösung interessiert 
+        sind – wir bieten Ihnen das Fahrzeug Ihrer Wahl und den passenden Service gleich dazu. Mit
+        unserem Fuhrpark halten wir für Sie eine große Auswahl an Kleinwagen, Limousinen, Kombis und
+        Luxuslimousinen bereit. Ob Kleinwagen für Fahrten in der Stadt, eine Luxuslimousine für den 
+        besonderen Anlass oder doch eher der Kleinbus für die ganze Familie - wir stehen Ihnen mit
+        unserem Rundum-Service und einer großen Auswahl zur Verfügung. Bei uns können Sie 
+        zwischen Kurz- und Langzeitmiete sowie zwischen einer Anmietung vor Ort oder einer 
+        Fahrzeuglieferun bis zum gewünschtem Anmietort auswählen.
       </p>
       <p>
         Donec ultricies, lorem id porta dignissim, tellus nibh sagittis purus, ut hendrerit est arcu facilisis justo.

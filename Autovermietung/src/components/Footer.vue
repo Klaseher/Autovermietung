@@ -9,14 +9,14 @@
       </div>
     </div>
     <div class="col">
-      <h3 class="text-center">Contacts</h3>
+      <h3 class="text-center">Kontaktmöglichkeiten</h3>
       <hr>
       <p class="text-center">{{ contact }}</p>
     </div>
     <div class="col footer-menu">
       <router-link class="aside-anchor" to="/">Home</router-link>
-      <router-link class="aside-anchor" to="/about">HEYRJP</router-link>
-      <router-link class="aside-anchor" to="/search">Unsere Autos</router-link>
+      <router-link class="aside-anchor" to="/about">ÜBER UNS</router-link>
+      <router-link class="aside-anchor" to="/search">AUTO MIETEN</router-link>
     </div>
   </footer>
 </template>
@@ -27,7 +27,7 @@
 export default {
   data() {
     return {
-      contact: 'Hotline: 012345678'
+      contact: 'Kundenhotline: 0371 8556677'
     }
   }
 }
