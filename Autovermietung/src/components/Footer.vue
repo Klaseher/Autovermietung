@@ -27,7 +27,7 @@
 export default {
   data() {
     return {
-      contact: 'Kundenhotline: 0371 8556677'
+      contact: 'Kundenhotline: 0371 8556677 E-Mail: info@heyrjp.de'
     }
   }
 }

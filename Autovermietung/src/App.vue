@@ -21,10 +21,10 @@
                   <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
                 </li>
                 <li>
-                  <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/about">Über uns</router-link>
                 </li>
                 <li>
-                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Auto mieten</router-link>
                 </li>
                 <li>
                   <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
@@ -43,10 +43,10 @@
                   <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
                 </li>
                 <li>
-                  <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/about">Über uns</router-link>
                 </li>
                 <li>
-                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
+                  <router-link @click="clickMenu" class="aside-anchor" to="/search">Auto mieten</router-link>
                 </li>
                 <li>
                   <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
@@ -63,8 +63,8 @@
         <div class="desktop-menu d-none d-xl-block d-lg-block">
           <ul class="nav aside-list">
             <router-link @click="clickMenu" class="aside-anchor" to="/">Home</router-link>
-            <router-link @click="clickMenu" class="aside-anchor" to="/about">HEYRJP</router-link>
-            <router-link @click="clickMenu" class="aside-anchor" to="/search">Unsere Autos</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/about">Über uns</router-link>
+            <router-link @click="clickMenu" class="aside-anchor" to="/search">Auto mieten</router-link>
             <router-link @click="clickMenu" class="aside-anchor" to="/login">{{ login }}</router-link>
             <div v-if="loggedIn">
               <router-link class="aside-anchor" @click="logout" to="/logout">Ausloggen</router-link>
@@ -120,7 +120,7 @@ export default {
     changeValue() { //test, ob angemeldet durch Auslesen von Browser-Speicher
       // eslint-disable-next-line eqeqeq
       if (sessionStorage.getItem('auth') == 'true') {
-        this.login = 'Dein Account'
+        this.login = 'Mein Konto'
         this.loggedIn = true
       } else {
         this.login = 'Registrieren / Anmelden'
