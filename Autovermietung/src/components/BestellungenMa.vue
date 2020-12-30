@@ -45,7 +45,7 @@
             </table>
              <br /> 
             <br />  
-            <button @click="home()">Zurueck</button>
+            <button @click="home()">Zurück</button>
         </div>
         <div  v-else>
             <h1>{{msg}}</h1>

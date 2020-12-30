@@ -7,7 +7,11 @@
       </div>
       <router-view/>
       <div class="container">
-        <h2 class="text-center">Unsere Partner</h2>
+        <h2 class="text-center">
+        Mobilität ist in der heutigen Zeit unverzichtbar. Daher hat es sich HEYRJP zur
+        Aufgabe gemacht, Sie in Bewegung zu bringen. Seit der Aufnahme der Geschäftstätigkeit
+        folgen wir unserem Geschäftsziel, Sie mit hochwertigem Service und
+        bestechend guten Leistungen zu überzeugen. Wir machen Ihre Wünsche wahr.</h2>
         <hr>
 
       </div>
@@ -49,7 +53,7 @@ export default {
   },
   data() {
     return {
-      msg: ' Welcome to HEYRJP',
+      msg: 'Ihre HEYRJP Autovermietung',
       block: 'full',
       slides: [
         {image: require('@/assets/Marke/audi.png')},
