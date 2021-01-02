@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="form-group actions">
-        <button v-if="car.image" class="btn btn-danger" @click="imageRemove">Remove photo</button>
+        <button v-if="car.image" class="btn btn-danger" @click="imageRemove">Bild entfernen</button>
         <vue-core-image-upload
             :class="['btn', 'btn-primary']"
             :crop="false"
@@ -20,7 +20,7 @@
             :data="data"
             :max-file-size="5242880"
             url="http://localhost:3000/upload-image"
-            text="Upload photo">
+            text="Bild hochladen">
         </vue-core-image-upload>
       </div>
 
@@ -81,10 +81,10 @@
           Zurück
         </button>
         <button class="btn btn-danger" type="button" @click="remove">
-          Delete
+          Auto löschen
         </button>
         <button type="submit" class="btn btn-primary">
-          Sparen
+          Daten Speichern
         </button>
       </div>
     </form>
