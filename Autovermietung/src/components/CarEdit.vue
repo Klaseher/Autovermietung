@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Edit Car</h1>
+    <h1>Fahrzeugdaten bearbeiten</h1>
     <hr>
     <form @submit="handleSubmit" v-if="car">
       <div class="form-group">

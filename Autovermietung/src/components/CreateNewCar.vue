@@ -1,10 +1,10 @@
 <template>
   <div class="container">
-    <h1>New Car</h1>
+    <h1>Neues Auto anlegen</h1>
     <hr>
     <form @submit="handleSubmit" v-if="!created">
       <div class="form-group">
-        <label for="name">Car Name*:</label>
+        <label for="name">Fahrzeugmodell*:</label>
         <input @keypress="this.created = '';" class="form-control" id="name" type="text" v-model="car.name" required
                autofocus>
       </div>
@@ -22,7 +22,7 @@
             :data="data"
             :max-file-size="5242880"
             url="http://localhost:3000/upload-image"
-            text="Upload photo">
+            text="Bild hochladen">
         </vue-core-image-upload>
       </div>
 
@@ -33,7 +33,7 @@
       </div>
 
       <div class="form-group">
-        <label for="sitzplaetze">Sitzplaetze*:</label>
+        <label for="sitzplaetze">Sitzplätze*:</label>
         <input @keypress="this.created = '';" class="form-control" id="sitzplaetze" type="number"
                v-model="car.sitzplaetze"/>
       </div>
@@ -69,7 +69,7 @@
         <input @keypress="this.created = '';" class="form-control" id="leistung" type="number" v-model="car.leistung"/>
       </div>
       <div class="form-group form-check">
-        <input @keypress="this.created = '';" class="form-check-input" id="verfuegbar" type="checkbox"
+        <input @keypress="this.created = '';" class="form-check-input" id="verfügbar" type="checkbox"
                v-model="car.verfuegbar" value="1"/>
         <label for="verfuegbar" class="form-check-label">Verfuegbar</label>
       </div>
@@ -83,7 +83,7 @@
           Zurück
         </button>
         <button type="submit" class="btn btn-primary">
-          Sparen
+          Daten speichern
         </button>
       </div>
     </form>
