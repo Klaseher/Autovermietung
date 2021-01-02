@@ -212,6 +212,11 @@
             <td>{{ auto.sitzplaetze }}</td>
             <td>Türen:</td>
             <td>{{ auto.tueren }}</td>
+            <td rowspan="3" colspan="2" class="va-middle">
+              <div class="img-preview" v-if="auto.image">
+                <img v-bind:src="`${getImageUrl(auto.image)}`" v-bind:alt="`${auto.image.originalname}`">
+              </div>
+            </td>
           </tr>
 
           <tr>
@@ -266,6 +271,7 @@
 import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
+import fileService from "@/services/file.service";
 
 export default ({
   name: "App",
@@ -351,6 +357,9 @@ export default ({
     };
   },
   methods: {
+    getImageUrl(image) {
+      return fileService.getImageUrl(image)
+    },
     ladeAutos() {
       if (this.autos.length < 1) {
         UserService.getCar("alle")

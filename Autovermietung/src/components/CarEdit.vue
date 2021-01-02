@@ -1,12 +1,10 @@
 <template>
   <div class="container">
-    <h1>New Car</h1>
+    <h1>Edit Car</h1>
     <hr>
-    <form @submit="handleSubmit" v-if="!created">
+    <form @submit="handleSubmit" v-if="car">
       <div class="form-group">
-        <label for="name">Car Name*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="name" type="text" v-model="car.name" required
-               autofocus>
+        <h2>{{car.name}}</h2>
       </div>
       <div class="form-group" v-if="car.image">
         <div class="image-preview">
@@ -82,6 +80,9 @@
         <button class="btn btn-secondary" type="button" @click="back">
           Zurück
         </button>
+        <button class="btn btn-danger" type="button" @click="remove">
+          Delete
+        </button>
         <button type="submit" class="btn btn-primary">
           Sparen
         </button>
@@ -103,6 +104,7 @@ import carService from "../services/car.service";
 import Helper from "@/services/helper.service";
 import VueCoreImageUpload from 'vue-core-image-upload';
 import fileService from '../services/file.service';
+import UserService from "@/services/user.service";
 
 export default {
   components: {
@@ -152,25 +154,37 @@ export default {
       }
       carService.saveCar(this.car)
           .then(() => {
-            this.created = 'Car successfully created';
-            this.car = {
-              name: '',
-              image: null,
-              sitzplaetze: null,
-              tueren: null,
-              typ: null,
-              co2: null,
-              verbrauch: null,
-              kraftstoff: null,
-              tankvolumen: null,
-              leistung: null,
-              preis: null,
-              verfuegbar: true,
-              getriebe: null,
-            }
+            this.created = 'Car successfully saved';
           })
           .catch((error) => Helper.handle(error))
+    },
+    remove(e) {
+      e.preventDefault()
+      if (confirm('Are you sure?')) {
+        carService.removeCar(this.car)
+            .then(() => {
+              this.created = 'Car successfully deleted';
+              this.car = null;
+            })
+            .catch((error) => Helper.handle(error))
+      }
     }
+  },
+  beforeMount() {
+    if (this.$route.params.name == null) {
+      Helper.redirect('/admin');
+    }
+    UserService.getCar(this.$route.params.name)
+        .then(response => {
+          if(!response.data.car){
+            Helper.redirect('/admin');
+          }
+          this.car = {...response.data.car, verfuegbar: response.data.car.verfuegbar == 1};
+        })
+        .catch((error) => {
+          Helper.handle(error)
+          Helper.redirect('/admin')
+        })
   }
 }
 </script>

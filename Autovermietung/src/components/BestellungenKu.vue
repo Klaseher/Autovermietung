@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div v-if="ausgewaehlt">
+    <div v-if="!ausgewaehlt">
       <h1>{{ msg }}</h1>
       <hr>
       <div class="table-responsive">
@@ -25,7 +25,7 @@
             <td>{{ bestellung.zeitstempel }}</td>
             <td>{{ status(bestellung.status) }}</td>
             <td>
-              <button @click="showOrder(bestellung.bnr)">Weiter</button>
+              <button class="btn btn-primary" @click="showOrder(bestellung.bnr)">Weiter</button>
             </td>
           </tr>
           </tbody>

@@ -64,19 +64,7 @@
             <thead>
             <tr>
               <th>Name</th>
-              <!--
-              <th>Typ</th>
-              <th>Türen</th>
-              <th>Sitplätze</th>
-              <th>Kraftstoff</th>
-              <th>Verbrauch</th>
-              <th>Leistung</th>
-              <th>Tankvolume</th>
-              <th>CO2</th>
-              <th>Getriebe</th>
-              <th>Modell</th>
-              <th>Preis</th>
-              <!-->
+              <th>Photo</th>
               <th>Bearbeiten</th>
             </tr>
             </thead>
@@ -84,11 +72,17 @@
             <tr v-for="(car, index) in cars" :key="index">
               <td>{{ car.name }}</td>
               <td>
+                <div class="img-preview" v-if="car.image">
+                  <img v-bind:src="`${getImageUrl(car.image)}`" v-bind:alt="`${car.image.originalname}`">
+                </div>
+              </td>
+              <td>
                 <button class="btn btn-primary" @click="editingCar(car.name)">Bearbeiten</button>
               </td>
             </tr>
             </tbody>
           </table>
+          <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
         </div>
       </div>
     </div>
@@ -102,6 +96,7 @@
 //Komponente für Mitarbeiter/Admin
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
+import fileService from "@/services/file.service";
 export default {
   data () {
     return {
@@ -123,7 +118,9 @@ export default {
     }
   },
   methods: {
-
+    getImageUrl(image) {
+      return fileService.getImageUrl(image)
+    },
     zeigeBestellungen(){
        this.$router.push('/admin/bestellungen')
     },
@@ -167,9 +164,11 @@ export default {
     editingEmployee (id) {
       this.$router.push('/admin/editEmployee/' + id)
     },
-
-    editingCar () {
-      
+    createCar(){
+      this.$router.push('/admin/newCar')
+    },
+    editingCar (name) {
+      this.$router.push('/admin/editCar/' + name)
     },
     redirect (route) {
       Helper.redirect(route)

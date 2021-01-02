@@ -73,9 +73,58 @@ class Db {
     return this.db.get(
       `SELECT * FROM auto WHERE name = ?`,
       [name], function (err, row) {
+          if(row && row.image){
+              row.image = JSON.parse(row.image);
+          }
         callback(err, row)
       })
   }
+
+    removeCar (car, callback) {
+        return this.db.get(
+            `DELETE
+             FROM auto
+             WHERE name = ?`,
+            [car.name], function (err, row) {
+                callback(err, row)
+            });
+    }
+
+    saveCar(car, callback) {
+        return this.db.get(
+            `UPDATE auto
+             set name = ?,
+                 sitzplaetze = ?,
+                 tueren = ?,
+                 typ = ?,
+                 co2 = ?,
+                 verbrauch = ?,
+                 kraftstoff = ?,
+                 tankvolumen = ?,
+                 leistung = ?,
+                 preis = ?,
+                 verfuegbar = ?,
+                 getriebe = ?,
+                 image = ?
+             where name = ?`,
+            [
+                car.name, car.sitzplaetze, car.tueren, car.typ, car.co2, car.verbrauch, car.kraftstoff, car.tankvolumen, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image), car.name,
+            ], function (err, row) {
+                callback(err, row)
+            });
+    }
+
+    createCar(car, callback) {
+        return this.db.get(
+            `INSERT into auto(name, sitzplaetze, tueren, typ, co2, verbrauch, kraftstoff, tankvolumen, leistung, preis,
+                              verfuegbar, getriebe, image)
+             values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                car.name, car.sitzplaetze, car.tueren, car.typ, car.co2, car.verbrauch, car.kraftstoff, car.tankvolumen, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image)
+            ], function (err, row) {
+                callback(err, row)
+            })
+    }
 
   //Alle Datensätze aus Auto-Tabelle zurückgeben
   getAllCars (callback) {
@@ -84,6 +133,9 @@ class Db {
       `SELECT * FROM auto`,
       function (err, rows) {
         rows.forEach(function (row) {
+            if(row && row.image){
+                row.image = JSON.parse(row.image);
+            }
           cars.push(row)
         })
         callback(err, cars)

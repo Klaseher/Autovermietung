@@ -42,7 +42,19 @@
       color: white;
       text-align: center
     }
-
+    table {
+      .img-preview{
+        max-width: 200px;
+        margin: auto;
+        img{
+          max-width: 100%;
+          margin: auto;
+        }
+      }
+      .va-middle{
+        vertical-align: middle;
+      }
+    }
 
   }
 

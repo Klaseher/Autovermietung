@@ -11,6 +11,8 @@ const moment = require('moment')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto')
 const { time } = require('console')
+const multer  = require('multer');
+var fs = require('fs')
 moment().format()
 
 const db = new DB('autovermietung.db') //DB wird geöffnet --> siehe db.js
@@ -870,6 +872,77 @@ router.post('/order/:bnr/cost', (req, res) => {
       return res.status(404).send('Requested resource is not available')
   }  
 })
+
+app.use(express.static(__dirname));
+app.use(multer({dest:"uploaded/cars"}).array("files"));
+
+app.post("/upload-image", function (req, res, ) {
+  let filedata = req.files;
+  if (!filedata) {
+    res.status(500);
+    res.send("Ошибка при загрузке файла");
+  } else {
+    res.send(filedata[0]);
+  }
+});
+
+app.get("/get-image", function (req, res,) {
+  fs.readFile(__dirname + "/../" + req.query.path, function (err, data) {
+    if (err) {
+      return res.status(404).send("Image's not found");
+    }
+    res.writeHead(200, {'Content-Type': req.query.mimeType || 'image/jpeg', 'filename': req.query.origName})
+    res.end(data) // Send the file data to the browser.
+  });
+});
+
+app.delete("/file", function (req) {
+  fs.unlinkSync(__dirname + "/../" + req.query.path);
+});
+
+
+router.post("/delete-car", function (req, res) {
+  confirmToken(req.cookies.jwt, res, function (ausgabe) {
+    if (ausgabe.role != 2) {
+      return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+    }
+    db.removeCar(req.body, (err) => {
+      if (err) return res.status(500).send('Error on the server.')
+      if (req.body.image && req.body.image.path) {
+        fs.unlinkSync(req.body.image.path);
+      }
+      return res.status(200).send({success: true})
+    })
+  })
+});
+
+router.post("/save-car", function (req, res) {
+
+  confirmToken(req.cookies.jwt, res, function (ausgabe) {
+    if (ausgabe.role != 2) {
+      return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+    }
+    db.getCar(req.body.name, (err, car) => {
+      if (err) return res.status(500).send('Error on the server.')
+      if (car) {
+        //update a car
+        const carUpdates = {...car, ...req.body};
+        db.saveCar(carUpdates, (err) => {
+          if (err) return res.status(500).send('Error on the server.')
+          return res.status(200).send({success: true})
+        })
+      } else {
+        // create a car
+        db.createCar(req.body, (err) => {
+          if (err) {
+            return res.status(500).send('Error on the server.')
+          }
+          return res.status(200).send({success: true})
+        })
+      }
+    })
+  })
+});
 
 //Wenn Token vorhanden, Verifizerung, ob Token gültig
 //Danach werden entschlüsselte Daten aus Token geholt, um Person in DB zu suchen

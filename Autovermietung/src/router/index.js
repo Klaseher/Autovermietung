@@ -31,6 +31,8 @@ import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
 import BestellungenKu from '../components/BestellungenKu.vue'
 import CarDamage from '../components/CarDamage.vue'
+import CreateNewCar from "@/components/CreateNewCar";
+import CarEdit from "@/components/CarEdit";
 
 const routes = [
   {
@@ -124,6 +126,24 @@ const routes = [
     path: '/admin/editEmployee/:id',
     name: 'editEmployee',
     component: EmployeeEdit,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: '/admin/newCar',
+    name: 'newCar',
+    component: CreateNewCar,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: '/admin/editCar/:name',
+    name: 'editCar',
+    component: CarEdit,
     meta: {
       requiresAuth: true,
       is_admin: true
