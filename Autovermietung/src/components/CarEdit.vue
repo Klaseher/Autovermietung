@@ -43,10 +43,7 @@
         <label for="typ">Typ*:</label>
         <input @keypress="this.created = '';" class="form-control" id="typ" type="text" v-model="car.typ"/>
       </div>
-      <div class="form-group">
-        <label for="co2">CO2:</label>
-        <input @keypress="this.created = '';" class="form-control" id="co2" type="number" v-model="car.co2"/>
-      </div>
+
       <div class="form-group">
         <label for="verbrauch">Verbrauch*:</label>
         <input @keypress="this.created = '';" class="form-control" id="verbrauch" type="number"
@@ -57,11 +54,7 @@
         <input @keypress="this.created = '';" class="form-control" id="kraftstoff" type="text"
                v-model="car.kraftstoff"/>
       </div>
-      <div class="form-group">
-        <label for="tankvolumen">Tankvolumen*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="tankvolumen" type="number"
-               v-model="car.tankvolumen"/>
-      </div>
+
       <div class="form-group">
         <label for="leistung">Leistung*:</label>
         <input @keypress="this.created = '';" class="form-control" id="leistung" type="number" v-model="car.leistung"/>
@@ -90,7 +83,7 @@
     </form>
     <div v-if="created">
       <h3 class="text-center">{{ created }}</h3>
-      <div class="form-group actions">
+      <div v-if="!car" class="form-group actions">
         <button class="btn btn-secondary" type="button" @click="back">
           Zurück
         </button>
@@ -118,10 +111,8 @@ export default {
         sitzplaetze: null,
         tueren: null,
         typ: null,
-        co2: null,
         verbrauch: null,
         kraftstoff: null,
-        tankvolumen: null,
         leistung: null,
         preis: null,
         verfuegbar: true,
@@ -145,7 +136,7 @@ export default {
       this.car.image = null;
     },
     back() {
-      this.$router.push('/admin')
+      this.$router.push('/admin/cars')
     },
     handleSubmit(e) {
       e.preventDefault()

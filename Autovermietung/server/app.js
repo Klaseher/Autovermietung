@@ -425,6 +425,32 @@ router.get('/employee/:id', (req, res) => {
   })
 })
 
+router.get('/customers', (req, res) => {
+  let token = req.cookies.jwt
+  let userr = null
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      userr = ausgabe.user
+        //Wenn Paramter -200, dann alle Mitarbeiter holen
+          //Nur Admin darf das
+          if (userr.rolle == 2) {
+            db.getAllCustomers((err, users) => {
+              if (err) return ausgabe.res.status(500).send('Error on the server.')
+              if (!users) return ausgabe.res.status(404).send('No Employees available')
+              return ausgabe.res.status(200).send({customers: users})
+            })
+          } else {
+            return ausgabe.res.status(401).send('Unauthorized access')
+          }
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })
+})
+
 //Auto(s) holen
 router.get('/car/:autoname', (req, res) => {
   if(req.params.autoname != null){
@@ -916,6 +942,9 @@ router.post("/delete-car", function (req, res) {
   })
 });
 
+const validateCar = car => !(!car.name || !car.sitzplaetze || !car.tueren || !car.typ || !car.verbrauch || !car.kraftstoff ||  !car.leistung
+  || !car.preis || !car.verfuegbar || !car.getriebe);
+
 router.post("/save-car", function (req, res) {
 
   confirmToken(req.cookies.jwt, res, function (ausgabe) {
@@ -927,11 +956,17 @@ router.post("/save-car", function (req, res) {
       if (car) {
         //update a car
         const carUpdates = {...car, ...req.body};
+        if (!validateCar(carUpdates)) {
+          return res.status(400).send('Please fill all required fields.');
+        }
         db.saveCar(carUpdates, (err) => {
           if (err) return res.status(500).send('Error on the server.')
           return res.status(200).send({success: true})
         })
       } else {
+        if (!validateCar(req.body)) {
+          return res.status(400).send('Please fill all required fields.');
+        }
         // create a car
         db.createCar(req.body, (err) => {
           if (err) {
@@ -978,6 +1013,19 @@ function confirmToken (token, res, callback)
   }
 }
 
+router.get("/car-types", function (req, res) {
+    db.getCarTypes((err, result) => {
+      if (err) return res.status(500).send('Error on the server.')
+      return res.status(200).send(result)
+    })
+});
+
+router.get("/car-door-numbers", function (req, res) {
+  db.getCarTueren((err, result) => {
+    if (err) return res.status(500).send('Error on the server.')
+    return res.status(200).send(result)
+  })
+});
 
 app.use(router)
 

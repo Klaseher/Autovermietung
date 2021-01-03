@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push('/admin')
+      this.$router.push('/admin/employees')
     },
      //Registrieren neuer Mitarbeiter
     handleSubmit (e) {

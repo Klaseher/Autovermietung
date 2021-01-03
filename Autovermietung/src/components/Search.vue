@@ -45,7 +45,7 @@
             />
           </div>
           <div class="col">
-            <button class="btn btn-primary" type="submit" @click="searchCar()">Autosuche</button>
+            <button class="btn btn-primary" type="submit" @click="searchCar">Autosuche</button>
           </div>
         </div>
       </form>
@@ -60,16 +60,6 @@
       <div v-if="seen">
         <form>
           <div class="form-row  form-group">
-            <div class="col">
-              <input
-                  type="text"
-                  placeholder="Mindestpreis (€)"
-                  v-model="preis_min"
-                  required
-                  autofocus
-                  class="form-control"
-              />
-            </div>
             <div class="col">
               <input
                   type="text"
@@ -93,8 +83,8 @@
             <div class="col">
               <input
                   type="text"
-                  placeholder="Anzahl Türen"
-                  v-model="tuer"
+                  placeholder="Leistung (PS)"
+                  v-model="leistung"
                   required
                   autofocus
                   class="form-control"
@@ -137,47 +127,17 @@
                 </option>
               </select>
             </div>
-          </div>
-          <div class="form-row form-group">
             <div class="col">
-              <input
-                  type="text"
-                  placeholder="Co2-Ausstoß (g/km)"
-                  v-model="c02"
-                  required
-                  autofocus
-                  class="form-control"
-              />
-            </div>
-            <div class="col">
-              <input
-                  type="text"
-                  placeholder="Spritverbrauch (l/100km)"
-                  v-model="verbrauch"
-                  required
-                  autofocus
-                  class="form-control"
-              />
-            </div>
-            <div class="col">
-              <input
-                  type="text"
-                  placeholder="Tankvolumen (l)"
-                  v-model="tankvolumen"
-                  required
-                  autofocus
-                  class="form-control"
-              />
-            </div>
-            <div class="col">
-              <input
-                  type="text"
-                  placeholder="Leistung (PS)"
-                  v-model="leistung"
-                  required
-                  autofocus
-                  class="form-control"
-              />
+              <select v-model="tuer" class="form-control">
+                <option value="" disabled selected>Anzahl Türen</option>
+                <option
+                    v-for="(value, index) in doorsNumber"
+                    :key="index"
+                    :value="value"
+                >
+                  {{ value }}
+                </option>
+              </select>
             </div>
           </div>
         </form>
@@ -193,10 +153,9 @@
 
             <td>Typ:</td>
             <td>{{ auto.typ }}</td>
-            <td>CO2:</td>
-            <td>{{ auto.co2 }}</td>
-            <td>Mieten:</td>
-            <td>
+            <td>Verbrauch:</td>
+            <td>{{ auto.verbrauch }}</td>
+            <td class="text-center">
               <button
                   type="submit"
                   @click="mieten(auto.name)"
@@ -212,7 +171,7 @@
             <td>{{ auto.sitzplaetze }}</td>
             <td>Türen:</td>
             <td>{{ auto.tueren }}</td>
-            <td rowspan="3" colspan="2" class="va-middle">
+            <td rowspan="2" class="va-middle">
               <div class="img-preview" v-if="auto.image">
                 <img v-bind:src="`${getImageUrl(auto.image)}`" v-bind:alt="`${auto.image.originalname}`">
               </div>
@@ -227,13 +186,6 @@
             <td>{{ auto.leistung }}</td>
           </tr>
 
-          <tr>
-            <td>Verbrauch:</td>
-            <td>{{ auto.verbrauch }}</td>
-
-            <td>Tankvolumen:</td>
-            <td>{{ auto.tankvolumen }}</td>
-          </tr>
           <tr>
             <td>Getriebe:</td>
             <td>{{ auto.getriebe }}</td>
@@ -272,6 +224,7 @@ import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 import fileService from "@/services/file.service";
+import carService from "@/services/car.service";
 
 export default ({
   name: "App",
@@ -280,6 +233,7 @@ export default ({
   },
   data() {
     return {
+      doorsNumber: [],
       //startdatum
       datepickerSetting: {
         value: "",
@@ -371,11 +325,12 @@ export default ({
             .catch((error) => Helper.handle(error));
       }
     },
-    searchCar() {
+    searchCar(e) {
+      e.preventDefault();
       this.ladeAutos();
       let startdatum = new Date(this.start)
       let enddatum = new Date(this.ende)
-      if (this.start == '' && this.ende == '') {
+      if (!this.start && !this.ende) {
         alert('Start- und Enddatum werden für die Suche ignoriert')
       } else if (this.start == '') {
         alert('Das Startdatum wird für die Suche ignoriert')
@@ -385,16 +340,10 @@ export default ({
         alert('Enddatum darf nicht hinter Startdatum liegen.\nDer Zeitraum wird bei der Suche ignoriert')
       }
       this.gesuchteAutos = this.autos.filter((auto) => {
-        let co2 = false;
         let max = false;
         let tuer = false;
         let platz = false;
         let verbrauch = false;
-        if (this.c02 == "") {
-          co2 = true;
-        } else {
-          co2 = auto.co2 <= this.c02;
-        }
         if (this.preis_max == "") {
           max = true;
         } else max = auto.preis <= this.preis_max;
@@ -418,10 +367,8 @@ export default ({
             tuer &&
             platz &&
             auto.typ.toLowerCase().match(this.typ.toLowerCase()) &&
-            co2 &&
             verbrauch &&
             auto.kraftstoff.toLowerCase().match(this.kraftstoff.toLowerCase()) &&
-            auto.tankvolumen >= this.tankvolumen &&
             auto.leistung >= this.leistung &&
             auto.preis >= this.preis_min &&
             max &&
@@ -506,6 +453,12 @@ export default ({
       this.ausgewaehlt = false;
       this.ladeAutos();
       this.$router.push("/search");
+    },
+    setDoorsNumberList(){
+      carService.getDoorNumbers().then(r => this.doorsNumber = r.data);
+    },
+    setTypeList(){
+      carService.getTypes().then(r => this.autotypen = r.data);
     }
   },
 
@@ -539,15 +492,29 @@ export default ({
       this.ausgewaehlt = false;
       this.ladeAutos();
     }
+  },
+  mounted() {
+    this.setDoorsNumberList();
+    this.setTypeList();
   }
 })
 </script>
 
 
 <style lang="scss" scoped>
-
 .search {
   width: 100%;
+  .auto{
+    padding: 15px;
+    border-radius: 15px;
+  }
+  .auto:nth-child(even){
+    background: #eee;
+  }
+
+  .auto:hover{
+    background: #ccc;
+  }
 }
 .search-result{
   .description{

@@ -22,7 +22,8 @@
 
     <!-- Anzeigen der Adminfunktionen -->
     <div v-if="seen" class="form-group">
-      <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet werden.</p>
+      <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet
+        werden.</p>
       <div class="actions form-group">
         <button class="btn btn-primary" type="submit" @click="showEmployees">
           Mitarbeiterübersicht
@@ -38,6 +39,9 @@
       <div>
         <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
         <div v-if="editEmployee" class="table-responsive">
+          <div class="form-group">
+            <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
+          </div>
           <table class="table">
             <thead>
             <tr>
@@ -59,7 +63,31 @@
           <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
         </div>
 
+        <div v-if="editUser" class="table-responsive">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Benutzername</th>
+              <th>Daten bearbeiten</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(customer, index) in customers" :key="index">
+              <td>{{ customer.nachname }}</td>
+              <td>{{ customer.user }}</td>
+              <td>
+                <button class="btn btn-primary" @click="editingCustomer(customer.id)">Daten bearbeiten</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div class="table-responsive" v-if="editCar">
+          <div class="form-group">
+            <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
+          </div>
           <table class="table">
             <thead>
             <tr>
@@ -97,8 +125,9 @@
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
 import fileService from "@/services/file.service";
+
 export default {
-  data () {
+  data() {
     return {
       vorname: '',
       name: '',
@@ -113,73 +142,114 @@ export default {
       editEmployee: false,
       editCar: false,
       employees: [], //Alle Mitarbeiter
-      cars:[],
-      getriebe:''
+      cars: [],
+      customers: [],
+      getriebe: '',
+      editUser: false,
     }
   },
   methods: {
     getImageUrl(image) {
       return fileService.getImageUrl(image)
     },
-    zeigeBestellungen(){
-       this.$router.push('/admin/bestellungen')
+    zeigeBestellungen() {
+      this.$router.push('/admin/bestellungen')
     },
 
     //laden aller Mitarbeiter aus Backend
 
-    showEmployees () {
+    showEmployees() {
       this.editEmployee = !this.editEmployee
       this.editCar = false;
+      this.editUser = false;
       if (this.editEmployee) {
         UserService.getEmployee(-200)
-          .then(response => {
-            this.employees.push.apply(this.employees, response.data.employees)
-          })
-          .catch((error) => Helper.handle(error))
+            .then(response => {
+              this.employees.push.apply(this.employees, response.data.employees)
+            })
+            .catch((error) => Helper.handle(error))
       } else {
         this.employees = []
       }
     },
-    showCustomers () {
-     
+    showCustomers() {
+      this.editUser = !this.editUser
+      this.editCar = false;
+      this.editEmployee = false;
+      if (this.editUser) {
+        UserService.getCustomers()
+            .then(response => {
+              this.customers.push.apply(this.customers, response.data.customers)
+            })
+            .catch((error) => Helper.handle(error))
+      } else {
+        this.customers = []
+      }
     },
-    showCars () {
+    showCars() {
       this.editCar = !this.editCar
       this.editEmployee = false;
+      this.editUser = false;
       if (this.editCar) {
         UserService.getCar('alle')
-          .then(response => {
-            this.cars.push.apply(this.cars, response.data.cars)
-          })
-          .catch((error) => Helper.handle(error))
+            .then(response => {
+              this.cars.push.apply(this.cars, response.data.cars)
+            })
+            .catch((error) => Helper.handle(error))
       } else {
         this.cars = []
       }
     },
     //Pfad auf detaillierte Mitarbeiteranzeige erneuern
-    createEmployee(){
+    createEmployee() {
       this.$router.push('/admin/newEmployee')
     },
     //Pfad auf detaillierte Mitarbeiteranzeige ändern
-    editingEmployee (id) {
+    editingEmployee(id) {
       this.$router.push('/admin/editEmployee/' + id)
     },
-    createCar(){
+    editingCustomer(id) {
+      this.$router.push('/admin/editCustomer/' + id)
+    },
+    createCar() {
       this.$router.push('/admin/newCar')
     },
-    editingCar (name) {
+    editingCar(name) {
       this.$router.push('/admin/editCar/' + name)
     },
-    redirect (route) {
+    redirect(route) {
       Helper.redirect(route)
     }
   },
-  beforeMount () {
+  beforeMount() {
     let role = sessionStorage.getItem('role')
     if (role == 1) {
       this.admin = false
     } else if (role == 2) {
       this.admin = true
+    }
+
+  },
+  mounted() {
+    const tab = this.$route.params.tab;
+    if(tab){
+      switch (tab){
+        case 'cars': {
+          this.seen = true;
+          this.showCars();
+          break;
+        }
+        case 'employees': {
+          this.seen = true;
+          this.showEmployees();
+          break;
+        }
+        case 'customers': {
+          this.seen = true;
+          this.showCustomers();
+          break;
+        }
+      }
     }
   }
 }

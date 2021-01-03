@@ -14,9 +14,14 @@ class UserService {
     }
 
     getCar(autoname) {
-        return axios.get(API_URL + 'car/' + autoname)
+        return axios.get(API_URL + 'car/' + autoname);
     }
-
+    getTypes(){
+        return axios.get(API_URL + 'car-types');
+    }
+    getDoorNumbers(){
+        return axios.get(API_URL + 'car-door-numbers');
+    }
 }
 
 export default new UserService()

@@ -1,6 +1,9 @@
 <template>
   <div id="app-home">
     <div class="home">
+      <div class="form-group">
+        <HomeCarousel/>
+      </div>
       <div class="container">
         <h1>{{ msg }}</h1>
         <hr>
@@ -44,12 +47,14 @@
 //Homepage-Komponente
 import {VueperSlides, VueperSlide} from 'vueperslides'
 import 'vueperslides/dist/vueperslides.css'
+import HomeCarousel from "@/components/HomeCarousel";
 
 export default {
   name: 'out',
   components: {
     VueperSlides,
     VueperSlide,
+    HomeCarousel,
   },
   data() {
     return {

@@ -67,6 +67,17 @@ class Db {
         callback(err, users)
       })
   }
+    getAllCustomers (callback) {
+        let users = []
+        return this.db.all(
+            `SELECT id, nachname, user FROM user WHERE rolle = ?`,
+            ['0'], function (err, rows) {
+                rows.forEach(function (row) {
+                    users.push(row)
+                })
+                callback(err, users)
+            })
+    }
 
   //Auto-Datensatz mit spezischem Namen aus DB holen
   getCar (name, callback) {
@@ -97,10 +108,10 @@ class Db {
                  sitzplaetze = ?,
                  tueren = ?,
                  typ = ?,
-                 co2 = ?,
+                 co2 = 100,
                  verbrauch = ?,
                  kraftstoff = ?,
-                 tankvolumen = ?,
+                 tankvolumen = 50,
                  leistung = ?,
                  preis = ?,
                  verfuegbar = ?,
@@ -108,7 +119,7 @@ class Db {
                  image = ?
              where name = ?`,
             [
-                car.name, car.sitzplaetze, car.tueren, car.typ, car.co2, car.verbrauch, car.kraftstoff, car.tankvolumen, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image), car.name,
+                car.name, car.sitzplaetze, car.tueren, car.typ, car.verbrauch, car.kraftstoff, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image), car.name,
             ], function (err, row) {
                 callback(err, row)
             });
@@ -120,7 +131,7 @@ class Db {
                               verfuegbar, getriebe, image)
              values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                car.name, car.sitzplaetze, car.tueren, car.typ, car.co2, car.verbrauch, car.kraftstoff, car.tankvolumen, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image)
+                car.name, car.sitzplaetze, car.tueren, car.typ, 100, car.verbrauch, car.kraftstoff, 50, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image)
             ], function (err, row) {
                 callback(err, row)
             })
@@ -367,8 +378,18 @@ class Db {
           callback(err)
         })
     }
-
-
+    getCarTypes(callback) {
+        return this.db.all(
+            `SELECT distinct typ FROM auto order by typ`, function (err, rows) {
+                callback(err, rows.map(r => r.typ))
+            })
+    }
+    getCarTueren(callback) {
+        return this.db.all(
+            `SELECT distinct tueren FROM auto order by tueren`, function (err, rows) {
+                callback(err, rows.map(r => r.tueren))
+            })
+    }
 }
 
 module.exports = Db

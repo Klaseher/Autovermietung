@@ -46,10 +46,6 @@
         <input @keypress="this.created = '';" class="form-control" id="typ" type="text" v-model="car.typ"/>
       </div>
       <div class="form-group">
-        <label for="co2">CO2:</label>
-        <input @keypress="this.created = '';" class="form-control" id="co2" type="number" v-model="car.co2"/>
-      </div>
-      <div class="form-group">
         <label for="verbrauch">Verbrauch*:</label>
         <input @keypress="this.created = '';" class="form-control" id="verbrauch" type="number"
                v-model="car.verbrauch"/>
@@ -58,11 +54,6 @@
         <label for="kraftstoff">Kraftstoff*:</label>
         <input @keypress="this.created = '';" class="form-control" id="kraftstoff" type="text"
                v-model="car.kraftstoff"/>
-      </div>
-      <div class="form-group">
-        <label for="tankvolumen">Tankvolumen*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="tankvolumen" type="number"
-               v-model="car.tankvolumen"/>
       </div>
       <div class="form-group">
         <label for="leistung">Leistung*:</label>
@@ -116,10 +107,8 @@ export default {
         sitzplaetze: null,
         tueren: null,
         typ: null,
-        co2: null,
         verbrauch: null,
         kraftstoff: null,
-        tankvolumen: null,
         leistung: null,
         preis: null,
         verfuegbar: true,
@@ -143,7 +132,7 @@ export default {
       this.car.image = null;
     },
     back() {
-      this.$router.push('/admin')
+      this.$router.push('/admin/cars')
     },
     handleSubmit(e) {
       e.preventDefault()

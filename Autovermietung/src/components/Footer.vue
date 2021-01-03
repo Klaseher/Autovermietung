@@ -1,22 +1,33 @@
 <template>
-  <footer class="container">
-
-    <div class="col">
-      <div class="logo">
-        <a href="/">
-          <img alt="logo" src="../assets/logo.png">
-        </a>
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="logo">
+            <a href="/">
+              <img alt="logo" src="../assets/logo.png">
+            </a>
+          </div>
+        </div>
+        <div class="col">
+          <h3 class="text-center">Kontaktmöglichkeiten</h3>
+          <hr>
+          <p class="form-group">
+            <i class="bi bi-telephone-fill"></i> <a class="ml-2" v-bind:href="`tel:${phone}`">{{ phone }}</a>
+          </p>
+          <p class="form-group">
+            <i class="bi bi-envelope-fill"></i> <a class="ml-2" v-bind:href="`mailto:${email}`">{{ email }}</a>
+          </p>
+          <p class="form-group">
+            <i class="bi bi-geo-alt-fill"></i> <span  class="ml-2">{{ address }}</span>
+          </p>
+        </div>
+        <div class="col footer-menu">
+          <router-link class="aside-anchor" to="/">Home</router-link>
+          <router-link class="aside-anchor" to="/about">ÜBER UNS</router-link>
+          <router-link class="aside-anchor" to="/search">AUTO MIETEN</router-link>
+        </div>
       </div>
-    </div>
-    <div class="col">
-      <h3 class="text-center">Kontaktmöglichkeiten</h3>
-      <hr>
-      <p class="text-center">{{ contact }}</p>
-    </div>
-    <div class="col footer-menu">
-      <router-link class="aside-anchor" to="/">Home</router-link>
-      <router-link class="aside-anchor" to="/about">ÜBER UNS</router-link>
-      <router-link class="aside-anchor" to="/search">AUTO MIETEN</router-link>
     </div>
   </footer>
 </template>
@@ -27,7 +38,9 @@
 export default {
   data() {
     return {
-      contact: 'Kundenhotline: 0371 8556677 E-Mail: info@heyrjp.de'
+      phone: '0371 8556677',
+      email: 'info@heyrjp.de',
+      address: '11 Wall Street New York, NY',
     }
   }
 }
@@ -39,32 +52,36 @@ footer {
   display: flex;
   padding: 15px;
   min-height: 150px;
-  hr{
+
+  hr {
     background: #fff;
   }
-  a{
-    color: #333;
-  }
-  .logo{
+
+  .logo {
     height: 110px;
-    img{
+
+    img {
       max-height: 100%;
     }
   }
-  .footer-menu{
+
+  .footer-menu {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: space-around;
   }
 }
+
 @media (max-width: 991px) {
   footer {
     flex-direction: column;
-    >.col, .logo{
+
+    > .col, .logo {
       text-align: center;
     }
-    .footer-menu{
+
+    .footer-menu {
       align-items: center;
     }
   }

@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push('/admin/employees');
+      this.$router.push('/admin/customers');
     },
     //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
     updateName () {
