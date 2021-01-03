@@ -2,6 +2,7 @@
 //bzw. die etwas mit Authentifizierung zu tun haben oder auch benötigen
 //siehe Endpunkte Backend für spezifische Funktionalitäten
 import axios from 'axios'
+import Helper from "@/services/helper.service";
 // import router from '../router'
 
 const API_URL = 'http://localhost:3000/'
@@ -12,8 +13,7 @@ class Auth {
   logout () {
     sessionStorage.removeItem('role');
     sessionStorage.removeItem('auth');
-    axios.post(API_URL + 'logout');
-    location.reload();
+    axios.post(API_URL + 'logout').then(() => Helper.redirect('/'));
   }
 
   login (mail, pass) {
