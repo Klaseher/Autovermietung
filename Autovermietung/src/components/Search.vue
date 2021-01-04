@@ -11,7 +11,6 @@
                 type="text"
                 placeholder="Autoname"
                 v-model="autoname"
-                required
                 autofocus
                 class="form-control"
             />
@@ -65,8 +64,6 @@
                   type="text"
                   placeholder="Höchstpreis (€)"
                   v-model="preis_max"
-                  required
-                  autofocus
                   class="form-control"
               />
             </div>
@@ -75,8 +72,6 @@
                   type="text"
                   placeholder="Anzahl Sitze"
                   v-model="platz"
-                  required
-                  autofocus
                   class="form-control"
               />
             </div>
@@ -85,8 +80,6 @@
                   type="text"
                   placeholder="Leistung (PS)"
                   v-model="leistung"
-                  required
-                  autofocus
                   class="form-control"
               />
             </div>
@@ -330,14 +323,9 @@ export default ({
       this.ladeAutos();
       let startdatum = new Date(this.start)
       let enddatum = new Date(this.ende)
-      if (!this.start && !this.ende) {
-        alert('Start- und Enddatum werden für die Suche ignoriert')
-      } else if (this.start == '') {
-        alert('Das Startdatum wird für die Suche ignoriert')
-      } else if (this.ende == '') {
-        alert('Das Enddatum wird für die Suche ignoriert')
-      } else if (startdatum.getTime() > enddatum.getTime()) {
+      if (startdatum.getTime() > enddatum.getTime()) {
         alert('Enddatum darf nicht hinter Startdatum liegen.\nDer Zeitraum wird bei der Suche ignoriert')
+        return;
       }
       this.gesuchteAutos = this.autos.filter((auto) => {
         let max = false;
