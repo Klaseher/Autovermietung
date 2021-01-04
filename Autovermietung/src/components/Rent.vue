@@ -9,20 +9,22 @@
         <br /> <h3>{{user.telefon}}</h3>
         <br /> <h3>{{user.user}}</h3>
         <br />
-        <datepicker-lite 
+        <datepicker-lite
             :value-attr="datepickerSetting.value"
+            :placeholder-attr="datepickerSetting.placeholder"
             :year-minus="datepickerSetting.yearMinus"
-            :from="datepickerSetting.from"
-            :to="datepickerSetting.to"
+            :from="datepickerSetting.fromDate"
+            :to="datepickerSetting.toDate"
             :disabled-date="datepickerSetting.disabledDate"
             :locale="datepickerSetting.locale"
             @value-changed="datepickerSetting.changeEvent"
         />
         <datepicker-lite 
             :value-attr="datepickerSetting2.value"
+            :placeholder-attr="datepickerSetting2.placeholder"
             :year-minus="datepickerSetting2.yearMinus"
-            :from="datepickerSetting2.from"
-            :to="datepickerSetting2.to"
+            :from="datepickerSetting2.fromDate"
+            :to="datepickerSetting2.toDate"
             :disabled-date="datepickerSetting.disabledDate"
             :locale="datepickerSetting2.locale"
             @value-changed="datepickerSetting2.changeEvent"
@@ -60,9 +62,10 @@ export default {
             cost: '',
             datepickerSetting : {
                 value:"",
+                placeholder: "Startdatum",
                 yearMinus: 0,
-                from: "",
-                to: "1999/01/01",
+                fromDate: "2020/01/01",
+                toDate: "2030/12/10",
                 disabledDate: [],
                 locale: {
                 format: "YYYY/MM/DD",
@@ -86,9 +89,10 @@ export default {
             //enddatum
             datepickerSetting2 : {
                 value: "",
+                placeholder: "Enddatum",
                 yearMinus: 0,
-                from: "",
-                to: "1999/01/01",
+                fromDate: "2020/01/01",
+                toDate: "2030/12/10",
                 disabledDate: [],
                 locale: {
                 format: "YYYY/MM/DD",
@@ -130,7 +134,7 @@ export default {
         //Hier Methode zum Bestellen
         bestellen(){
             if(this.start == '' && this.ende == ''){
-                alert('Start- und Enddatum dürfen nicht leer sein')
+                alert('Start- und Enddatum dürfen nicht leer/ungültig sein')
                 return
             }
             else if(this.start == ''){
@@ -220,15 +224,11 @@ export default {
         }
     },
     beforeMount(){
-        let from = new Date()
         let to = new Date();
-        from.setDate(from.getDate() + 1) // kann nicht am selben Tag buchen
         to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
         //Zeiträume für Start-und Endkalender festlegen
-        this.datepickerSetting.from = Helper.formatDate(from)
-        this.datepickerSetting.to = Helper.formatDate(to)
-        this.datepickerSetting2.from = Helper.formatDate(from)
-        this.datepickerSetting2.to = Helper.formatDate(to)
+        this.datepickerSetting.toDate = Helper.formatDate(to)
+        this.datepickerSetting2.toDate = Helper.formatDate(to)
         UserService.getUser()
         .then((response) =>{
             this.user = response.data.user;     

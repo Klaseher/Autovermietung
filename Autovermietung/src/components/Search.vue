@@ -16,23 +16,25 @@
       </span>
       <br />
       <br />
-      <datepicker-lite 
+      <datepicker-lite
         :value-attr="datepickerSetting.value"
+        :placeholder-attr="datepickerSetting.placeholder"
         :year-minus="datepickerSetting.yearMinus"
-        :from="datepickerSetting.from"
-        :to="datepickerSetting.to"
+        :from="datepickerSetting.fromDate"
+        :to="datepickerSetting.toDate"
         :disabled-date="datepickerSetting.disabledDate"
         :locale="datepickerSetting.locale"
         @value-changed="datepickerSetting.changeEvent"
       />
       <datepicker-lite 
-        :value-attr="datepickerSetting2.value"
-        :year-minus="datepickerSetting2.yearMinus"
-        :from="datepickerSetting2.from"
-        :to="datepickerSetting2.to"
-        :disabled-date="datepickerSetting2.disabledDate"
-        :locale="datepickerSetting2.locale"
-        @value-changed="datepickerSetting2.changeEvent"
+          :value-attr="datepickerSetting2.value"
+          :placeholder-attr="datepickerSetting2.placeholder"
+          :year-minus="datepickerSetting2.yearMinus"
+          :from="datepickerSetting2.fromDate"
+          :to="datepickerSetting2.toDate"
+          :disabled-date="datepickerSetting.disabledDate"
+          :locale="datepickerSetting2.locale"
+          @value-changed="datepickerSetting2.changeEvent"
       />
       <br />
       <br />
@@ -205,8 +207,7 @@
 </template>
 
 <script>
-
-import DatepickerLite from "./DatepickerLite.vue";
+import DatepickerLite from "vue3-datepicker-lite";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 export default ({
@@ -219,12 +220,11 @@ export default ({
       //startdatum
        datepickerSetting : {
         value:"",
+        placeholder: "Startdatum",
         yearMinus: 0,
-        from: "",
-        to: "1999/01/01",
-        disabledDate: [
-            
-        ],
+        fromDate: "2020/01/01",
+        toDate: "2030/12/10",
+        disabledDate: [],
         locale: {
           format: "YYYY/MM/DD",
           weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
@@ -246,13 +246,12 @@ export default ({
       },
       //enddatum
       datepickerSetting2 : {
-        value: "",
+        value:"",
+        placeholder: "Enddatum",
         yearMinus: 0,
-        from: "",
-        to: "1999/01/01",
-        disabledDate: [
-            
-        ],
+        fromDate: "2020/01/01",
+        toDate: "2030/12/10",
+        disabledDate: [],
         locale: {
           format: "YYYY/MM/DD",
           weekday: ["Son", "Mon", "Dien", "Mit", "Don", "Frei", "Sam"],
@@ -454,16 +453,14 @@ export default ({
   },
 
   beforeMount() {
-    let from = new Date()
     let to = new Date();
+    let from = new Date();
     from.setDate(from.getDate() + 1) // kann nicht am selben Tag buchen
     to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
     //Zeiträume für Start-und Endkalender festlegen
     this.datepickerSetting.value = Helper.formatDate(from)
-    this.datepickerSetting.from = Helper.formatDate(from)
-    this.datepickerSetting.to = Helper.formatDate(to)
-    this.datepickerSetting2.from = Helper.formatDate(from)
-    this.datepickerSetting2.to = Helper.formatDate(to)
+    this.datepickerSetting.toDate = Helper.formatDate(to)
+    this.datepickerSetting2.toDate = Helper.formatDate(to)
     this.kraftstofftypen = ["Super", "Super Plus", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
     this.getriebetypen = ["Automatik", "Schaltung"];
