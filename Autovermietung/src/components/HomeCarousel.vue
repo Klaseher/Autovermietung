@@ -86,14 +86,19 @@ export default {
           text: 'BMW 5er Angebote',
         },
         {
-          image: require('@/assets/Slides/S-Klasse.jpg'),
-          link: '/search/Mercedes%20S-Klasse',
-          text: 'Mercedes S-Klasse Angebote',
-        },
-        {
           image: require('@/assets/Slides/BMW 7er.jpg'),
           link: '/search/BMW%207er',
           text: 'BMW 7er Angebote',
+        },
+        {
+          image: require('@/assets/Slides/E-Klasse.webp'),
+          link: '/search/Mercedes%20E',
+          text: 'Mercedes E-Klasse Angebote',
+        },
+        {
+          image: require('@/assets/Slides/S-Klasse.jpg'),
+          link: '/search/Mercedes%20S',
+          text: 'Mercedes S-Klasse Angebote',
         },
       ],
     }

@@ -65,9 +65,9 @@ export default {
         {image: require('@/assets/Marke/bmw.png')},
         {image: require('@/assets/Marke/VW.png')},
         {image: require('@/assets/Marke/Merc.png')},
-        {image: require('@/assets/Marke/opel.png')},
-        {image: require('@/assets/Marke/mazda.png')},
-        {image: require('@/assets/Marke/porsche.png')},
+        //{image: require('@/assets/Marke/opel.png')},
+        //{image: require('@/assets/Marke/mazda.png')},
+        //{image: require('@/assets/Marke/porsche.png')},
       ]
     }
   }
