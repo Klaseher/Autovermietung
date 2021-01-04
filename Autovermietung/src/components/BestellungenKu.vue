@@ -22,19 +22,24 @@
                         <td>{{bestellung.auto_fk}}</td>
                         <td>{{bestellung.zeitstempel}}</td>
                         <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="showOrder(bestellung.bnr)">Weiter</button></td>
+                        <td><button class="button btn" @click="showOrder(bestellung.bnr)">Weiter</button></td>
                     </tr>
                 </tbody>
             </table>
+            <br />
+            <br />
+            <button class="button btn" @click="backToDashBoard">Zurück</button>
+             <br />
+            <br />
         </div>
         <div v-else>
             <h1>{{msg}}</h1>
             <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <table>
+            <table class="discribe">
                 <thead>
                     <tr>
-                        <th>Kosten</th>
+                        <th >Kosten</th>
                         <th>Beschreibung</th>
                     </tr>
                 </thead>
@@ -46,8 +51,8 @@
                 </tbody>
             </table>
             <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
-            <button type="cancel" @click="back">Zurück zur Übersicht</button>
-            <button @click="abbrechen"  :disabled=isDisabled>Abbrechen</button>
+            <button class="button btn" type="cancel" @click="back">Zurück zur Übersicht</button>
+            <button class="button btn" @click="abbrechen"  :disabled=isDisabled>Abbrechen</button>
          </div>
     </div>
 </template>
@@ -75,6 +80,9 @@ export default {
             this.msg = "Alle Bestellungen"
             this.holeBestellungen();
             this.$router.push("/dashboard/bestellungen")
+        },
+        backToDashBoard(){
+            this.$router.push("/dashboard")
         },
         // bestellung abbrechen
         abbrechen() {
@@ -286,13 +294,15 @@ export default {
 .clientorder{
 
 
-  background: lightblue;
+ background:#443dac;
+  color:rgb(205, 213, 214);
+  background-size: 1000px 1000px, cover;
   
 }
 h1 {
   
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(191, 211, 121);
   padding:20px;
   text-align: center;
         
@@ -300,7 +310,7 @@ h1 {
   }
 
 h3{
-  color:#4e13bb;
+  color:#ee9644;
   }
 input, select {
   width: 30%;
@@ -312,7 +322,8 @@ input, select {
   box-sizing: border-box;
 }
 
-button{
+.button{
+    margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -327,7 +338,11 @@ button{
 	text-decoration:none;
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
-  width: 20%;
+  width: 30%;
+}
+.btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
 }
 label{
   color:indigo;
@@ -344,11 +359,24 @@ li {
 a {
   color: #42b983;
 }
-table, th, td {
-  border: 1px solid black;
+table,th,td {
+  border: 3px solid black;
   border-collapse: collapse;
   padding: 15px;
   border-spacing: 5px;
   width: 100%;
+  
+
 }
+table.discribe{
+    table-layout: fixed;
+    width: 100%;  
+}
+th{
+    color:gold;
+}
+td{
+    color:white;
+}
+
 </style>

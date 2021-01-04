@@ -2,7 +2,7 @@
     <div class="ma">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
-            <button @click="update()">Aktualisieren</button>
+            <button class="button btn" @click="update()">Aktualisieren</button>
             <select v-model="bestellungsauswahl">
                 <option value="" disabled selected>Filter Bestellungen</option>
                 <option
@@ -39,26 +39,26 @@
                         <td>{{bestellung.nachname}}</td>
                         <td>{{bestellung.zeitstempel}}</td>
                         <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="editingOrder(bestellung.bnr)">Weiter</button></td>
+                        <td><button class="button btn" @click="editingOrder(bestellung.bnr)">Weiter</button></td>
                     </tr>
                 </tbody>
             </table>
              <br /> 
             <br />  
-            <button @click="home()">Zurück</button>
+            <button class="button btn" @click="home()">Zurück</button>
         </div>
         <div  v-else>
             <h1>{{msg}}</h1>
-            <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
+            <br /> <span><h3>Auto: <h4> {{gewaehlteBestellung.auto_fk}} </h4></h3></span>
             <br /> <h3>Kunde: {{gewaehlteBestellung.vorname}} {{gewaehlteBestellung.nachname}}</h3>
             <br /> <h3>Email: {{gewaehlteBestellung.user}}</h3>
             <br /> <h3>Adresse: {{gewaehlteBestellung.adresse}}</h3>
             <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
             <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <button type="cancel" @click="back">Zurück zur Bestellübersicht</button>
-            <button @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung stornieren</button>
-            <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung freigeben</button>
-            <button @click="showDamage(gewaehlteBestellung)">Bekannte Fahrzeugschäden</button>
+            <button  class="button btn" type="cancel" @click="back">Zurück zur Bestellübersicht</button>
+            <button class="button btn" @click="abbrechen(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung stornieren</button>
+            <button class="button btn" @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestellung freigeben</button>
+            <button class="button btn" @click="showDamage(gewaehlteBestellung)">Bekannte Fahrzeugschäden</button>
          </div>
     </div>
 </template>
@@ -377,7 +377,9 @@ h1 {
         
   font-size: 30px;
   }
-
+h2{
+  color:#e6e5e9;
+  }
 h3{
   color:#e6e5e9;
   }
@@ -391,7 +393,8 @@ input, select {
   box-sizing: border-box;
 }
 
-button{
+.button{
+    margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -407,6 +410,10 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
   width: 20%;
+}
+.btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
 }
 label{
   color:indigo;

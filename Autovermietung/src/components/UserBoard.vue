@@ -1,13 +1,15 @@
 <template>
 
-    <div class="hello">
+    <div class="user">
         <h1>Welcome to regular users page</h1>
         <h2>{{msg}}</h2>
         <div v-on:click="zeigeBestellungen()" class="control">
-                <button>
+                <button class="button btn">
                     Bestellungen
                 </button>
         </div>
+        <br />
+        <br />
 
 
     </div>
@@ -44,20 +46,21 @@ export default {
 <style scoped>
 
 .user{
-  padding:5px;
-  background: turquoise;
-  background-size:contain;
+ background:#443dac;
+  color:rgb(205, 213, 214);
+  background-size: 1000px 1000px, cover;
 }
 h1{
   font-weight:bold;
-  color: mediumblue;
+  color: rgb(204, 224, 114);
   padding:60px;
   text-align: center;
         
   font-size: 30px;
         
 }
-button{
+.button{
+  
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -73,4 +76,10 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content: center;
 }
+
+  .btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
+}
+
 </style>

@@ -1,7 +1,7 @@
 <template>
     <div class="damage">
         <h1> {{msg}} </h1>
-         <textarea v-model="beschreibung" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
+         <textarea v-model="beschreibung" name="text" cols="35" rows="4" placeholder="Schaden hier beschreiben">Schaden hier beschreiben</textarea> 
           <input
           type="text"
           placeholder="Kostenvoranschlag in €"
@@ -26,7 +26,7 @@
           {{schaden}}
           </option>
         </select>
-        <button type="submit" @click="erstelleSchaden()">Schaden aufnehmen</button>
+        <button class="button btn" type="submit" @click="erstelleSchaden()">Schaden aufnehmen</button>
         <br/>
         <br/>
         <div v-if="allgemein">
@@ -47,8 +47,8 @@
                         <td>{{schaden.typ}}</td>
                         <td>{{schaden.prioritaet}}</td>
                         <td>{{schaden.hoehe}}</td>
-                        <td><button @click="updateCheck(schaden)">Problem behoben</button></td>
-                        <td><button @click="loescheSchaden">Löschen</button></td>
+                        <td><button class="button btn" @click="updateCheck(schaden)">Problem behoben</button></td>
+                        <td><button class="button btn" @click="loescheSchaden">Löschen</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -70,14 +70,14 @@
                         <td>{{schaden.typ}}</td>
                         <td>{{schaden.prioritaet}}</td>
                         <td>{{schaden.hoehe}}</td>
-                        <td><button @click="loescheSchaden">Loeschen</button></td>
+                        <td><button class="button btn" @click="loescheSchaden">Loeschen</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>  
         <br/>
         <br/>
-        <button type="cancel" @click="back">Zurück zum Start</button>
+        <button class="button btn" type="cancel" @click="back">Zurück zum Start</button>
         <br/>
         <br/>
     </div>
@@ -263,13 +263,14 @@ h3{
 input, select {
   width: 30%;
   padding: 12px 20px;
-  margin: 8px 0;
+  margin: 8px 10px;
   display: inline-block;
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
 }
-button{
+.button{
+    margin: 10px 10px;
   box-shadow: 0px 0px 0px 2px #9fb4f2;
 	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
 	background-color:#7892c2;
@@ -285,6 +286,10 @@ button{
 	text-shadow:0px 1px 0px #283966;
   align-content:space-between;
   width: 30%;
+}
+.btn:hover {
+  background-color: #96b428;
+  color: rgb(26, 12, 12);
 }
 
 table, th, td {
