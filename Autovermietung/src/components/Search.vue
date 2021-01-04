@@ -461,7 +461,7 @@ export default ({
     this.datepickerSetting.to = Helper.formatDate(to)
     this.datepickerSetting2.from = Helper.formatDate(from)
     this.datepickerSetting2.to = Helper.formatDate(to)
-    this.kraftstofftypen = ["Super", "Super Plus", "Diesel"];
+    this.kraftstofftypen = ["Benzin", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
     this.getriebetypen = ["Automatik", "Schaltung"];
     if (this.$route.params.autoname != "") {

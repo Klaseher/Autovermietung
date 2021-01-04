@@ -61,7 +61,7 @@ export default {
     return {
       slides: [
         {
-          image: require('@/assets/Slides/Audi A3.jpg'),
+          image: require('@/assets/Slides/E-TRON.jpg'),
           link: '/search/Audi%20A3',
           text: 'Audi E-TRON Angebote',
         },
@@ -86,6 +86,11 @@ export default {
           text: 'BMW 5er Angebote',
         },
         {
+          image: require('@/assets/Slides/S-Klasse.jpg'),
+          link: '/search/Mercedes%20S-Klasse',
+          text: 'Mercedes S-Klasse Angebote',
+        },
+        {
           image: require('@/assets/Slides/BMW 7er.jpg'),
           link: '/search/BMW%207er',
           text: 'BMW 7er Angebote',
@@ -105,7 +110,7 @@ export default {
       position: absolute;
       bottom: 10%;
       right: 5%;
-      padding: 15px 50px;
+      padding: 5px 10px;
     }
   }
 }
