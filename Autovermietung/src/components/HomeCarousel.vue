@@ -63,32 +63,32 @@ export default {
         {
           image: require('@/assets/Slides/Audi A3.jpg'),
           link: '/search/Audi%20A3',
-          text: 'Audi A3',
+          text: 'Audi E-TRON Angebote',
         },
         {
           image: require('@/assets/Slides/Audi A4.webp'),
           link: '/search/Audi%20A4',
-          text: 'Audi A4',
+          text: 'Audi A4 Angebote',
         },
         {
           image: require('@/assets/Slides/Audi A5.jpg'),
           link: '/search/Audi%20A5',
-          text: 'Audi A5',
+          text: 'Audi A5 Angebote',
         },
         {
           image: require('@/assets/Slides/Audi A8.webp'),
           link: '/search/Audi%20A8',
-          text: 'Audi A8',
+          text: 'Audi A8 Angebote',
         },
         {
           image: require('@/assets/Slides/BMW 5er.jpg'),
           link: '/search/BMW%205',
-          text: 'BMW 5',
+          text: 'BMW 5er Angebote',
         },
         {
           image: require('@/assets/Slides/BMW 7er.jpg'),
           link: '/search/BMW%207er',
-          text: 'BMW 7er',
+          text: 'BMW 7er Angebote',
         },
       ],
     }
@@ -104,8 +104,8 @@ export default {
     a.search-link {
       position: absolute;
       bottom: 10%;
-      right: 10%;
-      padding: 15px 70px;
+      right: 5%;
+      padding: 15px 50px;
     }
   }
 }

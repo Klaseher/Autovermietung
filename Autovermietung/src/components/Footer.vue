@@ -40,7 +40,7 @@ export default {
     return {
       phone: '0371 8556677',
       email: 'info@heyrjp.de',
-      address: '11 Wall Street New York, NY',
+      address: 'Weststraße 50, 09112 Chemnitz',
     }
   }
 }
