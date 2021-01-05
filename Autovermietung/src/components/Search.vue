@@ -123,6 +123,7 @@
             <div class="col">
               <select v-model="tuer" class="form-control">
                 <option value="" disabled selected>Anzahl Türen</option>
+                <option value="">Alle</option>
                 <option
                     v-for="(value, index) in doorsNumber"
                     :key="index"
