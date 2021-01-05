@@ -209,7 +209,7 @@ export default {
                     }
                   }
                 }
-              })
+            }})
               .catch((error) => {
                 this.password = ''
                 Helper.handle(error)
