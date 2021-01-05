@@ -85,7 +85,6 @@
                 </tbody>
             </table>
         </div>  
-        <button type="cancel" @click="back">Zurueck zum Start</button>
     </div>
     <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zum Start</button>
   </div>

@@ -72,7 +72,6 @@
             <button @click="home()">Zurueck</button>
         </div>
         <div  v-else>
-            <h1>{{msg}}</h1>
             <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
             <br /> <h3>Kunde: {{gewaehlteBestellung.vorname}} {{gewaehlteBestellung.nachname}}</h3>
             <br /> <h3>Email: {{gewaehlteBestellung.user}}</h3>
