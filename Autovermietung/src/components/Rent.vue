@@ -46,6 +46,7 @@
         <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Uebersicht</button>
         <button
             class="btn btn-primary"
+            type="button"
             @click='bestellen()'
             :disabled="!verfuegbarkeit(auto.verfuegbar)"
         >
@@ -190,6 +191,8 @@ export default {
             Auth.createOrder(this.auto.name, this.start, this.ende, this.cost)
             .then(response => {
                 if(response.data.success){
+                    sessionStorage.removeItem('start');
+                    sessionStorage.removeItem('ende');
                      //Bestätigung, wenn Bestellung erfolgreich erstellt wurde in DB
                     alert('Die Mietanfrage für ' + this.$route.params.autoname + ' für den Zeitraum: ' + this.start + ' - ' + this.ende
                       + ' wird von einem Mitarbeiter bearbeitet. Den Stand Ihrer Anfrage können Sie in Ihrem Account nachverfolgen')
@@ -197,8 +200,11 @@ export default {
                 }
             })
             .catch((error) => {
+              sessionStorage.removeItem('start');
+              sessionStorage.removeItem('ende');
               Helper.handle(error)
-              Helper.redirect('/')
+              Helper.redirect("/search")
+              
             })
         },
         //Alle Tage zw. (inklusive) Start- und Enddatum deaktivieren
@@ -215,6 +221,8 @@ export default {
             }
         },
       back() {
+        sessionStorage.removeItem('start');
+        sessionStorage.removeItem('ende');
         this.$router.push("/search")
       },
     },
@@ -246,10 +254,16 @@ export default {
         let to = new Date();
         to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
         //Zeiträume für Start-und Endkalender festlegen
+        if(sessionStorage.getItem('start') != null){
+            this.datepickerSetting.value = sessionStorage.getItem('start')
+        }
         this.datepickerSetting.toDate = Helper.formatDate(to)
         this.datepickerSetting2.toDate = Helper.formatDate(to)
         this.datepickerSetting.fromDate = Helper.formatDate(from)
         this.datepickerSetting2.fromDate = Helper.formatDate(from)
+        if(sessionStorage.getItem('ende') != null){
+            this.datepickerSetting2.value = sessionStorage.getItem('ende')
+        }
         UserService.getUser()
         .then((response) =>{
             this.user = response.data.user;     

@@ -256,7 +256,7 @@ export default {
         isDisabled() {
             let heute = new Date()
             let start = new Date(this.gewaehlteBestellung.startdatum)
-            if (start.getTime() <= heute.getTime() || this.gewaehlteBestellung.status != 0 || this.gewaehlteBestellung.status != 1){
+            if (start.getTime() <= heute.getTime() || (this.gewaehlteBestellung.status != 0 && this.gewaehlteBestellung.status != 1)){
                 return true
             }
             else{

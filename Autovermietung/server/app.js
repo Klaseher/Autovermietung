@@ -791,25 +791,46 @@ router.post('/rent/', (req, res) => {
               return res.status(500).send('We identified unusual behaviour on your account.\nTherefore you will not be able to do any more orders for today')
             }
             else{
-              db.createOrder([
-                user.id,
-                req.body.auto,
-                req.body.start,
-                req.body.ende,
-                0,
-                moment(timestamp).format('YYYY/MM/DD'),
-              ], (err, value) => {
-                if (err || !value) return res.status(500).send('Error on the server.')
-                db.addCost([
-                  value,
-                  0,
-                  req.body.kosten,
-                  0,
-                  'Standardkosten',
-                ], (err) => {
-                  if (err) return res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true})
-                })
+              db.getCarTimeframes(req.body.auto, (err, carTimeframes) => {
+                if (err) return res.status(500).send('Error on the server.')
+                let gueltig = true
+                for(let i=0;i<carTimeframes.length-1;i++){
+                  let von = new Date(carTimeframes[i].startdatum)
+                  let bis = new Date(carTimeframes[i].enddatum)
+                  let startdatum = new Date(req.body.start)
+                  let enddatum = new Date(req.body.ende)
+                  if (((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
+                    || ((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
+                    || ((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))) {
+                     gueltig = false
+                     break
+                  }
+                }
+                if(gueltig){
+                  db.createOrder([
+                    user.id,
+                    req.body.auto,
+                    req.body.start,
+                    req.body.ende,
+                    0,
+                    moment(timestamp).format('YYYY/MM/DD'),
+                  ], (err, value) => {
+                    if (err || !value) return res.status(500).send('Error on the server.')
+                    db.addCost([
+                      value,
+                      0,
+                      req.body.kosten,
+                      0,
+                      'Standardkosten',
+                    ], (err) => {
+                      if (err) return res.status(500).send('Error on the server.')
+                      return res.status(200).send({success: true})
+                    })
+                  })
+                }
+                else{
+                  return res.status(409).send('Invalid period for order')
+                }
               })
             }
           })
