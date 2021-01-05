@@ -1,45 +1,69 @@
 <template>
-    <div class="editEmployee">
-        <h4>Edit Employee</h4>
-        <form>
-            <label for="name">Employee Last Name: {{name}}</label>
-            <div>
-                <input id="name" type="text" v-model="new_name" required autofocus>
-            </div>
-            <button type="button" @click="updateName">
-                    Change Last Name
-            </button>
-        </form>
-         <form>
-            <label for="email">Current Username: {{username}} </label>
-            <div>
-                <input id="username" type="email" v-model="new_username" required autofocus>
-            </div>
-            <button type="button" @click="updateUsername">
-                    Change Username
-            </button>
-        </form>
-         <form>
-             <label for="password">New Password</label>
-            <div>
-                <input id="password" type="password" v-model="password" required>
-            </div>
-            <label for="password">Confirm Password</label>
-            <div>
-                <input id="new_password" type="password" v-model="new_password" required>
-            </div>
-            <button type="button" @click="changePassword">
-                    Change Password
-            </button>
-        </form>
-        <button type="cancel" @click="back">
-                 Go back
-        </button>
-        <button type="button" @click="deleteEmployee">
-                  Delete 
-        </button>
-        <h1>{{meldung}}</h1>
+  <div class="container">
+    <h1>Mitarbeiterdaten bearbeiten</h1>
+    <hr>
+    <div class="form-group">
+      <form>
+        <div class="form-group">
+          <label for="name"><b>Aktueller Name: </b> {{ name }}</label>
+        </div>
+        <div  class="form-inline">
+        <div class="form-group">
+          <input class="form-control" id="name" type="text" v-model="new_name" required autofocus>
+        </div>
+        <div class="form-group mx-sm-3">
+          <button class="btn btn-primary" type="button" @click="updateName">
+            Name ändern
+          </button>
+        </div>
+        </div>
+      </form>
     </div>
+
+    <div class="form-group">
+      <form >
+        <div class="form-group">
+          <label for="username">Aktueller Benutzername: {{ username }} </label>
+        </div>
+        <div class="form-inline">
+        <div class="form-group">
+          <input class="form-control" id="username" type="email" v-model="new_username" required autofocus>
+        </div>
+        <div class="form-group mx-sm-3">
+          <button type="button" @click="updateUsername" class="btn btn-primary">
+            Benutzername ändern
+          </button>
+        </div>
+        </div>
+      </form>
+    </div>
+    <div class="form-group">
+      <form>
+        <div class="form-group">
+          <label for="password">Nesues Passwort</label>
+          <input class="form-control" id="password" type="password" v-model="password" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Passwort bestätigen</label>
+          <input class="form-control" id="new_password" type="password" v-model="new_password" required>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary" type="button" @click="changePassword">
+            Passwort ändern
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="actions">
+      <button class="btn btn-secondary" type="cancel" @click="back">
+        Zurück
+      </button>
+      <button class="btn btn-danger" type="button" @click="deleteEmployee">
+        Mitarbeiter entfernen
+      </button>
+    </div>
+    <h2 class="text-center">{{ meldung }}</h2>
+  </div>
 </template>
 
 <script>
@@ -62,7 +86,7 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push('../')
+      this.$router.push('/admin/employees');
     },
     //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
     updateName () {
@@ -167,66 +191,5 @@ export default {
 }
 </script>
 <style  scoped>
-.editEmployee{
-  background:lightblue;
-  padding:10%
-  
-}
-h1 {
-  
-  font-weight:bold;
-  color: mediumblue;
-  padding:20px;
-  text-align: center;
-        
-  font-size: 30px;
-  }
-input, select {
-  width: 30%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:14px;
-	padding:20px 37px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  width: 20%;
-}
-label{
-  color:indigo;
-}
-ul {
-  list-style-type: none;
-   padding: 0;
-}
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
 </style>

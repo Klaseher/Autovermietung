@@ -31,6 +31,9 @@ import Rent from '../components/Rent.vue'
 import BestellungenMa from '../components/BestellungenMa.vue'
 import BestellungenKu from '../components/BestellungenKu.vue'
 import CarDamage from '../components/CarDamage.vue'
+import CreateNewCar from "@/components/CreateNewCar";
+import CarEdit from "@/components/CarEdit";
+import CustomerEdit from "@/components/CustomerEdit";
 
 const routes = [
   {
@@ -130,6 +133,33 @@ const routes = [
     }
   },
   {
+    path: '/admin/editCustomer/:id',
+    name: 'editCustomer',
+    component: CustomerEdit,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: '/admin/newCar',
+    name: 'newCar',
+    component: CreateNewCar,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: '/admin/editCar/:name',
+    name: 'editCar',
+    component: CarEdit,
+    meta: {
+      requiresAuth: true,
+      is_admin: true
+    }
+  },
+  {
 
     // uebersicht schaeden auto
     path: '/admin/:autoname/schaden/:bnr?',
@@ -146,6 +176,18 @@ const routes = [
     path: '/admin/bestellungen/:bnr?',
     name: 'bestellungenMitarbeiter',
     component: BestellungenMa,
+    meta: {
+      requiresAuth: true,
+      is_employee: true
+    }
+  },
+
+  {
+    //Ohne Parameter bnr --> Alle Bestellungen angezeigt
+    //Mit Parameter --> Nur Bestellung mit spezifischer bnr
+    path: '/admin/:tab',
+    name: 'adminTab',
+    component: Admin,
     meta: {
       requiresAuth: true,
       is_employee: true

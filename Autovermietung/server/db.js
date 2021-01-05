@@ -67,15 +67,75 @@ class Db {
         callback(err, users)
       })
   }
+    getAllCustomers (callback) {
+        let users = []
+        return this.db.all(
+            `SELECT id, nachname, user FROM user WHERE rolle = ?`,
+            ['0'], function (err, rows) {
+                rows.forEach(function (row) {
+                    users.push(row)
+                })
+                callback(err, users)
+            })
+    }
 
   //Auto-Datensatz mit spezischem Namen aus DB holen
   getCar (name, callback) {
     return this.db.get(
       `SELECT * FROM auto WHERE name = ?`,
       [name], function (err, row) {
+          if(row && row.image){
+              row.image = JSON.parse(row.image);
+          }
         callback(err, row)
       })
   }
+
+    removeCar (car, callback) {
+        return this.db.get(
+            `DELETE
+             FROM auto
+             WHERE name = ?`,
+            [car.name], function (err, row) {
+                callback(err, row)
+            });
+    }
+
+    saveCar(car, callback) {
+        return this.db.get(
+            `UPDATE auto
+             set name = ?,
+                 sitzplaetze = ?,
+                 tueren = ?,
+                 typ = ?,
+                 co2 = 100,
+                 verbrauch = ?,
+                 kraftstoff = ?,
+                 tankvolumen = 50,
+                 leistung = ?,
+                 preis = ?,
+                 verfuegbar = ?,
+                 getriebe = ?,
+                 image = ?
+             where name = ?`,
+            [
+                car.name, car.sitzplaetze, car.tueren, car.typ, car.verbrauch, car.kraftstoff, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image), car.name,
+            ], function (err, row) {
+                callback(err, row)
+            });
+    }
+
+    createCar(car, callback) {
+        return this.db.get(
+            `INSERT into auto(name, sitzplaetze, tueren, typ, co2, verbrauch, kraftstoff, tankvolumen, leistung, preis,
+                              verfuegbar, getriebe, image)
+             values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                car.name, car.sitzplaetze, car.tueren, car.typ, 100, car.verbrauch, car.kraftstoff, 50, car.leistung, car.preis, car.verfuegbar, car.getriebe, JSON.stringify(car.image)
+            ], function (err, row) {
+                callback(err, row)
+            })
+    }
 
   //Alle Datensätze aus Auto-Tabelle zurückgeben
   getAllCars (callback) {
@@ -84,6 +144,9 @@ class Db {
       `SELECT * FROM auto`,
       function (err, rows) {
         rows.forEach(function (row) {
+            if(row && row.image){
+                row.image = JSON.parse(row.image);
+            }
           cars.push(row)
         })
         callback(err, cars)
@@ -315,8 +378,18 @@ class Db {
           callback(err)
         })
     }
-
-
+    getCarTypes(callback) {
+        return this.db.all(
+            `SELECT distinct typ FROM auto order by typ`, function (err, rows) {
+                callback(err, rows.map(r => r.typ))
+            })
+    }
+    getCarTueren(callback) {
+        return this.db.all(
+            `SELECT distinct tueren FROM auto order by tueren`, function (err, rows) {
+                callback(err, rows.map(r => r.tueren))
+            })
+    }
 }
 
 module.exports = Db

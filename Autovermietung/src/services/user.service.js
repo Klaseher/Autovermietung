@@ -17,6 +17,9 @@ class UserService {
   getEmployee (id) {
     return axios.get(API_URL + 'employee/' + id)
   }
+    getCustomers () {
+        return axios.get(API_URL + 'customers')
+    }
 
   getCar (autoname) {
     return axios.get(API_URL + 'car/' + autoname)

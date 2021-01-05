@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 Planung/
 autovermietung/node_modules
-=======
 .DS_Store
 Autovermietung/dist/
 autovermietung/dist/
@@ -26,4 +24,4 @@ SQLite/
 *.njsproj
 *.sln
 *.exe
->>>>>>> login2(bitte-nicht-hier-committen,-sondern-in-login1)
+

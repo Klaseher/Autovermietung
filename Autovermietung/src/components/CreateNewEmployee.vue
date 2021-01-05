@@ -1,43 +1,41 @@
 <template>
-    <div class="newEmployee">
-        <h4>New Employee</h4>
-          <form>
-                <label for="vorname">Vorname</label>
-                <div>
-                  <input id="vorname" type="text" v-model="vorname" required autofocus>
-                </div>
-                <label for="name">Name</label>
-                <div>
-                  <input id="name" type="text" v-model="name" required autofocus>
-                </div>
-                <label for="username">Username</label>
-                <div>
-                  <input id="username" type="text" v-model="username" required autofocus>
-                </div>
-                
-
-                <label for="password">Password</label>
-                <div>
-                  <input id="password" type="password" v-model="password" required autofocus>
-                </div>
-                <label for="password-confirm">Confirm Password</label>
-                <div>
-                    <input id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
-                </div>
-                <br/>
-            <div>
-                <button type="button" @click="back">
-                    Go back
-                </button>
-                <button type="submit" @click="handleSubmit">
-                    Create new Employee
-                </button>
-            </div>
-          </form>
-           <div>
-              <h3 >{{created}}</h3>
-           </div>
+  <div class="container">
+    <h1>New Employee</h1>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label for="vorname">Vorname</label>
+        <input class="form-control" id="vorname" type="text" v-model="vorname" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input class="form-control" id="name" type="text" v-model="name" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="username">Benutzername</label>
+        <input class="form-control" id="username" type="text" v-model="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Passwort</label>
+        <input class="form-control" id="password" type="password" v-model="password" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password-confirm">Passwort wiederholen</label>
+        <input class="form-control" id="password-confirm" type="password" v-model="password_confirmation" required autofocus>
+      </div>
+      <div class="form-group actions">
+        <button class="btn btn-secondary" type="button" @click="back">
+          Zurück
+        </button>
+        <button type="submit" @click="handleSubmit" class="btn btn-primary">
+          Neuen Mitarbeiter hinzufügen
+        </button>
+      </div>
+    </form>
+    <div>
+      <h3 class="text-center">{{ created }}</h3>
     </div>
+  </div>
 </template>
 
 <script>
@@ -57,7 +55,7 @@ export default {
   },
   methods: {
     back () {
-      this.$router.push('/admin')
+      this.$router.push('/admin/employees')
     },
      //Registrieren neuer Mitarbeiter
     handleSubmit (e) {
@@ -118,66 +116,5 @@ export default {
 }
 </script>
 <style  scoped>
-.newEmployee{
-  background:lightblue;
-  padding:10%
-  
-}
-h1 {
-  
-  font-weight:bold;
-  color: mediumblue;
-  padding:20px;
-  text-align: center;
-        
-  font-size: 30px;
-  }
-input, select {
-  width: 30%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-button{
-  box-shadow: 0px 0px 0px 2px #9fb4f2;
-	background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);
-	background-color:#7892c2;
-	border-radius:10px;
-	border:1px solid #4e6096;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:14px;
-	padding:20px 37px 20px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #283966;
-  align-content: center;
-  width: 20%;
-}
-label{
-  color:indigo;
-}
-ul {
-  list-style-type: none;
-   padding: 0;
-}
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  padding: 15px;
-  border-spacing: 5px;
-  width: 100%;
-}
 </style>

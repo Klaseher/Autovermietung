@@ -1,28 +1,45 @@
 <template>
-    <div v-if="!resetPW">
-        <h1>Geben Sie die Email ein, die mit dem Account verknüpft ist, dessen Passwort Sie zurücksetzen möchten</h1>
-        <form>
-         <input type="email" placeholder="Email" v-model="email" required autofocus/>
-         <button type="cancel" @click="back">
-                    Zurueck
-         </button>
-         <button type="button" @click="reset">
-                    Reset
-         </button>
-        </form>
-        <h1>{{msg}}</h1>
-    </div>
-    <div v-else>
-      <h1> Geben Sie hier Ihr neues Passwort ein </h1>
-      <input type="password" placeholder="Ihr Neues Passwort" v-model="password" required autofocus/>
-      <input type="password" placeholder="Bestätigen Sie Passwort" v-model="password_confirmation" required autofocus/>
-         <button type="cancel" @click="back">
-                    Abbrechen
-         </button>
-         <button type="button" @click="confirmNewPW">
-                    Passwort ändern
-         </button>
-    </div>
+  <div v-if="!resetPW" class="container">
+    <h1>Geben Sie die Email ein, die mit dem Account verknüpft ist, dessen Passwort Sie zurücksetzen möchten</h1>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label for="reset-email">Email*</label>
+        <input class="form-control" id="reset-email" type="email" v-model="email" required autofocus/>
+      </div>
+      <div class="form-group actions">
+        <button class="btn btn-secondary" type="cancel" @click="back">
+          Zurueck
+        </button>
+        <button class="btn btn-primary" type="button" @click="reset">
+          Reset
+        </button>
+      </div>
+    </form>
+    <h2>{{ msg }}</h2>
+  </div>
+  <div v-else class="container">
+    <h1> Geben Sie hier Ihr neues Passwort ein </h1>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label for="reset-password">Ihr Neues Passwort</label>
+        <input class="form-control" id="reset-password" type="password" v-model="password" required autofocus/>
+      </div>
+      <div class="form-group">
+        <label for="reset-password">Bestätigen Sie Passwort</label>
+        <input class="form-control" type="password" v-model="password_confirmation" required autofocus/>
+      </div>
+      <div class="form-group actions">
+        <button class="btn btn-secondary" type="cancel" @click="back">
+          Abbrechen
+        </button>
+        <button class="btn btn-primary" type="button" @click="confirmNewPW">
+          Passwort ändern
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -108,33 +125,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 16px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  width: 10%;
-  font-size: 14px;
-  margin: 4px 2px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-}
 
 </style>

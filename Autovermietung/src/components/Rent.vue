@@ -1,15 +1,17 @@
 <template>
-<div>
-        <h1>Auto buchen</h1>
-        <br />
-        <br />
-        <br /> <h3>{{auto.name}}</h3>
-        <br /> <h3>{{user.vorname}} {{user.nachname}}</h3>
-        <br /> <h3>{{user.adresse}}</h3>
-        <br /> <h3>{{user.telefon}}</h3>
-        <br /> <h3>{{user.user}}</h3>
-        <br />
-        <datepicker-lite 
+  <div class="container">
+    <h1>Auto buchen</h1>
+    <hr>
+    <h3>{{ auto.name }}</h3>
+    <h3>{{ user.vorname }} {{ user.nachname }}</h3>
+    <h3>{{ user.adresse }}</h3>
+    <h3>{{ user.telefon }}</h3>
+    <h3>{{ user.user }}</h3>
+    <hr>
+    <form>
+      <div class="form-group">
+        <label for="rent-start-date">Anfangsdatum</label>
+        <datepicker-lite
             :value-attr="datepickerSetting.value"
             :year-minus="datepickerSetting.yearMinus"
             :from="datepickerSetting.from"
@@ -17,8 +19,13 @@
             :disabled-date="datepickerSetting.disabledDate"
             :locale="datepickerSetting.locale"
             @value-changed="datepickerSetting.changeEvent"
+            id="rent-start-date"
+            class-attr="form-control"
         />
-        <datepicker-lite 
+      </div>
+      <div class="form-group">
+        <label for="rent-end-date">Endtermin</label>
+        <datepicker-lite
             :value-attr="datepickerSetting2.value"
             :year-minus="datepickerSetting2.yearMinus"
             :from="datepickerSetting2.from"
@@ -26,18 +33,25 @@
             :disabled-date="datepickerSetting.disabledDate"
             :locale="datepickerSetting2.locale"
             @value-changed="datepickerSetting2.changeEvent"
-         />
-        <br />
-        <br />
-        <br />
-        <br /> <h3>Kosten: {{kosten}} €</h3>
+            id="rent-end-date"
+            class-attr="form-control"
+        />
+      </div>
+      <div class="form-group text-right">
+        <h3>Kosten: {{ kosten }} €</h3>
+      </div>
+      <div class="form-group actions">
+        <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Uebersicht</button>
         <button
+            class="btn btn-primary"
             @click='bestellen()'
             :disabled="!verfuegbarkeit(auto.verfuegbar)"
-            >
-            Anfrage
+        >
+          Anfrage
         </button>
-    </div>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -194,7 +208,10 @@ export default {
                     current.setDate(current.getDate() + 1)
                 }
             }
-        }
+        },
+      back() {
+        this.$router.push("/search")
+      },
     },
     computed: {
         // kosten berechnen durch bestimmung zeitraumlaenge in tage
@@ -252,11 +269,5 @@ export default {
 </script>
 
 <style scoped>
-h1{
-    color: blue;
-}
-p{
-    color: black;
-}
 
 </style>
