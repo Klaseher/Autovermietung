@@ -207,7 +207,7 @@
 </template>
 
 <script>
-import DatepickerLite from "vue3-datepicker-lite";
+import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 export default ({
@@ -459,8 +459,10 @@ export default ({
     to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
     //Zeiträume für Start-und Endkalender festlegen
     this.datepickerSetting.value = Helper.formatDate(from)
+    this.datepickerSetting.fromDate = Helper.formatDate(from)
     this.datepickerSetting.toDate = Helper.formatDate(to)
     this.datepickerSetting2.toDate = Helper.formatDate(to)
+    this.datepickerSetting2.fromDate = Helper.formatDate(from)
     this.kraftstofftypen = ["Super", "Super Plus", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
     this.getriebetypen = ["Automatik", "Schaltung"];

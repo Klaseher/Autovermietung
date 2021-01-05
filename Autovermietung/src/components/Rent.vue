@@ -44,7 +44,7 @@
 
 <script>
 // Hier kann Kunde Bestellung erstellen
-import DatepickerLite from "vue3-datepicker-lite";
+import DatepickerLite from "./DatepickerLite.vue";
 import UserService from "../services/user.service";
 import Helper from "../services/helper.service";
 import Auth from "../services/auth.service";
@@ -224,11 +224,15 @@ export default {
         }
     },
     beforeMount(){
+        let from = new Date();
+        from.setDate(from.getDate() + 1) 
         let to = new Date();
         to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
         //Zeiträume für Start-und Endkalender festlegen
         this.datepickerSetting.toDate = Helper.formatDate(to)
         this.datepickerSetting2.toDate = Helper.formatDate(to)
+        this.datepickerSetting.fromDate = Helper.formatDate(from)
+        this.datepickerSetting2.fromDate = Helper.formatDate(from)
         UserService.getUser()
         .then((response) =>{
             this.user = response.data.user;     

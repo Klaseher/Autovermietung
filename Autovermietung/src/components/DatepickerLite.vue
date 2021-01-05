@@ -96,7 +96,6 @@
 
 <script>
 import { defineComponent, ref, reactive, computed, watch } from "vue";
-
 export default defineComponent({
   name: "my-datepicker",
   props: {
@@ -314,7 +313,7 @@ export default defineComponent({
             let toDate = props.to.match(formatSetting.formatRegexp);
             if (
               yyyy < fromDate[formatSetting.yearIndex] ||
-              (yyyy == fromDate[formatSetting.yearIndex] && mm < toDate[formatSetting.monthIndex]) ||
+              (yyyy == fromDate[formatSetting.yearIndex] && mm > toDate[formatSetting.monthIndex]) ||
               (yyyy == fromDate[formatSetting.yearIndex] &&
                 mm == fromDate[formatSetting.monthIndex] &&
                 dd < fromDate[formatSetting.dateIndex])
@@ -326,7 +325,7 @@ export default defineComponent({
               (yyyy == toDate[formatSetting.yearIndex] && mm > toDate[formatSetting.monthIndex]) ||
               (yyyy == toDate[formatSetting.yearIndex] &&
                 mm == toDate[formatSetting.monthIndex] &&
-                dd > toDate[formatSetting.dateIndex])
+                dd < toDate[formatSetting.dateIndex])
             ) {
               isDisabled = true;
             }
