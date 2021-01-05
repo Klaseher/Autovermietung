@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-    <h1> {{ msg }} </h1>
-    <hr>
     <div>
         <h1> {{msg}} </h1>
          <textarea v-model="beschreibung" placeholder="Beschreibung des Schadens" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 

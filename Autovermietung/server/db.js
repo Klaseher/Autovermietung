@@ -495,14 +495,6 @@ class Db {
       })
   }
 
-  //schaden hinzufuegen
-  updatePriority (update, callback) {
-    return this.db.run(
-      `UPDATE schaden SET prioritaet = ? WHERE auto_fk = ? AND pos = ?`,
-      update, (err) => {
-        callback(err)
-      })
-  }
 
   //schaden bnr_fk updaten
   updateBnrDamage (bnr, auto, pos, callback) {
