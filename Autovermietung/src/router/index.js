@@ -78,7 +78,7 @@ const routes = [
     component: Reset
   },
   {
-    path: '/login',
+    path: '/login/:redirect?',
       name: 'login',
       component: Login_Register,
       meta: {
@@ -216,9 +216,9 @@ router.beforeEach((to, from, next) => {
         sessionStorage.setItem('auth', response.data.auth)
 
         if (JSON.stringify(response.data.auth) !== 'true') {
+          let val = to.fullPath.replace(/\//g, "_").substring(1)
           next({
-            path: '/login',
-            params: { nextUrl: to.fullPath }
+            path: '/login/' + val
           })
         } else {
           let role = response.data.role
@@ -259,9 +259,9 @@ router.beforeEach((to, from, next) => {
         alert(content)
         sessionStorage.removeItem('role')
         sessionStorage.removeItem('auth')
+        let val = to.fullPath.replace(/\//g, "_").substring(1)
         next({
-          path: '/login',
-          params: { nextUrl: to.fullPath }
+          path: '/login/' + val
         })
       }
     )

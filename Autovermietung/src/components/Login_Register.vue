@@ -187,16 +187,19 @@ export default {
           passTest.test(this.password) && this.password.length > 0 && this.password.length < 100) {
         if (this.password.length > 0) {
           Auth.login(this.email, this.password)
-              .then(response => {
-                // eslint-disable-next-line camelcase
-                let is_admin = response.data.role
-                sessionStorage.setItem('role', JSON.stringify(response.data.role))
-                sessionStorage.setItem('auth', response.data.auth)
-
-                if (sessionStorage.getItem('auth') == 'true') {
-                  this.disabled = false
-                  if (this.$route.params.nextUrl != null) {
-                    this.$router.push(this.$route.params.nextUrl)
+            .then(response => {
+              // eslint-disable-next-line camelcase
+              let is_admin = response.data.role
+              sessionStorage.setItem('role', JSON.stringify(response.data.role))
+              sessionStorage.setItem('auth', response.data.auth)
+              if (sessionStorage.getItem('auth') == 'true') {
+                this.disabled = false
+                if (this.$route.params.redirect != '') {
+                  this.$router.push("/" + this.$route.params.redirect.replace(/_/g, "/"))
+                } else {
+                  // eslint-disable-next-line camelcase
+                  if (is_admin >= 1) {
+                    this.$router.push('admin')
                   } else {
                     // eslint-disable-next-line camelcase
                     if (is_admin >= 1) {

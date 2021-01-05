@@ -180,6 +180,15 @@ class Db {
       })
   }
 
+  //Verfuegbarkeit Auto anpassen
+  updateVerfuegbarkeit (auto, status, callback) {
+    return this.db.get(
+      `UPDATE auto SET verfuegbar = ? WHERE name = ?`,
+      [status, auto], function (err, row) {
+        callback(err, row)
+      })
+  }
+
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,
@@ -223,7 +232,7 @@ class Db {
   // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
   //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
   //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist --> wenn auto noch nicht zurueckgegeben, aber zahlung noch offen
-
+ 
 
   //Bestellung Kunde erstellen
   createOrder (order, callback) {
@@ -244,10 +253,23 @@ class Db {
   }
 
   //Alle Bestellungen Kunde erhalten, die offen sind
-  getCustomerOrders (id, callback) {
+  getOpenCustomerOrders (id, callback) {
     let orders = []
     return this.db.all(
       `SELECT * FROM bestellung WHERE user_fk = ? AND status <> 3 AND status <> 4`,
+      [id], function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Alle Bestellungen Kunde erhalten, die geschlossen sind
+  getCustomerOrdersHistory (id, callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT * FROM bestellung WHERE user_fk = ? AND (status = 3 OR status = 4)`,
       [id], function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)
@@ -265,20 +287,59 @@ class Db {
       })
   }
 
-   //Bestellung testen, ob bnr u. autoname hat
-   getOrderbyBnrAndCar (bnr, autoname, callback) {
-    return this.db.get(
-     `SELECT * from bestellung WHERE bnr = ? AND auto_fk = ?`,
-     [bnr,autoname], function (err, row) {
-       callback(err, row)
-     })
- }
+   //Schaeden holen, die zu Bestellung gehoeren
+   getDamagebyBnrAndCar (bnr, autoname, callback) {
+    let schaeden = []
+    return this.db.all(
+      `SELECT * FROM schaden WHERE bnr_fk = ? AND auto_fk = ?`,
+      [bnr,autoname], function (err, rows) {
+        rows.forEach(function (row) {
+          schaeden.push(row)
+        })
+        callback(err, schaeden)
+      })
+  }
 
-  //Alle offenen Bestellungen Kunde erhalten (0, also die noch zu bestaetigen sind), wenn mitarbeiter zuerst bestellungen anzeigt
-  getAllOpenOrders (callback) {
+  //Schaeden holen, die zu Bestellung gehoeren
+  getDamagebyCar (auto, pos, callback) {
+    return this.db.get(
+      `SELECT * FROM schaden WHERE auto_fk = ? AND pos = ?`,
+      [auto,pos], function (err, row) {
+        callback(err, row)
+      })
+  }
+
+  //Mitarbeiter: Alle  Bestellungen holen
+  getAllOrders (callback) {
     let orders = []
     return this.db.all(
-      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 0`,
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id`,
+        function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Mitarbeiter: Alle offenen Bestellungen eines bestimmten Typ (0,1,2,5)
+  getAllOpenOrders (typ, callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = ?`,
+      [typ],function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
+      })
+  }
+
+  //Mitarbeiter: Alle abgeschlossenen Bestellungen erhalten (status 3,4)
+  getOrderHistory (callback) {
+    let orders = []
+    return this.db.all(
+      `SELECT bnr, auto_fk, startdatum, enddatum, status, zeitstempel, vorname, nachname, user, adresse, telefon FROM bestellung JOIN user ON bestellung.user_fk=user.id WHERE status = 3 OR status = 4`,
       function (err, rows) {
         rows.forEach(function (row) {
           orders.push(row)
@@ -296,6 +357,14 @@ class Db {
           damage.push(row)
         })
         callback(err, damage)
+      })
+  }
+
+  updateAutoAusleihe(status,auto, callback){
+    return this.db.get(
+      `UPDATE auto SET ausgeliehen = ? WHERE name = ?`,
+      [status, auto], function (err) {
+        callback(err)
       })
   }
 
@@ -320,6 +389,33 @@ class Db {
     return this.db.run(
       'INSERT INTO kosten (bnr_fk, pos, menge, typ, beschreibung) VALUES (?,?,?,?,?)',
       standard, function (err) {
+        callback(err)
+      })
+  }
+
+  // bestimmten kosteneintrag loeschen
+  deleteOrderCost (bnr, pos, callback) {
+    return this.db.run(
+      `DELETE FROM kosten WHERE bnr_fk = ? AND pos = ?`,
+      [bnr, pos], function (err) {
+        callback(err)
+      })
+  }
+
+  // letztes Auftreten des Kostentyps loeschen
+  deleteFirstOrderCost (bnr, typ, callback) {
+    return this.db.run(
+      `DELETE FROM kosten WHERE bnr_fk = ? AND typ = ? AND pos = (SELECT MAX(pos) FROM kosten WHERE bnr_fk = ? AND typ = ?);`,
+      [bnr, typ, bnr, typ], function (err) {
+        callback(err)
+      })
+  }
+
+  //Kosten Hoehe updaten
+  updateCost(menge, bnr_fk, pos, beschreibung, callback){
+    return this.db.run(
+      `UPDATE kosten SET menge = ?, beschreibung = ? WHERE bnr_fk = ? AND pos = ?`,
+      [menge, beschreibung, bnr_fk, pos], function (err) {
         callback(err)
       })
   }
@@ -364,7 +460,7 @@ class Db {
   //schaden hinzufuegen
   createDamage (damage, callback) {
     return this.db.run(
-      'INSERT INTO schaden (auto_fk, pos, beschreibung, prioritaet, typ, hoehe) VALUES (?,?,?,?,?,?)',
+      'INSERT INTO schaden (auto_fk, pos, beschreibung, prioritaet, typ, hoehe, bnr_fk, pos_fk) VALUES (?,?,?,?,?,?,?,?)',
       damage, (err) => {
         callback(err)
       })
@@ -390,6 +486,34 @@ class Db {
                 callback(err, rows.map(r => r.tueren))
             })
     }
+   //schaden loeschen
+   deleteDamage (auto, pos, callback) {
+    return this.db.run(
+      `DELETE FROM schaden WHERE auto_fk = ? AND pos = ?`,
+      [auto, pos], function (err) {
+        callback(err)
+      })
+  }
+
+  //schaden hinzufuegen
+  updatePriority (update, callback) {
+    return this.db.run(
+      `UPDATE schaden SET prioritaet = ? WHERE auto_fk = ? AND pos = ?`,
+      update, (err) => {
+        callback(err)
+      })
+  }
+
+  //schaden bnr_fk updaten
+  updateBnrDamage (bnr, auto, pos, callback) {
+  return this.db.run(
+    `UPDATE schaden SET bnr_fk = ? WHERE auto_fk = ? AND pos = ?`,
+    bnr,auto,pos, (err) => {
+      callback(err)
+    })
+  }
+
+
 }
 
 module.exports = Db
