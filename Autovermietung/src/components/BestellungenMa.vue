@@ -282,7 +282,7 @@ export default {
             }
             if(bestaetigen){
                 let bestellung = 0
-                 if(this.$route.params.bnr == ! ''){
+                 if(this.$route.params.bnr != ''){
                     bestellung = this.gewaehlteBestellung
                     bestellkosten = this.bestellkosten
                     auto = this.auto
@@ -626,15 +626,7 @@ export default {
                                 let enddatum = new Date(this.bestellungen[i].enddatum)
                                 let von = new Date(this.bestellungen[h].startdatum)
                                 let bis = new Date(this.bestellungen[h].enddatum)
-                                if((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())){
-                                    this.bestellungen[i].doppelt = true
-                                    this.bestellungen[h].doppelt = true
-                                }
-                                else if((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())){
-                                    this.bestellungen[i].doppelt = true
-                                    this.bestellungen[h].doppelt = true
-                                }
-                                else if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
+                                if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
                                     ||((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
                                     ||((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))){
                                     this.bestellungen[i].doppelt = true

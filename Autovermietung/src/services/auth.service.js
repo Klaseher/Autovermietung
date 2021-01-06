@@ -13,6 +13,8 @@ class Auth {
   logout () {
     sessionStorage.removeItem('role');
     sessionStorage.removeItem('auth');
+    sessionStorage.removeItem('start');
+    sessionStorage.removeItem('ende');
     axios.post(API_URL + 'logout').then(() => Helper.redirect('/'));
   }
 

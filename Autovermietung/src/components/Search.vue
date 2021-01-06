@@ -433,6 +433,8 @@ export default ({
 
 
     buchen() {
+      sessionStorage.setItem('start', this.start)
+      sessionStorage.setItem('ende', this.ende)
       this.$router.push("/rent/" + this.gewaehltesauto.name);
       //request an backend, um buchung abzuschließen
       //dazu in db eine bestellung erstellt werden
