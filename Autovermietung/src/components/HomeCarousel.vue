@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <!--    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">-->
     <!--      <div class="carousel-inner">-->
     <!--        <div v-for="(slide, index) in slides" :key="index" v-bind:class="`carousel-item${index === 0 ? ' active': ''}`">-->
@@ -25,10 +25,10 @@
     <!--    </div>-->
     <vueper-slides
         :visible-slides="1"
-        class="no-shadow container partner-slider"
+        class="no-shadow top-slider"
         ref="vueperslides2"
         @slide="$refs.vueperslides1.goToSlide($event.currentSlide.index, { emit: false })"
-        :bullets="true"
+        :bullets="true"<datepicker-lite
         :touchable="false"
         :gap="2.5"
         :arrows="true"
@@ -117,6 +117,15 @@ export default {
       right: 5%;
       padding: 5px 10px;
     }
+  }
+}
+.top-slider{
+  max-width: 100%;
+  margin: auto;
+}
+@media (min-width: 992px) {
+  .top-slider{
+    max-width: 70%;
   }
 }
 </style>

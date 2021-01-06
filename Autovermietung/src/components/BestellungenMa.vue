@@ -1,20 +1,29 @@
 <template>
-    <div class="ma">
-        <div v-if="!ausgewaehlt">
-            <h1>{{msg}}</h1>
-            <select v-model="bestellungsauswahl">
-                <option value="" disabled selected>Filter Bestellungen</option>
-                <option
-                    v-for="(bestellung, index) in bestellungstypen"
-                    :key="index"
-                    :value="bestellung"
-                >
-                    {{bestellung}}
-                </option>
+  <div class="container">
+    <div v-if="!ausgewaehlt">
+      <h1>{{ msg }}</h1>
+      <hr>
+      <form class="form-group">
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <select v-model="bestellungsauswahl" class="form-control">
+              <option value="" disabled selected>Filter Bestellungen</option>
+              <option
+                  v-for="(bestellung, index) in bestellungstypen"
+                  :key="index"
+                  :value="bestellung"
+              >
+                {{ bestellung }}
+              </option>
             </select>
-            <button @click="update()">Aktualisieren</button>
-            <div>
-                <datepicker-lite 
+            <div class="form-group mx-sm-3">
+              <button @click="update()" class="btn btn-primary">Aktualisieren</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <datepicker-lite
                 :value-attr="datepickerSetting.value"
                 :year-minus="datepickerSetting.yearMinus"
                 :from="datepickerSetting.from"
@@ -22,8 +31,9 @@
                 :disabled-date="datepickerSetting.disabledDate"
                 :locale="datepickerSetting.locale"
                 @value-changed="datepickerSetting.changeEvent"
-                />
-                <datepicker-lite 
+                class-attr="form-control"
+            />
+            <datepicker-lite
                 :value-attr="datepickerSetting2.value"
                 :year-minus="datepickerSetting2.yearMinus"
                 :from="datepickerSetting2.from"
@@ -31,89 +41,113 @@
                 :disabled-date="datepickerSetting2.disabledDate"
                 :locale="datepickerSetting2.locale"
                 @value-changed="datepickerSetting2.changeEvent"
-                />
-                <input type="text" placeholder="Nach BNR suchen" v-model="bnr">
-                <input type="text" placeholder="Nach Vorname suchen" v-model="vorname">
-                <input type="text" placeholder="Nach Nachname suchen" v-model="nachname">
-                <button @click="suchen()">Suchen</button>
-            </div>
-            <br /> 
-            <br />  
-            <table>
-                <thead>
-                    <tr>
-                        <th>BNR</th>
-                        <th>Startdatum</th>
-                        <th>Enddatum</th>
-                        <th>Auto</th>
-                        <th>Vorname</th>
-                        <th>Nachname</th>
-                        <th>Erstelldatum</th>
-                        <th>Status</th>
-                        <th>Bearbeiten</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
-                        <td>{{bestellung.bnr}}</td>
-                        <td>{{bestellung.startdatum}}</td>
-                        <td>{{bestellung.enddatum}}</td>
-                        <td>{{bestellung.auto_fk}}</td>
-                        <td>{{bestellung.vorname}}</td>
-                        <td>{{bestellung.nachname}}</td>
-                        <td>{{bestellung.zeitstempel}}</td>
-                        <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="editingOrder(bestellung.bnr)">Weiter</button></td>
-                    </tr>
-                </tbody>
-            </table>
-             <br /> 
-            <br />  
-            <button @click="home()">Zurueck</button>
+                class-attr="form-control mx-sm-3"
+            />
+          </div>
         </div>
-        <div  v-else>
-            <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
-            <br /> <h3>Kunde: {{gewaehlteBestellung.vorname}} {{gewaehlteBestellung.nachname}}</h3>
-            <br /> <h3>Email: {{gewaehlteBestellung.user}}</h3>
-            <br /> <h3>Adresse: {{gewaehlteBestellung.adresse}}</h3>
-            <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
-            <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kosten</th>
-                        <th>Beschreibung</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(kosten, index) in bestellkosten" :key="index">
-                        <td>{{kosten.menge}}€</td>
-                        <td>{{kosten.beschreibung}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
-            <button type="cancel" @click="back">Zurueck zur Suche</button>
-            <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1) && auto.ausgeliehen ==0">
-                <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">Abbrechen</button>
-            </div>
-            <div v-if="gewaehlteBestellung.status==0">
-                <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            </div>
-            <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
-                <button @click="ausleihen(auto.name)">Auto ausleihen</button>
-            </div> 
-            <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
-                <button @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
-            </div>
-            <div v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==1) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
-                <button @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
-            </div>
-            <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
-                <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
-            </div>
-         </div>
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <input class="form-control" type="text" placeholder="Nach BNR suchen" v-model="bnr">
+            <input class="form-control mx-sm-3" type="text" placeholder="Nach Vorname suchen" v-model="vorname">
+            <input class="form-control" type="text" placeholder="Nach Nachname suchen" v-model="nachname">
+            <button class="btn btn-primary mx-sm-3" @click="suchen()">Suchen</button>
+          </div>
+        </div>
+      </form>
+      <div class="table-responsive form-group">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>BNR</th>
+            <th>Startdatum</th>
+            <th>Enddatum</th>
+            <th>Auto</th>
+            <th>Vorname</th>
+            <th>Nachname</th>
+            <th>Erstelldatum</th>
+            <th>Status</th>
+            <th>Bearbeiten</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
+            <td>{{ bestellung.bnr }}</td>
+            <td>{{ bestellung.startdatum }}</td>
+            <td>{{ bestellung.enddatum }}</td>
+            <td>{{ bestellung.auto_fk }}</td>
+            <td>{{ bestellung.vorname }}</td>
+            <td>{{ bestellung.nachname }}</td>
+            <td>{{ bestellung.zeitstempel }}</td>
+            <td>{{ status(bestellung.status) }}</td>
+            <td>
+              <button class="btn btn-primary" @click="editingOrder(bestellung.bnr)">Weiter</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-secondary" @click="home()">Zurück</button>
+      </div>
     </div>
+    <div v-else>
+      <h1>{{ msg }}</h1>
+      <hr>
+      <div class="form-group">
+        <h3>Auto: {{ gewaehlteBestellung.auto_fk }}</h3>
+        <h3>Kunde: {{ gewaehlteBestellung.vorname }} {{ gewaehlteBestellung.nachname }}</h3>
+        <h3>Email: {{ gewaehlteBestellung.user }}</h3>
+        <h3>Adresse: {{ gewaehlteBestellung.adresse }}</h3>
+        <h3>Telefon: {{ gewaehlteBestellung.telefon }}</h3>
+        <h3>Mietzeitraum: {{ gewaehlteBestellung.startdatum }} - {{ gewaehlteBestellung.enddatum }}</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Kosten</th>
+            <th>Beschreibung</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(kosten, index) in bestellkosten" :key="index">
+            <td>{{ kosten.menge }}€</td>
+            <td>{{ kosten.beschreibung }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <br/>
+      <h3>Gesamtkosten: {{ gesamtkosten }}€</h3>
+      <div class="actions form-group">
+        <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Suche</button>
+        <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1) && auto.ausgeliehen ==0">
+          <button class="btn btn-danger" @click="abbrechen(gewaehlteBestellung.bnr, 0)"
+                  :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">
+            Abbrechen
+          </button>
+        </div>
+        <div v-if="gewaehlteBestellung.status==0">
+          <button class="btn btn-success" @click="acceptOrder(gewaehlteBestellung.bnr)"
+                  :disabled="gewaehlteBestellung.status!=0">Bestaetigen
+          </button>
+        </div>
+        <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
+          <button class="btn btn-secondary" @click="ausleihen(auto.name)">Auto ausleihen</button>
+        </div>
+        <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
+          <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
+        </div>
+        <div
+            v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==1) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
+          <button class="btn btn-primary" @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
+        </div>
+        <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
+          <button class="btn btn-info" @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 
