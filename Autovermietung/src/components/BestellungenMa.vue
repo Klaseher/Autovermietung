@@ -1,75 +1,109 @@
 <template>
-    <div class="ma">
+    <div class="container">
         <div v-if="!ausgewaehlt">
             <h1>{{msg}}</h1>
-            <select v-model="bestellungsauswahl">
-                <option value="" disabled selected>Filter Bestellungen</option>
-                <option
-                    v-for="(bestellung, index) in bestellungstypen"
-                    :key="index"
-                    :value="bestellung"
-                >
-                    {{bestellung}}
-                </option>
-            </select>
-            <button @click="update()">Aktualisieren</button>
-            <div>
-                <datepicker-lite 
-                :value-attr="datepickerSetting.value"
-                :year-minus="datepickerSetting.yearMinus"
-                :from="datepickerSetting.from"
-                :to="datepickerSetting.to"
-                :disabled-date="datepickerSetting.disabledDate"
-                :locale="datepickerSetting.locale"
-                @value-changed="datepickerSetting.changeEvent"
-                />
-                <datepicker-lite 
-                :value-attr="datepickerSetting2.value"
-                :year-minus="datepickerSetting2.yearMinus"
-                :from="datepickerSetting2.from"
-                :to="datepickerSetting2.to"
-                :disabled-date="datepickerSetting2.disabledDate"
-                :locale="datepickerSetting2.locale"
-                @value-changed="datepickerSetting2.changeEvent"
-                />
-                <input type="text" placeholder="Nach BNR suchen" v-model="bnr">
-                <input type="text" placeholder="Nach Vorname suchen" v-model="vorname">
-                <input type="text" placeholder="Nach Nachname suchen" v-model="nachname">
-                <button @click="suchen()">Suchen</button>
+            <form>
+                <div class="form-row">
+                    <div class="col">
+                        <select v-model="bestellungsauswahl" class="form-control">
+                            <option value="" disabled selected>Filter Bestellungen</option>
+                            <option
+                                v-for="(bestellung, index) in bestellungstypen"
+                                :key="index"
+                                :value="bestellung"
+                            >
+                                {{bestellung}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit" @click="update()">Aktualisieren</button>
+                    </div>
+                </div>
+            </form>
+            <br/>
+            <div class="form-row">
+                <div class="col">
+                    <datepicker-lite 
+                    :value-attr="datepickerSetting.value"
+                    :year-minus="datepickerSetting.yearMinus"
+                    :from="datepickerSetting.from"
+                    :to="datepickerSetting.to"
+                    :disabled-date="datepickerSetting.disabledDate"
+                    :locale="datepickerSetting.locale"
+                    @value-changed="datepickerSetting.changeEvent"
+                    classAttr="form-control"
+                     placeholder="von Datum auswählen"
+                    />
+                </div>
+
+                <div class="col">
+                    <datepicker-lite 
+                    :value-attr="datepickerSetting2.value"
+                    :year-minus="datepickerSetting2.yearMinus"
+                    :from="datepickerSetting2.from"
+                    :to="datepickerSetting2.to"
+                    :disabled-date="datepickerSetting2.disabledDate"
+                    :locale="datepickerSetting2.locale"
+                    @value-changed="datepickerSetting2.changeEvent"
+                    classAttr="form-control"
+                     placeholder="bis Datum auswählen"
+                    />
+                </div>
             </div>
+            <br/>
+
+            <form>
+                <div class="form-row form-group">
+                    <div class="col">
+                        <input type="text" placeholder="Nach BNR suchen" v-model="bnr" class="form-control">
+                    </div>
+                    <div class="col">
+                        <input type="text" placeholder="Nach Vorname suchen" v-model="vorname" class="form-control">
+                    </div>
+                    <div class="col">
+                        <input type="text" placeholder="Nach Nachname suchen" v-model="nachname" class="form-control">
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit" @click="suchen()">Suchen</button>
+                    </div>
+                </div>
+            </form>
             <br /> 
             <br />  
-            <table>
-                <thead>
-                    <tr>
-                        <th>BNR</th>
-                        <th>Startdatum</th>
-                        <th>Enddatum</th>
-                        <th>Auto</th>
-                        <th>Vorname</th>
-                        <th>Nachname</th>
-                        <th>Erstelldatum</th>
-                        <th>Status</th>
-                        <th>Bearbeiten</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
-                        <td>{{bestellung.bnr}}</td>
-                        <td>{{bestellung.startdatum}}</td>
-                        <td>{{bestellung.enddatum}}</td>
-                        <td>{{bestellung.auto_fk}}</td>
-                        <td>{{bestellung.vorname}}</td>
-                        <td>{{bestellung.nachname}}</td>
-                        <td>{{bestellung.zeitstempel}}</td>
-                        <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="editingOrder(bestellung.bnr)">Weiter</button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>BNR</th>
+                            <th>Startdatum</th>
+                            <th>Enddatum</th>
+                            <th>Auto</th>
+                            <th>Vorname</th>
+                            <th>Nachname</th>
+                            <th>Erstelldatum</th>
+                            <th>Status</th>
+                            <th>Bearbeiten</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
+                            <td>{{bestellung.bnr}}</td>
+                            <td>{{bestellung.startdatum}}</td>
+                            <td>{{bestellung.enddatum}}</td>
+                            <td>{{bestellung.auto_fk}}</td>
+                            <td>{{bestellung.vorname}}</td>
+                            <td>{{bestellung.nachname}}</td>
+                            <td>{{bestellung.zeitstempel}}</td>
+                            <td>{{status(bestellung.status)}}</td>
+                            <td><button class="btn btn-primary" @click="editingOrder(bestellung.bnr)">Weiter</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
              <br /> 
             <br />  
-            <button @click="home()">Zurueck</button>
+            <button  type="submit" @click="home()">Zurueck</button>
         </div>
         <div  v-else>
             <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
