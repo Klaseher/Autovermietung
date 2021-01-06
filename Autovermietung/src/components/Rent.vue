@@ -191,8 +191,6 @@ export default {
             Auth.createOrder(this.auto.name, this.start, this.ende, this.cost)
             .then(response => {
                 if(response.data.success){
-                    sessionStorage.removeItem('start');
-                    sessionStorage.removeItem('ende');
                      //Bestätigung, wenn Bestellung erfolgreich erstellt wurde in DB
                     alert('Die Mietanfrage für ' + this.$route.params.autoname + ' für den Zeitraum: ' + this.start + ' - ' + this.ende
                       + ' wird von einem Mitarbeiter bearbeitet. Den Stand Ihrer Anfrage können Sie in Ihrem Account nachverfolgen')
@@ -200,8 +198,6 @@ export default {
                 }
             })
             .catch((error) => {
-              sessionStorage.removeItem('start');
-              sessionStorage.removeItem('ende');
               Helper.handle(error)
               Helper.redirect("/search")
               
@@ -221,8 +217,6 @@ export default {
             }
         },
       back() {
-        sessionStorage.removeItem('start');
-        sessionStorage.removeItem('ende');
         this.$router.push("/search")
       },
     },
@@ -264,6 +258,8 @@ export default {
         if(sessionStorage.getItem('ende') != null){
             this.datepickerSetting2.value = sessionStorage.getItem('ende')
         }
+        sessionStorage.removeItem('start');
+        sessionStorage.removeItem('ende');
         UserService.getUser()
         .then((response) =>{
             this.user = response.data.user;     
