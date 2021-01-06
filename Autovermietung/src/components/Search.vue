@@ -433,7 +433,14 @@ export default ({
 
 
     buchen() {
-      this.$router.push("/rent/" + this.gewaehltesauto.name);
+      const params = [];
+      if(this.start){
+        params.push(`start=${encodeURI(this.start)}`);
+      }
+      if(this.ende){
+        params.push(`end=${encodeURI(this.ende)}`);
+      }
+      this.$router.push("/rent/" + this.gewaehltesauto.name + (params.length ? `?${params.join('&')}` : ''));
       //request an backend, um buchung abzuschließen
       //dazu in db eine bestellung erstellt werden
       //employee kann es dann abrufen in account

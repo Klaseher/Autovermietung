@@ -28,7 +28,7 @@
         class="no-shadow top-slider"
         ref="vueperslides2"
         @slide="$refs.vueperslides1.goToSlide($event.currentSlide.index, { emit: false })"
-        :bullets="true"<datepicker-lite
+        :bullets="true"
         :touchable="false"
         :gap="2.5"
         :arrows="true"
