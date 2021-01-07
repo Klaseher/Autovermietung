@@ -935,4 +935,14 @@ export default {
 
 <style scoped>
 
+.doppelt{
+    background-color: red
+}
+.bezahlen {
+    background-color: orange
+}
+.normal {
+    background-color: rgb(193, 197, 233)
+}
+
 </style>
