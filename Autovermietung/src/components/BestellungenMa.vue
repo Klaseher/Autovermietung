@@ -795,8 +795,16 @@ export default {
                 this.class="doppelt"
                 return this.class
               }
+              else if (bestellung.status == 0){
+                this.class = "offen"
+                return this.class
+              }
               else if (bestellung.status == 2) {
                 this.class = "bezahlen"
+                return this.class
+              }
+              else if (bestellung.status == 3 || bestellung.status == 4){
+                this.class = "beendet"
                 return this.class
               }
               else{
@@ -938,8 +946,14 @@ export default {
 .doppelt{
     background-color: red
 }
+.offen{
+    background-color: yellow
+}
 .bezahlen {
     background-color: orange
+}
+.beendet {
+    background-color: rgb(161, 158, 158)
 }
 .normal {
     background-color: rgb(193, 197, 233)
