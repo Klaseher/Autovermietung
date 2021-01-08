@@ -19,7 +19,7 @@
             @imageuploaded="imageuploaded"
             :data="data"
             :max-file-size="5242880"
-            url="http://localhost:3000/upload-image"
+            v-bind:url="`${process.env.API_SERVER_URL || 'http://localhost:3000'}/upload-image`"
             text="Bild hochladen">
         </vue-core-image-upload>
       </div>

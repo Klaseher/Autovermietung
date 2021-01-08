@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <!--    <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">-->
     <!--      <div class="carousel-inner">-->
     <!--        <div v-for="(slide, index) in slides" :key="index" v-bind:class="`carousel-item${index === 0 ? ' active': ''}`">-->
@@ -30,10 +30,12 @@
         @slide="$refs.vueperslides1.goToSlide($event.currentSlide.index, { emit: false })"
         :bullets="true"
         :touchable="false"
-        :gap="2.5"
+        :gap="1"
         :arrows="true"
         :autoplay="true"
-        :duration="3000">
+        :duration="3000"
+        :fixed-height="true"
+        >
       <vueper-slide
           v-for="(slide, i) in slides"
           :key="i"
@@ -109,23 +111,16 @@ export default {
 
 <style lang="scss" scoped>
 .vueperslides {
-
+  height: 600px;
   .vueperslide {
+    background-repeat: no-repeat;
+    min-height: 600px;
     a.search-link {
       position: absolute;
       bottom: 10%;
       right: 5%;
       padding: 5px 10px;
     }
-  }
-}
-.top-slider{
-  max-width: 100%;
-  margin: auto;
-}
-@media (min-width: 992px) {
-  .top-slider{
-    max-width: 70%;
   }
 }
 </style>

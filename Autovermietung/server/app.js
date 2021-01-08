@@ -39,7 +39,7 @@ router.use(cookieParser())
 // CORS middleware
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080') // webseite, die requests sendet
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_APP_URL || 'http://localhost:8080') // webseite, die requests sendet
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept')
   next()
@@ -79,7 +79,7 @@ router.post('/register', function (req, res) {
             html: '<h4><b>Account verifizieren</b></h4>' +
             'Hallo Herr/Frau ' + user.nachname + ',' +
             '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
-            '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+            '<a href=' + (process.env.API_SERVER_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
             '<p>Dieser Link ist für 24h gültig</p>' +
             '<br><br>' +
             '<p>--Ihr Autovermietung-Team</p>'
@@ -96,7 +96,7 @@ router.post('/register', function (req, res) {
     })
   })
 })
-
+console.error('process.env.API_SERVER_URL', process.env.API_SERVER_URL);
 //Mitarbeiter registrieren
 router.post('/register-employee', function (req, res) {
   let token = req.cookies.jwt
@@ -173,7 +173,7 @@ router.post('/login', (req, res) => {
           html: '<h4><b>Account verifizieren</b></h4>' +
           'Hallo Herr/Frau ' + user.nachname + ',' +
           '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
-          '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+          '<a href=' + (process.env.API_SERVER_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
           '<p>Dieser Link ist für 24h gültig</p>' +
           '<br><br>' +
           '<p>--Ihr Autovermietung-Team</p>'
