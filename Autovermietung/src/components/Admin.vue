@@ -60,7 +60,6 @@
             </tr>
             </tbody>
           </table>
-          <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
         </div>
 
         <div v-if="editUser" class="table-responsive">
@@ -110,7 +109,6 @@
             </tr>
             </tbody>
           </table>
-          <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
         </div>
       </div>
     </div>
