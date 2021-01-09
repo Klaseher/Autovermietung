@@ -2,7 +2,7 @@
   <div class="container">
     <h1>Fahrzeugdaten bearbeiten</h1>
     <hr>
-    <form @submit="handleSubmit" v-if="car">
+    <form @submit.prevent="handleSubmit" v-if="car">
       <div class="form-group">
         <h2>{{car.name}}</h2>
       </div>
@@ -19,7 +19,7 @@
             @imageuploaded="imageuploaded"
             :data="data"
             :max-file-size="5242880"
-            v-bind:url="`${process.env.API_SERVER_URL || 'http://localhost:3000'}/upload-image`"
+            v-bind:url="`${apiUrl}/upload-image`"
             text="Bild hochladen">
         </vue-core-image-upload>
       </div>
@@ -37,7 +37,7 @@
       </div>
       <div class="form-group">
         <label for="tueren">Tueren*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren"/>
+        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren" max="10"/>
       </div>
       <div class="form-group">
         <label for="typ">Typ*:</label>
@@ -47,7 +47,7 @@
       <div class="form-group">
         <label for="verbrauch">Verbrauch*:</label>
         <input @keypress="this.created = '';" class="form-control" id="verbrauch" type="number"
-               v-model="car.verbrauch"/>
+               v-model="car.verbrauch" step="0.1"/>
       </div>
       <div class="form-group">
         <label for="kraftstoff">Kraftstoff*:</label>
@@ -105,6 +105,7 @@ export default {
   },
   data() {
     return {
+      apiUrl: process.env.API_SERVER_URL || 'http://localhost:3000',
       car: {
         name: '',
         image: null,
@@ -165,6 +166,9 @@ export default {
     if (this.$route.params.name == null) {
       Helper.redirect('/admin');
     }
+  },
+  mounted() {
+    console.error('123');
     UserService.getCar(this.$route.params.name)
         .then(response => {
           if(!response.data.car){

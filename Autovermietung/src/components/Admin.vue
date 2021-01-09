@@ -10,7 +10,7 @@
 
     <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
 
-    <div v-if="admin" class="form-group">
+    <div v-if="admin || employee" class="form-group">
       <div class="text-center">
         <button class="btn btn-primary" v-on:click="seen = !seen">
           Admin-Funktionen
@@ -25,14 +25,14 @@
       <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet
         werden.</p>
       <div class="actions form-group">
-        <button class="btn btn-primary" type="submit" @click="showEmployees">
+        <button class="btn btn-primary" type="submit" @click="showEmployees" v-if="admin">
           Mitarbeiterübersicht
         </button>
 
-        <button class="btn btn-primary" type="submit" @click="showCustomers">
+        <button class="btn btn-primary" type="submit" @click="showCustomers" v-if="admin || employee">
           Kundenübersicht
         </button>
-        <button class="btn btn-primary" type="submit" @click="showCars">
+        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin">
           Autoübersicht
         </button>
       </div>
@@ -136,6 +136,7 @@ export default {
       created: '',
       content: '',
       admin: false, //speichern, ob Mitarbeiter Admin ist
+      employee: false,
       seen: false,
       editEmployee: false,
       editCar: false,
@@ -225,8 +226,10 @@ export default {
     if (role == 1) {
       this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
       this.admin = false
+      this.employee = true;
     } else if (role == 2) {
-      this.admin = true
+      this.admin = true;
+      this.employee = false;
       this.adminmessage = "Sie sind als Administrator angemeldet"
     }
 

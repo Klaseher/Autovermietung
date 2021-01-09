@@ -138,7 +138,8 @@ const routes = [
     component: CustomerEdit,
     meta: {
       requiresAuth: true,
-      is_admin: true
+      is_admin: true,
+      is_employee: true,
     }
   },
   {

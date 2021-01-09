@@ -21,7 +21,7 @@
             @imageuploaded="imageuploaded"
             :data="data"
             :max-file-size="5242880"
-            v-bind:url="`${process.env.API_SERVER_URL || 'http://localhost:3000'}/upload-image`"
+            v-bind:url="`${apiUrl}/upload-image`"
             text="Bild hochladen">
         </vue-core-image-upload>
       </div>
@@ -39,7 +39,7 @@
       </div>
       <div class="form-group">
         <label for="tueren">Tueren*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren"/>
+        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren" max="10"/>
       </div>
       <div class="form-group">
         <label for="typ">Typ*:</label>
@@ -48,7 +48,7 @@
       <div class="form-group">
         <label for="verbrauch">Verbrauch*:</label>
         <input @keypress="this.created = '';" class="form-control" id="verbrauch" type="number"
-               v-model="car.verbrauch"/>
+               v-model="car.verbrauch" step="0.1"/>
       </div>
       <div class="form-group">
         <label for="kraftstoff">Kraftstoff*:</label>
@@ -62,7 +62,7 @@
       <div class="form-group form-check">
         <input @keypress="this.created = '';" class="form-check-input" id="verfügbar" type="checkbox"
                v-model="car.verfuegbar" value="1"/>
-        <label for="verfuegbar" class="form-check-label">Verfuegbar</label>
+        <label for="verfügbar" class="form-check-label">Verfuegbar</label>
       </div>
       <div class="form-group">
         <label for="getriebe">Getriebe*:</label>
@@ -101,6 +101,7 @@ export default {
   },
   data() {
     return {
+      apiUrl: process.env.API_SERVER_URL || 'http://localhost:3000',
       car: {
         name: '',
         image: null,

@@ -44,11 +44,13 @@ class Auth {
   }
 
   // eslint-disable-next-line camelcase
-  updateEmployee (id, nam, mail, pass) {
+  updateEmployee (id, nam, mail, pass, adresse, telefon) {
     return axios.put(API_URL + 'employee/' + id, {
       name: nam,
       username: mail,
-      password: pass
+      password: pass,
+      adresse,
+      telefon
     })
   }
 

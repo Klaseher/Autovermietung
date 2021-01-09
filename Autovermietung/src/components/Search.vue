@@ -466,6 +466,7 @@ export default ({
     to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
     //Zeiträume für Start-und Endkalender festlegen
     this.datepickerSetting.value = Helper.formatDate(from)
+    this.start = this.datepickerSetting.value;
     this.datepickerSetting.from = Helper.formatDate(from)
     this.datepickerSetting.to = Helper.formatDate(to)
     this.datepickerSetting2.from = Helper.formatDate(from)

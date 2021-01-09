@@ -100,7 +100,7 @@ export default {
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/employees')
           })
       } else {
         this.new_name = ''
@@ -118,7 +118,7 @@ export default {
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/employees')
           })
       } else {
         this.new_username = ''
@@ -126,7 +126,7 @@ export default {
       }
     },
     changePassword () {
-      var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      var passTest = new RegExp('(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}')
       if (this.password == this.new_password) {
         if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
           Auth.updateEmployee(this.id, null, null, this.new_password)
@@ -139,7 +139,7 @@ export default {
             })
             .catch((error) => {
               Helper.handle(error)
-              Helper.redirect('/admin')
+              Helper.redirect('/admin/employees')
             })
         } else {
           this.password = ''
@@ -161,11 +161,11 @@ export default {
             if(response)
             
             alert('Employee account successfully deleted')
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/employees')
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/employees')
           })
       } else {
         this.meldung = ''
@@ -182,10 +182,10 @@ export default {
         })
         .catch((error) => {
           Helper.handle(error)
-          Helper.redirect('/admin')
+          Helper.redirect('/admin/employees')
         })
     } else {
-      Helper.redirect('/admin')
+      Helper.redirect('/admin/employees')
     }
   }
 }

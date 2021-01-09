@@ -13,7 +13,7 @@
             <p class="form-group text-center">Melden Sie sich an und genießen Sie unseren Service</p>
             <div class="form-group">
               <label for="login-email">Email</label>
-              <input id="login-email" class="form-control" type="email" v-model="email" required autofocus/>
+              <input id="login-email" class="form-control" type="text" v-model="email" required autofocus/>
             </div>
             <div class="form-group">
               <label for="login-password">Password</label>
@@ -23,16 +23,16 @@
               <a href="/reset">Passwort vergessen?</a>
             </div>
             <div class="form-group actions">
-              <button class="btn btn-secondary" type="cancel" @click="back" :disabled="disabled">
+              <button class="btn btn-secondary" type="button" @click="back" :disabled="disabled">
                 Zurück
               </button>
-              <button class="btn btn-info" id="signUp" @click="signUp = true">Registrieren</button>
+              <button class="btn btn-info" id="signUp" type="button" @click="signUp = true">Registrieren</button>
               <button class="btn btn-primary" type="submit" :disabled="disabled">
                 Einloggen
               </button>
             </div>
           </form>
-          <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}" @submit="register">
+          <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}" @submit.prevent="register">
           <br><br/>
             <h3 class="text-center">Neues Konto anlegen</h3>
             <br><br/>
@@ -71,10 +71,10 @@
                      required/>
             </div>
             <div class="form-group actions">
-              <button class="btn btn-secondary" type="cancel" @click="back">
+              <button class="btn btn-secondary" type="button" @click="back">
                 Zurück
               </button>
-              <button class="btn btn-info" id="signIn" @click="signUp = false">Anmelden</button>
+              <button class="btn btn-info" id="signIn" type="button"  @click="signUp = false">Anmelden</button>
               <button class="btn btn-primary" type="submit">
                 Kundenkonto Erstellen
               </button>

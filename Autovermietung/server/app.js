@@ -306,7 +306,7 @@ router.put('/employee/:id', (req, res) => {
   confirmToken(token,res, function(ausgabe){
     if(ausgabe.role != -1) {
           userr = ausgabe.user
-          if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1 && userr.id == req.params.id))) {
+          if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1))) {
             if (req.body.name != null && req.body.username == null && req.body.password == null) {
               db.updateName(req.body.name, req.params.id, (err) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
@@ -321,6 +321,16 @@ router.put('/employee/:id', (req, res) => {
               db.updatePass(bcrypt.hashSync(req.body.password, 8), req.params.id, (err) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 return ausgabe.res.status(200).send(null)
+              })
+            } else if(req.body.adresse != null) {
+              db.updateAdresse(req.body.adresse, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({adresse: req.body.adresse})
+              })
+            } else if(req.body.telefon != null) {
+              db.updateTelefon(req.body.telefon, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({telefon: req.body.telefon})
               })
             } else { return ausgabe.res.status(400).send('Invalid request') }
           } else if (userr.rolle < 1) {
@@ -344,7 +354,7 @@ router.delete('/employee/:id', (req, res) => {
   confirmToken(token,res, function(ausgabe){
     if(ausgabe.role != -1) {
       let user = ausgabe.user
-      if(user.rolle == 2){
+      if(user.rolle == 2 || user.rolle == 1){
           db.deleteAccount(req.params.id, (err) => {
             if (err) return ausgabe.res.status(500).send('Error on the server.')
             return ausgabe.res.status(200).send(null)
@@ -390,7 +400,7 @@ router.get('/employee/:id', (req, res) => {
             //Wenn Paramter -200, dann alle Mitarbeiter holen
             if (req.params.id == -200) {
               //Nur Admin darf das
-              if (userr.rolle == 2) {
+              if (userr.rolle == 2 || userr.rolle == 1) {
                 db.getAllEmployees((err, users) => {
                   if (err) return ausgabe.res.status(500).send('Error on the server.')
                   if (!users) return ausgabe.res.status(404).send('No Employees available')
@@ -405,8 +415,8 @@ router.get('/employee/:id', (req, res) => {
               db.selectById(req.params.id, (err, user) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 if (!user) return ausgabe.res.status(404).send('Employee not found')
-                if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
-                  let employee = {id: user.id, name: user.nachname, email: user.user}
+                if (userr.rolle == 2 || (userr.rolle == 1 && (userr.id == user.id || user.rolle == 0))) {
+                  let employee = {id: user.id, name: user.nachname, email: user.user, rolle: user.rolle, adresse: user.adresse, telefon: user.telefon}
                   return ausgabe.res.status(200).send({employee: employee})
                 } else {
                   return ausgabe.res.status(401).send('Unauthorized access')
@@ -433,7 +443,7 @@ router.get('/customers', (req, res) => {
       userr = ausgabe.user
         //Wenn Paramter -200, dann alle Mitarbeiter holen
           //Nur Admin darf das
-          if (userr.rolle == 2) {
+          if (userr.rolle == 2 || userr.rolle == 1) {
             db.getAllCustomers((err, users) => {
               if (err) return ausgabe.res.status(500).send('Error on the server.')
               if (!users) return ausgabe.res.status(404).send('No Employees available')
