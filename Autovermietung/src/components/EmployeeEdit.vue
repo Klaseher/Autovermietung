@@ -40,7 +40,7 @@
     <div class="form-group">
       <form>
         <div class="form-group">
-          <label for="password">Nesues Passwort</label>
+          <label for="password">Neues Passwort</label>
           <input class="form-control" id="password" type="password" v-model="password" required>
         </div>
         <div class="form-group">

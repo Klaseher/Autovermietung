@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>New Employee</h1>
+    <h1>Neuen Mitarbeiter anlegen</h1>
     <hr>
     <form>
       <div class="form-group">
