@@ -23,13 +23,13 @@
               <a href="/reset">Passwort vergessen?</a>
             </div>
             <div class="form-group actions">
+              <button class="btn btn-primary" type="submit" @click="login" :disabled="disabled">
+                Einloggen
+              </button>
               <button class="btn btn-secondary" type="cancel" @click="back" :disabled="disabled">
                 Zurück
               </button>
               <button class="btn btn-info" id="signUp" @click="signUp = true">Registrieren</button>
-              <button class="btn btn-primary" type="submit" @click="login" :disabled="disabled">
-                Einloggen
-              </button>
             </div>
           </form>
           <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}">
