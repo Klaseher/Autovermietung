@@ -4,7 +4,7 @@
 import axios from 'axios'
 
 const API_URL = process.env.API_SERVER_URL || 'http://localhost:3000/'
-console.error(process.env);
+
 class UserService {
     saveCar(car) {
         return axios.post(API_URL + 'save-car/', car);

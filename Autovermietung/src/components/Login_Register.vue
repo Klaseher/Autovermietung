@@ -4,7 +4,7 @@
       <hr>
       <div class="row">
         <div class="col-sm">
-          <form class="sign-in" :class="{'hidden-for-animation' : signUp, 'slide-down' : !signUp}">
+          <form class="sign-in" :class="{'hidden-for-animation' : signUp, 'slide-down' : !signUp}" @submit.prevent="login">
             <br><br/>
             <h3 class="text-center">Anmeldung mit Ihren Kundendaten</h3>
             <br><br/>
@@ -27,12 +27,12 @@
                 Zurück
               </button>
               <button class="btn btn-info" id="signUp" @click="signUp = true">Registrieren</button>
-              <button class="btn btn-primary" type="submit" @click="login" :disabled="disabled">
+              <button class="btn btn-primary" type="submit" :disabled="disabled">
                 Einloggen
               </button>
             </div>
           </form>
-          <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}">
+          <form class="sign-up" :class="{'hidden-for-animation' : !signUp, 'slide-down' : signUp}" @submit="register">
           <br><br/>
             <h3 class="text-center">Neues Konto anlegen</h3>
             <br><br/>
@@ -75,7 +75,7 @@
                 Zurück
               </button>
               <button class="btn btn-info" id="signIn" @click="signUp = false">Anmelden</button>
-              <button class="btn btn-primary" type="submit" @click="register">
+              <button class="btn btn-primary" type="submit">
                 Kundenkonto Erstellen
               </button>
             </div>

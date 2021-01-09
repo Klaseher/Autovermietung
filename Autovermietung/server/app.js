@@ -35,11 +35,12 @@ let mailOptions;
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 router.use(cookieParser())
+const frontendUrl = process.env.FRONTEND_APP_URL || 'http://localhost:8080';
 
 // CORS middleware
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_APP_URL || 'http://localhost:8080') // webseite, die requests sendet
+  res.header('Access-Control-Allow-Origin', frontendUrl) // webseite, die requests sendet
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept')
   next()
@@ -96,7 +97,6 @@ router.post('/register', function (req, res) {
     })
   })
 })
-console.error('process.env.API_SERVER_URL', process.env.API_SERVER_URL);
 //Mitarbeiter registrieren
 router.post('/register-employee', function (req, res) {
   let token = req.cookies.jwt
@@ -226,7 +226,7 @@ router.post('/reset-userpw', (req, res) => {
           subject: 'Setzen Sie Ihr Account-Passwort zurück',
           html: '<h4><b>Passwort zurücksetzen</b></h4>' +
         '<p>Um Ihr Passwort zurückzusetzen, drücken Sie auf diesen Link:</p>' +
-        '<a href=' + 'http://localhost:8080/reset/' + user.id + '/' + token + '>Setzen Sie Ihr Passwort zurück</a>' +
+        '<a href=' + frontendUrl + '/reset/' + user.id + '/' + token + '>Setzen Sie Ihr Passwort zurück</a>' +
         '<p>Dieser Link ist für 24h gültig</p>' +
         '<br><br>' +
         '<p>--Ihr Autovermietung-Team</p>'
@@ -291,7 +291,7 @@ router.get('/verify-account/:id/:token', (req, res) => {
       if (isafter) return res.status(401).end('<h1>Invalid or expired reset link</h1>')
       db.verifyUser(req.params.id, (err) => {
         if (err) return res.status(500).end('<h1>Error on the server.</h1>')
-        res.status(200).end("<h1>Der Account wurde erfolgreich verifiziert</h1>" + '<p> <a href=' + 'http://localhost:8080/login>Zum Login</a></p>')
+        res.status(200).end("<h1>Der Account wurde erfolgreich verifiziert</h1>" + '<p> <a href=' + frontendUrl + '8080/login>Zum Login</a></p>')
       })
     })
   })
