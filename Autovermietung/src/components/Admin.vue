@@ -1,6 +1,6 @@
 <template>
   <div class="administrator container">
-    <h1>Sie sind als Administrator angemeldet</h1>
+    <h1>{{adminmessage}}</h1>
     <hr>
     <div class="text-center form-group">
       <button class="btn-primary btn" v-on:click="zeigeBestellungen()">
@@ -144,6 +144,7 @@ export default {
       customers: [],
       getriebe: '',
       editUser: false,
+      adminmessage: ''
     }
   },
   methods: {
@@ -222,9 +223,11 @@ export default {
   beforeMount() {
     let role = sessionStorage.getItem('role')
     if (role == 1) {
+      this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
       this.admin = false
     } else if (role == 2) {
       this.admin = true
+      this.adminmessage = "Sie sind als Administrator angemeldet"
     }
 
   },
