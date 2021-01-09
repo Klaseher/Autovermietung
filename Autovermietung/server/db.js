@@ -232,7 +232,7 @@ class Db {
   // falls keine offenen probleme vorhanden sind  (2 wird zu 3, wenn mitarbeiter bestellung begutachtet hat)
   //4 --> erfolgreich abgeschlossene Bestellung (nachdem Kunde Auto zurückgegeben hat)
   //5 --> verspaetete bestellung, wo auto bereits ausgeliehen ist --> wenn auto noch nicht zurueckgegeben, aber zahlung noch offen
- 
+  //6 --> auto ausgeliehen u. kunde hat bestellung angetreten 
 
   //Bestellung Kunde erstellen
   createOrder (order, callback) {
@@ -377,6 +377,15 @@ class Db {
       })
   }
 
+  //Bestellungsstatus aendern (z.B. nachdem fataler Schaden, muessen alle zukuenftigen Bestellungen erneut ueberpreuft u. bestaetigt werden)
+  updateOrdersByCarAndStatus(auto,status1,status2,callback){
+    return this.db.get(
+      `UPDATE bestellung SET status = ? WHERE auto_fk = ? AND status = ?`,
+      [status1,auto,status2], function (err, row) {
+        callback(err, row)
+      })
+  }
+
   //Kosten Typen
   //0 --> Standardkosten fuer Bestellung
   //1 --> Zusatzkosten Tank 
@@ -429,6 +438,19 @@ class Db {
           costs.push(row)
         })
         callback(err, costs)
+      })
+  }
+
+  //Bestellungen nach Status u. Auto holen
+  getOrdersByCarAndStatus(auto,status,callback){
+    let orders = []
+    return this.db.all(
+      `SELECT * FROM bestellung WHERE auto_fk = ? AND status = ?`,
+      [auto,status], function (err, rows) {
+        rows.forEach(function (row) {
+          orders.push(row)
+        })
+        callback(err, orders)
       })
   }
 

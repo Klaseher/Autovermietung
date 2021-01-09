@@ -131,6 +131,9 @@ export default {
                             if(response.data.cost){
                                 alert("Die dazugehoerigen Kosten wurden aus der Bestellung geloescht")
                             }
+                            if(response.data.verfuegbar){
+                                alert("Das Auto ist wieder fuer die Vermietung verfuegbar")
+                            }
                         }
                     })
                     .catch((error) => {
@@ -223,57 +226,92 @@ export default {
                 var zahlentester = new RegExp("^[0-9 ]*$")
                 let val = this.prio(this.auswahlPrio)
                 if(zahlentester.test(this.kosten) && this.kosten >= 0){
-                    // wenn bnr vorhanden, dann werden kosten hinzugefuegt + schaden mit bestellung verknuepft
-                    if(!this.allgemein){
-                        Auth.addCost(this.$route.params.bnr, this.status(this.auswahl), this.kosten, this.beschreibung)
-                        .then((response) =>{
-                            if(response.data.success){
-                                let pos_fk = response.data.cost.pos
-                                Auth.addBnrToSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten, this.$route.params.bnr, pos_fk)
-                                .then((response) =>{
-                                    if(response.data.success){
-                                        if(response.data.verfuegbar == false){
-                                            alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
-                                        }
-                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten, bnr_fk: this.$route.params.bnr, pos_fk: pos_fk})
-                                        this.auswahlPrio = ''
-                                        this.kosten = ''
-                                        this.beschreibung = ''
-                                        this.auswahl = ''
-                                        alert("Schaden erfolgreich hinzugefuegt")
-                                    }
-                                })
-                                .catch((error) => {
-                                    Helper.handle(error)
-                                    Helper.redirect("/admin");
-                                })
-                            }
-                        })
-                        .catch((error) => {
-                            Helper.handle(error)
-                            Helper.redirect("/admin");
-                        })
+                    // wenn fataler schaden
+                    let antwort = true
+                    if(val == 0){
+                        antwort = confirm("Das Auto wird für weitere Bestellungen gesperrt, bis dieser Schaden behoben wird.\nAchtung: Alle bereits bestätigten zukünftigen Bestellungen für dieses Auto müssen erneut bestätigt werden")
                     }
-                    // nur schaden hinzufuegen
-                    else{
-                        Auth.addSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten)
-                        .then((response) =>{
-                            if(response.data.success){
-                                if(response.data.verfuegbar == false){
-                                    alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                    if(antwort){
+                        // wenn bnr vorhanden, dann werden kosten hinzugefuegt + schaden mit bestellung verknuepft
+                        if(!this.allgemein){
+                            UserService.getCar(this.$route.params.autoname)
+                            .then(response =>{
+                                let auto = response.data.car 
+                                if(auto.ausgeliehen == 0){
+                                    Auth.addCost(this.$route.params.bnr, this.status(this.auswahl), this.kosten, this.beschreibung)
+                                    .then((response) =>{
+                                        if(response.data.success){
+                                            let pos_fk = response.data.cost.pos
+                                            Auth.addBnrToSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten, this.$route.params.bnr, pos_fk)
+                                            .then((response) =>{
+                                                if(response.data.success){
+                                                    if(response.data.verfuegbar == false){
+                                                        alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                                                        if(response.data.orders.length > 0){
+                                                            let bnrs = []
+                                                            for(let i=0;i<response.data.orders.length;i++){
+                                                                bnrs.push(response.data.orders[i].bnr)
+                                                            }
+                                                            alert("Folgende Bestellungen muessen erneut ueberprueft werden BNR: " + bnrs.join('; '))
+                                                        }
+                                                    }
+                                                    this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten, bnr_fk: this.$route.params.bnr, pos_fk: pos_fk})
+                                                    this.auswahlPrio = ''
+                                                    this.kosten = ''
+                                                    this.beschreibung = ''
+                                                    this.auswahl = ''
+                                                    alert("Schaden erfolgreich hinzugefuegt")
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                Helper.handle(error)
+                                                Helper.redirect("/admin");
+                                            })
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        Helper.handle(error)
+                                        Helper.redirect("/admin");
+                                    })
                                 }
-                                this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
-                                this.auswahlPrio = ''
-                                this.kosten = ''
-                                this.beschreibung = ''
-                                this.auswahl = ''
-                                alert("Schaden erfolgreich hinzugefuegt")
-                            }
-                        })
-                        .catch((error) => {
-                            Helper.handle(error)
-                            Helper.redirect("/admin");
-                        })
+                                else{
+                                    alert("Cant add damage when car is rented")
+                                    Helper.redirect("/admin");
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                Helper.redirect("/admin");
+                            })
+                        }
+                        // nur schaden hinzufuegen
+                        else{
+                            Auth.addSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten)
+                            .then((response) =>{
+                                if(response.data.success){
+                                    if(response.data.verfuegbar == false){
+                                        alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                                        if(response.data.orders.length > 0){
+                                            let bnrs = []
+                                            for(let i=0;i<response.data.orders.length;i++){
+                                                bnrs.push(response.data.orders[i].bnr)
+                                            }
+                                            alert("Folgende Bestellungen muessen erneut ueberprueft werden BNR: " + bnrs.join('; '))
+                                        }
+                                    }
+                                    this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
+                                    this.auswahlPrio = ''
+                                    this.kosten = ''
+                                    this.beschreibung = ''
+                                    this.auswahl = ''
+                                    alert("Schaden erfolgreich hinzugefuegt")
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                Helper.redirect("/admin");
+                            })
+                        }
                     }
                 }
                 else{

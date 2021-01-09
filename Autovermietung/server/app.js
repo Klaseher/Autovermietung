@@ -552,20 +552,51 @@ router.delete('/car/:autoname/schaeden/:pos', (req, res) => {
             if (!schaden) return res.status(404).send('No Damage available')
             db.deleteDamage(req.params.autoname, req.params.pos, (err) => {
               if (err) return ausgabe.res.status(500).send('Error on the server.')
-              // schauen, ob es zu schaden bestellung gibt u. wenn ja, dann kosten auch dazu loeschen, falls noch offene bestellung
-              if(schaden.bnr_fk != null && schaden.pos_fk != null){
-                db.getOrderbyBnr(schaden.bnr_fk, (err, order) =>{
-                  if (err) return ausgabe.res.status(500).send('Error on the server.')
-                  if (!order || order.status == 3 || order.status == 4) return res.status(200).send({success: true, cost: false})
-                  db.deleteOrderCost (schaden.bnr_fk, schaden.pos_fk, (err) => {
+              let updater = false
+              db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                let fatal = false
+                for(let i=0;i<cardamage.length;i++){
+                  if(cardamage[i].prioritaet == 0){
+                    fatal = true
+                    break
+                  }
+                }
+                // auto wieder verfuegbar
+                if (cardamage.length == 0 || !fatal){
+                  updater = true
+                } 
+                 // schauen, ob es zu schaden bestellung gibt u. wenn ja, dann kosten auch dazu loeschen, falls noch offene bestellung
+                if(schaden.bnr_fk != null && schaden.pos_fk != null){
+                  db.getOrderbyBnr(schaden.bnr_fk, (err, order) =>{
                     if (err) return ausgabe.res.status(500).send('Error on the server.')
-                    return ausgabe.res.status(200).send({success: true, cost: true})
+                    if (!order || order.status == 3 || order.status == 4) return res.status(200).send({success: true, cost: false})
+                    db.deleteOrderCost (schaden.bnr_fk, schaden.pos_fk, (err) => {
+                      if (err) return ausgabe.res.status(500).send('Error on the server.')
+                      if(updater){
+                        db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
+                          if (err) return ausgabe.res.status(500).send('Error on the server.')
+                          return res.status(200).send({success: true, cost: true, verfuegbar: true})
+                        })
+                      }
+                      else{
+                        return ausgabe.res.status(200).send({success: true, cost: true})
+                      }
+                    })
                   })
-                })
-              }
-              else{
-                return ausgabe.res.status(200).send({success: true})
-              }
+                }
+                else{
+                  if(updater){
+                    db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
+                      if (err) return ausgabe.res.status(500).send('Error on the server.')
+                      return res.status(200).send({success: true, verfuegbar: true})
+                    })
+                  }
+                  else{
+                    return ausgabe.res.status(200).send({success: true})
+                  }
+                }
+              })
             })
           })
         }
@@ -697,35 +728,47 @@ router.post('/car/:autoname/schaeden', (req, res) => {
           }
           // nur mitarbeiter darf schaeden hinzufuegen
           if(user.rolle > 0){
-            let bnr = null
-            let pos = null
-            if(req.body.bnr != null && req.body.pos != null){
-              bnr = req.body.bnr
-              pos = req.body.pos
-            }
-            db.createDamage([
-              req.params.autoname,
-              (posMax+1),
-              req.body.beschreibung,
-              req.body.prio,
-              req.body.typ,
-              req.body.kosten,
-              bnr,
-              pos
-            ], (err) => {
-              console.log(err)
+            db.getCar(req.params.autoname, (err, auto) =>{
               if (err) return ausgabe.res.status(500).send('Error on the server.')
-              // wenn schaden prioritaet 0, dann wird auto fuer weitere bestellungen gesperrt
-              if( req.body.prio == 0){
-                db.updateVerfuegbarkeit(req.params.autoname, 0, (err) => {
-                  console.log(err)
-                  if (err) return ausgabe.res.status(500).send('Error on the server.')
-                  return res.status(200).send({success: true, pos: posMax+1, verfuegbar: false})
-                })
+              // darf nur schaden hinzufuegen, wenn auto in laden physisch vorhanden ist
+              if (!auto || auto.ausgeliehen) return res.status(404).send('Cant add damage when car is rented')
+              let bnr = null
+              let pos = null
+              if(req.body.bnr != null && req.body.pos != null){
+                bnr = req.body.bnr
+                pos = req.body.pos
               }
-              else{
-                return res.status(200).send({success: true, pos: posMax+1})
-              }
+              db.createDamage([
+                req.params.autoname,
+                (posMax+1),
+                req.body.beschreibung,
+                req.body.prio,
+                req.body.typ,
+                req.body.kosten,
+                bnr,
+                pos
+              ], (err) => {
+                console.log(err)
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                // wenn schaden prioritaet 0, dann wird auto fuer weitere bestellungen gesperrt
+                // alle bereits bestaetigten bestellungen (1), werden wieder auf offenen gesetzt 
+                //u. muessen erneut bestaetigt werden durch Mitarbeiter
+                if( req.body.prio == 0){
+                  db.getOrdersByCarAndStatus(req.params.autoname, 1, (err,orders) => {
+                    if (err) return ausgabe.res.status(500).send('Error on the server.')
+                    db.updateVerfuegbarkeit(req.params.autoname, 0, (err) => {
+                      if (err) return ausgabe.res.status(500).send('Error on the server.')
+                      db.updateOrdersByCarAndStatus(req.params.autoname, 0, 1, (err) => {
+                        if (err) return ausgabe.res.status(500).send('Error on the server.')
+                        return res.status(200).send({success: true, pos: posMax+1, verfuegbar: false, orders: orders})
+                      })
+                    })
+                  })
+                }
+                else{
+                  return res.status(200).send({success: true, pos: posMax+1})
+                }
+              })
             })
           }
           else{
