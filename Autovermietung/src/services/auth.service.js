@@ -5,7 +5,7 @@ import axios from 'axios'
 import Helper from "@/services/helper.service";
 // import router from '../router'
 
-const API_URL = process.env.API_SERVER_URL || 'http://localhost:3000/'
+const API_URL = process.env.VUE_APP_API_SERVER_URL || 'http://localhost:3000/'
 
 class Auth {
   //hier wird Person abgemeldet, wobei Authentifizierungs-Paramter aus Browser 

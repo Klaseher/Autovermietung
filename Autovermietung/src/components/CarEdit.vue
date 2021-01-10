@@ -105,7 +105,7 @@ export default {
   },
   data() {
     return {
-      apiUrl: process.env.API_SERVER_URL || 'http://localhost:3000',
+      apiUrl: process.env.VUE_APP_API_SERVER_URL || 'http://localhost:3000',
       car: {
         name: '',
         image: null,

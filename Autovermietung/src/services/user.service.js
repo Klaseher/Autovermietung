@@ -3,7 +3,7 @@
 
 import axios from 'axios'
 
-const API_URL = process.env.API_SERVER_URL || 'http://localhost:3000/'
+const API_URL = process.env.VUE_APP_API_SERVER_URL || 'http://localhost:3000/'
 
 class UserService {
   getAuthentication () {
