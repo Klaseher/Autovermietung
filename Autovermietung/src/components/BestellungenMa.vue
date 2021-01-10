@@ -17,7 +17,7 @@
               </option>
             </select>
             <div class="form-group mx-sm-3">
-              <button @click="update()" class="btn btn-primary">Aktualisieren</button>
+              <button @click="update()" type="button" class="btn btn-primary">Bestellungen Aktualisieren</button>
             </div>
           </div>
         </div>
