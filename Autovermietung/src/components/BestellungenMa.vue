@@ -50,7 +50,7 @@
             <input class="form-control" type="text" placeholder="Nach BNR suchen" v-model="bnr">
             <input class="form-control mx-sm-3" type="text" placeholder="Nach Vorname suchen" v-model="vorname">
             <input class="form-control" type="text" placeholder="Nach Nachname suchen" v-model="nachname">
-            <button class="btn btn-primary mx-sm-3" @click="suchen()">Suchen</button>
+            <button class="btn btn-primary mx-sm-3" @click="suchen()" type="button">Suchen</button>
           </div>
         </div>
       </form>
@@ -120,7 +120,7 @@
       <br/>
       <h3>Gesamtkosten: {{ gesamtkosten }}€</h3>
       <div class="actions form-group">
-        <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Suche</button>
+        <button class="btn btn-secondary" type="cancel" @click="back">Zurück zur Suche</button>
         <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1) && auto.ausgeliehen ==0">
           <button class="btn btn-danger" @click="abbrechen(gewaehlteBestellung.bnr, 0)"
                   :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">
@@ -136,7 +136,7 @@
           <button class="btn btn-secondary" @click="ausleihen(auto.name)">Auto ausleihen</button>
         </div>
         <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
-          <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
+          <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurückgeben</button>
         </div>
         <div
             v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==1) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
@@ -221,7 +221,7 @@ export default {
         // daten neu laden bzw. bestimmte bestellungstypen anzeigen
         update(){
             if(this.bestellungsauswahl == ''){
-                alert("Bitte waehlen Sie einen Filter aus")
+                alert("Bitte wählen Sie einen Filter aus")
                 return
             }
             this.bestellungen = []
@@ -551,7 +551,7 @@ export default {
                                 if(response.data.success){
                                     this.gewaehlteBestellung.status = 4
                                     this.auto.ausgeliehen = 0
-                                    alert("Auto wurde erfolgreich zurueckgegeben")
+                                    alert("Auto wurde erfolgreich zurückgegeben")
                                     return
                                 }
                             })
@@ -579,7 +579,7 @@ export default {
         },
         // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
         rueckgabe(bnr){
-          if(confirm("Wurde das Auto wirklick vom Kunden zurueckgegeben?")){                
+          if(confirm("Wurde das Auto wirklick vom Kunden zurückgegeben?")){                
             Auth.updateStatusOrder(bnr, 2)
             .then((response) =>{
                 if(response.data.success){
@@ -588,7 +588,7 @@ export default {
                         if(response.data.success){
                             this.gewaehlteBestellung.status = 2
                             this.auto.ausgeliehen = 0
-                            alert("Auto wurde erfolgreich zurueckgegeben")
+                            alert("Auto wurde erfolgreich zurückgegeben")
                             return
                         }
                     })
@@ -849,7 +849,7 @@ export default {
         // zur detaillierten Bestellübersicht wechseln
         editingOrder(bnr){
             this.ausgewaehlt = true;
-            this.msg = "Bestellung: " + bnr
+            this.msg = "Bestellung Nr.: " + bnr
             this.gewaehlteBestellung = this.bestellungen.find(
             (element) => element.bnr == bnr)
             this.holeKosten(bnr)

@@ -64,7 +64,7 @@ export default {
       slides: [
         {
           image: require('@/assets/Slides/E-TRON.jpg'),
-          link: '/search/Audi%20A3',
+          link: '/search/Audi%20E-TRON',
           text: 'Audi E-TRON Angebote',
         },
         {
