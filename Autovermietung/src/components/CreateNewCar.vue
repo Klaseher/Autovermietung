@@ -14,14 +14,14 @@
         </div>
       </div>
       <div class="form-group actions">
-        <button v-if="car.image" class="btn btn-danger" @click="imageRemove">Remove photo</button>
+        <button v-if="car.image" class="btn btn-danger" @click="imageRemove">Bild löschen</button>
         <vue-core-image-upload
             :class="['btn', 'btn-primary']"
             :crop="false"
             @imageuploaded="imageuploaded"
             :data="data"
             :max-file-size="5242880"
-            url="http://localhost:3000/upload-image"
+            v-bind:url="`${apiUrl}/upload-image`"
             text="Bild hochladen">
         </vue-core-image-upload>
       </div>
@@ -33,22 +33,22 @@
       </div>
 
       <div class="form-group">
-        <label for="sitzplaetze">Sitzplätze*:</label>
+        <label for="sitzplaetze">Anzahl Sitzplätze*:</label>
         <input @keypress="this.created = '';" class="form-control" id="sitzplaetze" type="number"
                v-model="car.sitzplaetze"/>
       </div>
       <div class="form-group">
-        <label for="tueren">Tueren*:</label>
-        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren"/>
+        <label for="tueren">Anzahl Türen*:</label>
+        <input @keypress="this.created = '';" class="form-control" id="tueren" type="number" v-model="car.tueren" max="10"/>
       </div>
       <div class="form-group">
-        <label for="typ">Typ*:</label>
+        <label for="typ">Karosserietyp*:</label>
         <input @keypress="this.created = '';" class="form-control" id="typ" type="text" v-model="car.typ"/>
       </div>
       <div class="form-group">
         <label for="verbrauch">Verbrauch*:</label>
         <input @keypress="this.created = '';" class="form-control" id="verbrauch" type="number"
-               v-model="car.verbrauch"/>
+               v-model="car.verbrauch" step="0.1"/>
       </div>
       <div class="form-group">
         <label for="kraftstoff">Kraftstoff*:</label>
@@ -62,7 +62,7 @@
       <div class="form-group form-check">
         <input @keypress="this.created = '';" class="form-check-input" id="verfügbar" type="checkbox"
                v-model="car.verfuegbar" value="1"/>
-        <label for="verfuegbar" class="form-check-label">Verfuegbar</label>
+        <label for="verfügbar" class="form-check-label">Verfuegbar</label>
       </div>
       <div class="form-group">
         <label for="getriebe">Getriebe*:</label>
@@ -101,6 +101,7 @@ export default {
   },
   data() {
     return {
+      apiUrl: process.env.VUE_APP_API_SERVER_URL || 'http://localhost:3000',
       car: {
         name: '',
         image: null,
@@ -141,7 +142,7 @@ export default {
       }
       carService.saveCar(this.car)
           .then(() => {
-            this.created = 'Car successfully created';
+            this.created = 'Auto erfolgreich angelegt!';
             this.car = {
               name: '',
               image: null,

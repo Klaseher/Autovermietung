@@ -221,7 +221,7 @@ export default defineComponent({
       return format;
     };
 
-    const selectedValue = ref("");
+    const selectedValue = ref(props.valueAttr);
     const datepicker = reactive({
       show: false,
       hasRange: computed(() => {

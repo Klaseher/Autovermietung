@@ -25,15 +25,17 @@
     <!--    </div>-->
     <vueper-slides
         :visible-slides="1"
-        class="no-shadow container partner-slider"
+        class="no-shadow top-slider"
         ref="vueperslides2"
         @slide="$refs.vueperslides1.goToSlide($event.currentSlide.index, { emit: false })"
         :bullets="true"
         :touchable="false"
-        :gap="2.5"
+        :gap="1"
         :arrows="true"
         :autoplay="true"
-        :duration="3000">
+        :duration="3000"
+        :fixed-height="true"
+        >
       <vueper-slide
           v-for="(slide, i) in slides"
           :key="i"
@@ -62,7 +64,7 @@ export default {
       slides: [
         {
           image: require('@/assets/Slides/E-TRON.jpg'),
-          link: '/search/Audi%20A3',
+          link: '/search/Audi%20E-TRON',
           text: 'Audi E-TRON Angebote',
         },
         {
@@ -109,8 +111,10 @@ export default {
 
 <style lang="scss" scoped>
 .vueperslides {
-
+  height: 600px;
   .vueperslide {
+    background-repeat: no-repeat;
+    min-height: 600px;
     a.search-link {
       position: absolute;
       bottom: 10%;

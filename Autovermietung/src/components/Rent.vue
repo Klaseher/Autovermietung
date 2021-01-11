@@ -70,13 +70,13 @@ export default {
             adresse: '',
             telefon: '',
             email: '',
-            start: '',
-            ende: '',
+            start: this.getQueryParam('start'),
+            ende:  this.getQueryParam('end'),
             user: '',
             auto: '',
             cost: '',
             datepickerSetting : {
-                value:"",
+                value: this.getQueryParam('start'),
                 placeholder: "Startdatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -103,7 +103,7 @@ export default {
             },
             //enddatum
             datepickerSetting2 : {
-                value: "",
+                value:  this.getQueryParam('end'),
                 placeholder: "Enddatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -219,6 +219,11 @@ export default {
       back() {
         this.$router.push("/search")
       },
+      getQueryParam(param) {
+        if(typeof URL === 'undefined') return '';
+        const url = new URL(window.location);
+        return  url.searchParams.get(param) || '';
+      }
     },
     computed: {
         // kosten berechnen durch bestimmung zeitraumlaenge in tage
@@ -278,8 +283,7 @@ export default {
             Helper.handle(error)
             Helper.redirect("/");
         })
-    }
-  
+    },
 }
 </script>
 

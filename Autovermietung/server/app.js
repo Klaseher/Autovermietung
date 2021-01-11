@@ -35,11 +35,11 @@ let mailOptions;
 router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 router.use(cookieParser())
-
+const frontendUrl = process.env.FRONTEND_APP_URL || 'http://localhost:8080';
 // CORS middleware
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true)
-  res.header('Access-Control-Allow-Origin', 'http://localhost:8080') // webseite, die requests sendet
+  res.header('Access-Control-Allow-Origin', frontendUrl) // webseite, die requests sendet
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept')
   next()
@@ -79,7 +79,7 @@ router.post('/register', function (req, res) {
             html: '<h4><b>Account verifizieren</b></h4>' +
             'Hallo Herr/Frau ' + user.nachname + ',' +
             '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
-            '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+            '<a href=' + (process.env.FRONTEND_APP_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
             '<p>Dieser Link ist für 24h gültig</p>' +
             '<br><br>' +
             '<p>--Ihr Autovermietung-Team</p>'
@@ -96,7 +96,6 @@ router.post('/register', function (req, res) {
     })
   })
 })
-
 //Mitarbeiter registrieren
 router.post('/register-employee', function (req, res) {
   let token = req.cookies.jwt
@@ -173,7 +172,7 @@ router.post('/login', (req, res) => {
           html: '<h4><b>Account verifizieren</b></h4>' +
           'Hallo Herr/Frau ' + user.nachname + ',' +
           '<p>Um Ihren Account zu verifizeren, drücken Sie auf diesen Link:</p>' +
-          '<a href=' + 'http://localhost:3000/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
+          '<a href=' + (process.env.FRONTEND_APP_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
           '<p>Dieser Link ist für 24h gültig</p>' +
           '<br><br>' +
           '<p>--Ihr Autovermietung-Team</p>'
@@ -226,7 +225,7 @@ router.post('/reset-userpw', (req, res) => {
           subject: 'Setzen Sie Ihr Account-Passwort zurück',
           html: '<h4><b>Passwort zurücksetzen</b></h4>' +
         '<p>Um Ihr Passwort zurückzusetzen, drücken Sie auf diesen Link:</p>' +
-        '<a href=' + 'http://localhost:8080/reset/' + user.id + '/' + token + '>Setzen Sie Ihr Passwort zurück</a>' +
+        '<a href=' + frontendUrl + '/reset/' + user.id + '/' + token + '>Setzen Sie Ihr Passwort zurück</a>' +
         '<p>Dieser Link ist für 24h gültig</p>' +
         '<br><br>' +
         '<p>--Ihr Autovermietung-Team</p>'
@@ -291,7 +290,7 @@ router.get('/verify-account/:id/:token', (req, res) => {
       if (isafter) return res.status(401).end('<h1>Invalid or expired reset link</h1>')
       db.verifyUser(req.params.id, (err) => {
         if (err) return res.status(500).end('<h1>Error on the server.</h1>')
-        res.status(200).end("<h1>Der Account wurde erfolgreich verifiziert</h1>" + '<p> <a href=' + 'http://localhost:8080/login>Zum Login</a></p>')
+        res.status(200).end("<h1>Der Account wurde erfolgreich verifiziert</h1>" + '<p> <a href=' + frontendUrl + '8080/login>Zum Login</a></p>')
       })
     })
   })
@@ -306,7 +305,7 @@ router.put('/employee/:id', (req, res) => {
   confirmToken(token,res, function(ausgabe){
     if(ausgabe.role != -1) {
           userr = ausgabe.user
-          if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1 && userr.id == req.params.id))) {
+          if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1))) {
             if (req.body.name != null && req.body.username == null && req.body.password == null) {
               db.updateName(req.body.name, req.params.id, (err) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
@@ -321,6 +320,16 @@ router.put('/employee/:id', (req, res) => {
               db.updatePass(bcrypt.hashSync(req.body.password, 8), req.params.id, (err) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 return ausgabe.res.status(200).send(null)
+              })
+            } else if(req.body.adresse != null) {
+              db.updateAdresse(req.body.adresse, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({adresse: req.body.adresse})
+              })
+            } else if(req.body.telefon != null) {
+              db.updateTelefon(req.body.telefon, req.params.id, (err) => {
+                if (err) return ausgabe.res.status(500).send('Error on the server.')
+                return ausgabe.res.status(200).send({telefon: req.body.telefon})
               })
             } else { return ausgabe.res.status(400).send('Invalid request') }
           } else if (userr.rolle < 1) {
@@ -344,7 +353,7 @@ router.delete('/employee/:id', (req, res) => {
   confirmToken(token,res, function(ausgabe){
     if(ausgabe.role != -1) {
       let user = ausgabe.user
-      if(user.rolle == 2){
+      if(user.rolle == 2 || user.rolle == 1){
           db.deleteAccount(req.params.id, (err) => {
             if (err) return ausgabe.res.status(500).send('Error on the server.')
             return ausgabe.res.status(200).send(null)
@@ -390,7 +399,7 @@ router.get('/employee/:id', (req, res) => {
             //Wenn Paramter -200, dann alle Mitarbeiter holen
             if (req.params.id == -200) {
               //Nur Admin darf das
-              if (userr.rolle == 2) {
+              if (userr.rolle == 2 || userr.rolle == 1) {
                 db.getAllEmployees((err, users) => {
                   if (err) return ausgabe.res.status(500).send('Error on the server.')
                   if (!users) return ausgabe.res.status(404).send('No Employees available')
@@ -405,8 +414,8 @@ router.get('/employee/:id', (req, res) => {
               db.selectById(req.params.id, (err, user) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 if (!user) return ausgabe.res.status(404).send('Employee not found')
-                if (userr.rolle == 2 || (userr.rolle == 1 && userr.id == user.id)) {
-                  let employee = {id: user.id, name: user.nachname, email: user.user}
+                if (userr.rolle == 2 || (userr.rolle == 1 && (userr.id == user.id || user.rolle == 0))) {
+                  let employee = {id: user.id, name: user.nachname, email: user.user, rolle: user.rolle, adresse: user.adresse, telefon: user.telefon}
                   return ausgabe.res.status(200).send({employee: employee})
                 } else {
                   return ausgabe.res.status(401).send('Unauthorized access')
@@ -433,7 +442,7 @@ router.get('/customers', (req, res) => {
       userr = ausgabe.user
         //Wenn Paramter -200, dann alle Mitarbeiter holen
           //Nur Admin darf das
-          if (userr.rolle == 2) {
+          if (userr.rolle == 2 || userr.rolle == 1) {
             db.getAllCustomers((err, users) => {
               if (err) return ausgabe.res.status(500).send('Error on the server.')
               if (!users) return ausgabe.res.status(404).send('No Employees available')
@@ -1167,10 +1176,17 @@ app.post("/upload-image", function (req, res, ) {
 app.get("/get-image", function (req, res,) {
   fs.readFile(__dirname + "/../" + req.query.path, function (err, data) {
     if (err) {
-      return res.status(404).send("Image's not found");
+      fs.readFile(__dirname + "/../" + req.query.path.replace(/\\/g, '/'), function (err, data) {
+        if (err) {
+          return res.status(404).send("Image's not found");
+        }
+        res.writeHead(200, {'Content-Type': req.query.mimeType || 'image/jpeg', 'filename': req.query.origName})
+        res.end(data) // Send the file data to the browser.
+      })
+    } else {
+      res.writeHead(200, {'Content-Type': req.query.mimeType || 'image/jpeg', 'filename': req.query.origName})
+      res.end(data) // Send the file data to the browser.
     }
-    res.writeHead(200, {'Content-Type': req.query.mimeType || 'image/jpeg', 'filename': req.query.origName})
-    res.end(data) // Send the file data to the browser.
   });
 });
 

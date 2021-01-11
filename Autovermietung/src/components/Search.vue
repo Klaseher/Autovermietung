@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Verfügbare Autos</h1>
+    <h1>Verfügbares Auto</h1>
     <hr>
     <main class="search" v-if="!ausgewaehlt">
       <h1>Suchergebnisse für: {{ msg }}</h1>
@@ -123,6 +123,7 @@
             <div class="col">
               <select v-model="tuer" class="form-control">
                 <option value="" disabled selected>Anzahl Türen</option>
+                <option value="">Alle</option>
                 <option
                     v-for="(value, index) in doorsNumber"
                     :key="index"
@@ -197,7 +198,7 @@
       <p>Verbrauch: {{ gewaehltesauto.verbrauch }}</p>
       </div>
       <div class="actions">
-      <button type="cancel" class="btn btn-secondary" @click="back">Zurueck zur Suche</button>
+      <button type="cancel" class="btn btn-secondary" @click="back">Zur Fahrzeugsuche</button>
       <button
           class="btn btn-primary"
           type="submit"
@@ -460,13 +461,14 @@ export default ({
     to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
     //Zeiträume für Start-und Endkalender festlegen
     this.datepickerSetting.value = Helper.formatDate(from)
+    this.start = this.datepickerSetting.value;
     this.datepickerSetting.from = Helper.formatDate(from)
     this.datepickerSetting.to = Helper.formatDate(to)
     this.datepickerSetting2.from = Helper.formatDate(from)
     this.datepickerSetting2.to = Helper.formatDate(to)
     this.kraftstofftypen = ["Benzin", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
-    this.getriebetypen = ["Automatik", "Schaltung"];
+    this.getriebetypen = ["Automatik", "Schalter"];
     if (this.$route.params.autoname != "") {
       this.ausgewaehlt = true;
       UserService.getCar(this.$route.params.autoname)

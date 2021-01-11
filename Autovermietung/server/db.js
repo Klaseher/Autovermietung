@@ -197,6 +197,21 @@ class Db {
       })
   }
 
+    updateAdresse (adresse, id, callback) {
+        return this.db.get(
+            `UPDATE user SET adresse = ? WHERE id = ?`,
+            [adresse, id], function (err, row) {
+                callback(err, row)
+            })
+    }
+    updateTelefon(telefon, id, callback) {
+        return this.db.get(
+            `UPDATE user SET telefon = ? WHERE id = ?`,
+            [telefon, id], function (err, row) {
+                callback(err, row)
+            })
+    }
+
   //Person-Mail/Username ändern
   updateMail (email, id, callback) {
     return this.db.get(
