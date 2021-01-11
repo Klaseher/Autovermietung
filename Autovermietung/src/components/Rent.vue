@@ -70,13 +70,13 @@ export default {
             adresse: '',
             telefon: '',
             email: '',
-            start: this.getQueryParam('start'),
-            ende:  this.getQueryParam('end'),
+            start: '',
+            ende:  '',
             user: '',
             auto: '',
             cost: '',
             datepickerSetting : {
-                value: this.getQueryParam('start'),
+                value: '',
                 placeholder: "Startdatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -103,7 +103,7 @@ export default {
             },
             //enddatum
             datepickerSetting2 : {
-                value:  this.getQueryParam('end'),
+                value:  '',
                 placeholder: "Enddatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -218,11 +218,6 @@ export default {
         },
       back() {
         this.$router.push("/search")
-      },
-      getQueryParam(param) {
-        if(typeof URL === 'undefined') return '';
-        const url = new URL(window.location);
-        return  url.searchParams.get(param) || '';
       }
     },
     computed: {
