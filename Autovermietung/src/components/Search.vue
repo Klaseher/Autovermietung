@@ -465,6 +465,7 @@ export default ({
     this.datepickerSetting.to = Helper.formatDate(to)
     this.datepickerSetting2.from = Helper.formatDate(from)
     this.datepickerSetting2.to = Helper.formatDate(to)
+    this.start = this.datepickerSetting.value
     this.kraftstofftypen = ["Benzin", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
     this.getriebetypen = ["Automatik", "Schalter"];

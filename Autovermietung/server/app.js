@@ -831,7 +831,7 @@ router.post('/rent/', (req, res) => {
           // staendig bestellung erstellen, sofort abbrechen (wdh.)
           db.getCustomerOrdersHistory(user.id, (err, bestellungen) => {
             if (err) return res.status(500).send('Error on the server.')
-            let heute = new Date()
+            let heute = new Date(moment(timestamp).format('YYYY/MM/DD'))
             let counter = 0
             for(let i=0;i<bestellungen.length-1;i++){
               let zeitstempel = new Date(bestellungen[i].zeitstempel)
@@ -846,7 +846,7 @@ router.post('/rent/', (req, res) => {
               db.getCarTimeframes(req.body.auto, (err, carTimeframes) => {
                 if (err) return res.status(500).send('Error on the server.')
                 let gueltig = true
-                for(let i=0;i<carTimeframes.length-1;i++){
+                for(let i=0;i<carTimeframes.length;i++){
                   let von = new Date(carTimeframes[i].startdatum)
                   let bis = new Date(carTimeframes[i].enddatum)
                   let startdatum = new Date(req.body.start)

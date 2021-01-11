@@ -250,6 +250,7 @@ export default {
         //Zeiträume für Start-und Endkalender festlegen
         if(sessionStorage.getItem('start') != null){
             this.datepickerSetting.value = sessionStorage.getItem('start')
+            this.start = this.datepickerSetting.value
         }
         this.datepickerSetting.toDate = Helper.formatDate(to)
         this.datepickerSetting2.toDate = Helper.formatDate(to)
@@ -257,6 +258,7 @@ export default {
         this.datepickerSetting2.fromDate = Helper.formatDate(from)
         if(sessionStorage.getItem('ende') != null){
             this.datepickerSetting2.value = sessionStorage.getItem('ende')
+            this.ende = this.datepickerSetting2.value
         }
         sessionStorage.removeItem('start');
         sessionStorage.removeItem('ende');
