@@ -343,7 +343,7 @@ export default {
                                     Auth.addCost(bnr, 2, ((kosten/100)*30), 'Strafkosten fuer Problem bei Abholung des Autos')
                                     .then((response) =>{
                                         if(response.data.success){
-                                            if(this.$route.params.bnr == ! ''){
+                                            if(this.$route.params.bnr =! ''){
                                                 // daten aktualisieren, indem in array eingefuegt
                                                 this.bestellkosten.push(response.data.cost)
                                             }
@@ -351,7 +351,7 @@ export default {
                                             Auth.deleteCost(bnr, 0, null)
                                             .then((response) =>{
                                                 if(response.data.success){
-                                                     if(this.$route.params.bnr == ! ''){
+                                                     if(this.$route.params.bnr =! ''){
                                                         // daten aktualisieren, indem aus array geloescht 
                                                         for(let i=0; i<this.bestellkosten.length;i++){
                                                             if(this.bestellkosten[i].typ == 0){
