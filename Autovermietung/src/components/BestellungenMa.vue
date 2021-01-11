@@ -330,8 +330,9 @@ export default {
                     //Strafe in Form von 30% der Bestellkosten des zu mietenden Autos 
                     let kosten = 0
                     for(let i =0; i< bestellkosten.length; i++){
-                        if(bestellkosten[i].typ != 0){
+                        if(bestellkosten[i].typ == 0){
                             kosten = bestellkosten[i].menge
+                            break
                         }
                     }
                     if(!skip) alert("Es wird wegen der kurzfristign Absage eine Strafzahlung in Hoehe von " + ((kosten/100)*30) + "€ faellig")
