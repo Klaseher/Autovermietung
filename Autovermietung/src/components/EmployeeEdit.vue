@@ -94,7 +94,7 @@ export default {
       if (this.new_name.length > 5 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
         Auth.updateEmployee(this.id, this.new_name, null, null)
           .then(response => {
-            this.meldung = 'Employee Name successfully updated'
+            this.meldung = 'Mitarbeitername erfolgreich geändert'
             this.name = response.data.name
             this.new_name = ''
           })
@@ -104,7 +104,7 @@ export default {
           })
       } else {
         this.new_name = ''
-        return alert('Name invalid')
+        return alert('Namensfeld ist leer oder enthält nicht erlaubte Sonderzeichen')
       }
     },
     updateUsername () {
@@ -112,7 +112,7 @@ export default {
       if (this.new_username.length > 6 && this.new_username.length < 100 && this.new_username != this.username && userTest.test(this.new_username)) {
         Auth.updateEmployee(this.id, null, this.new_username, null)
           .then(response => {
-            this.meldung = 'Employee Username successfully updated'
+            this.meldung = 'Mitarbeiter Benutzername erfolgreich geändert'
             this.username = response.data.username
             this.new_username = ''
           })
@@ -122,7 +122,7 @@ export default {
           })
       } else {
         this.new_username = ''
-        return alert('Username invalid')
+        return alert('Benutzername ist leer oder enthält nicht erlaubte Sonderzeiche')
       }
     },
     changePassword () {
@@ -133,7 +133,7 @@ export default {
             .then(response => {
               if(response)
 
-              this.meldung = 'Employee Password successfully updated'
+              this.meldung = 'Mitarbeiter Passwort erfolgreich geändert'
               this.password = ''
               this.new_password = ''
             })
@@ -144,13 +144,13 @@ export default {
         } else {
           this.password = ''
           this.new_password = ''
-          return alert('Password is not safe enough')
+          return alert('Das eingegebene Passwort ist nicht sicher genug')
         }
       } else {
         this.password = ''
         this.new_password = ''
 
-        return alert('Passwords do not match')
+        return alert('Passwörter stimmen nicht überein')
       }
     },
     //Methode zum Löschen von Mitarbeiter-Account

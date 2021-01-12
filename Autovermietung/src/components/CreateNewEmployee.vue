@@ -81,7 +81,7 @@ export default {
               Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
                 .then(response => {
                   alert(response.data)
-                  this.created = 'User successfully created'
+                  this.created = 'Neuer Mitarbeiter erfolgreich angelegt!'
                   this.vorname = ''
                   this.name = ''
                   this.username = ''
@@ -93,22 +93,22 @@ export default {
               this.password = ''
               this.password_confirmation = ''
 
-              return alert('Passwords not safe enough')
+              return alert('Das eingegebene Passwort ist nicht sicher genug')
             }
           } else {
             this.password = ''
             this.password_confirmation = ''
 
-            return alert('Password is do not match')
+            return alert('Passwörter stimmen nicht überein')
           }
         } else {
           this.username = ''
-          return alert('Username not save enough (6-12 Characters + 1x uppercase + 1x Number)')
+          return alert('Benutzername ist nicht sicher genug (mindestens 6-12 Zeichen + 1x Großbuchstabe + 1x Zahl)')
         }
       } else {
         this.name = ''
         this.vorname = ''
-        return alert('Name too long or short or contains invalid symbols')
+        return alert('Benutzername ist zu lang/kurz oder enthält nicht erlaubte Sonderzeichen')
       }
     }
   }
