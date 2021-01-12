@@ -1,6 +1,6 @@
 <template>
   <div class="administrator container">
-    <h1>Sie sind als Administrator angemeldet</h1>
+    <h1>{{adminmessage}}</h1>
     <hr>
     <div class="text-center form-group">
       <button class="btn-primary btn" v-on:click="zeigeBestellungen()">
@@ -10,7 +10,7 @@
 
     <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
 
-    <div v-if="admin" class="form-group">
+    <div v-if="admin || employee" class="form-group">
       <div class="text-center">
         <button class="btn btn-primary" v-on:click="seen = !seen">
           Admin-Funktionen
@@ -25,14 +25,14 @@
       <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet
         werden.</p>
       <div class="actions form-group">
-        <button class="btn btn-primary" type="submit" @click="showEmployees">
+        <button class="btn btn-primary" type="submit" @click="showEmployees" v-if="admin">
           Mitarbeiterübersicht
         </button>
 
-        <button class="btn btn-primary" type="submit" @click="showCustomers">
+        <button class="btn btn-primary" type="submit" @click="showCustomers" v-if="admin || employee">
           Kundenübersicht
         </button>
-        <button class="btn btn-primary" type="submit" @click="showCars">
+        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin">
           Autoübersicht
         </button>
       </div>
@@ -60,7 +60,6 @@
             </tr>
             </tbody>
           </table>
-          <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
         </div>
 
         <div v-if="editUser" class="table-responsive">
@@ -110,7 +109,6 @@
             </tr>
             </tbody>
           </table>
-          <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
         </div>
       </div>
     </div>
@@ -138,6 +136,7 @@ export default {
       created: '',
       content: '',
       admin: false, //speichern, ob Mitarbeiter Admin ist
+      employee: false,
       seen: false,
       editEmployee: false,
       editCar: false,
@@ -146,6 +145,7 @@ export default {
       customers: [],
       getriebe: '',
       editUser: false,
+      adminmessage: ''
     }
   },
   methods: {
@@ -224,9 +224,13 @@ export default {
   beforeMount() {
     let role = sessionStorage.getItem('role')
     if (role == 1) {
+      this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
       this.admin = false
+      this.employee = true;
     } else if (role == 2) {
-      this.admin = true
+      this.admin = true;
+      this.employee = false;
+      this.adminmessage = "Sie sind als Administrator angemeldet"
     }
 
   },

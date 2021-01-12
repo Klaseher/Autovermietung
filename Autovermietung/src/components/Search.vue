@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>Verfügbare Autos</h1>
+    <h1>Verfügbares Auto</h1>
     <hr>
     <main class="search" v-if="!ausgewaehlt">
       <h1>Suchergebnisse für: {{ msg }}</h1>
@@ -198,7 +198,7 @@
       <p>Verbrauch: {{ gewaehltesauto.verbrauch }}</p>
       </div>
       <div class="actions">
-      <button type="cancel" class="btn btn-secondary" @click="back">Zurueck zur Suche</button>
+      <button type="cancel" class="btn btn-secondary" @click="back">Zur Fahrzeugsuche</button>
       <button
           class="btn btn-primary"
           type="submit"
@@ -433,6 +433,8 @@ export default ({
 
 
     buchen() {
+      sessionStorage.setItem('start', this.start)
+      sessionStorage.setItem('ende', this.ende)
       this.$router.push("/rent/" + this.gewaehltesauto.name);
       //request an backend, um buchung abzuschließen
       //dazu in db eine bestellung erstellt werden
@@ -463,9 +465,10 @@ export default ({
     this.datepickerSetting.to = Helper.formatDate(to)
     this.datepickerSetting2.from = Helper.formatDate(from)
     this.datepickerSetting2.to = Helper.formatDate(to)
+    this.start = this.datepickerSetting.value
     this.kraftstofftypen = ["Benzin", "Diesel"];
     this.autotypen = ["SUV", "Kleinwagen", "Van", "Coupe"];
-    this.getriebetypen = ["Automatik", "Schaltung"];
+    this.getriebetypen = ["Automatik", "Schalter"];
     if (this.$route.params.autoname != "") {
       this.ausgewaehlt = true;
       UserService.getCar(this.$route.params.autoname)

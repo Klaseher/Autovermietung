@@ -1,20 +1,29 @@
 <template>
-    <div class="ma">
-        <div v-if="!ausgewaehlt">
-            <h1>{{msg}}</h1>
-            <select v-model="bestellungsauswahl">
-                <option value="" disabled selected>Filter Bestellungen</option>
-                <option
-                    v-for="(bestellung, index) in bestellungstypen"
-                    :key="index"
-                    :value="bestellung"
-                >
-                    {{bestellung}}
-                </option>
+  <div class="container">
+    <div v-if="!ausgewaehlt">
+      <h1>{{ msg }}</h1>
+      <hr>
+      <form class="form-group">
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <select v-model="bestellungsauswahl" class="form-control">
+              <option value="" disabled selected>Filter Bestellungen</option>
+              <option
+                  v-for="(bestellung, index) in bestellungstypen"
+                  :key="index"
+                  :value="bestellung"
+              >
+                {{ bestellung }}
+              </option>
             </select>
-            <button @click="update()">Aktualisieren</button>
-            <div>
-                <datepicker-lite 
+            <div class="form-group mx-sm-3">
+              <button @click="update()" type="button" class="btn btn-primary">Bestellungen Aktualisieren</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <datepicker-lite
                 :value-attr="datepickerSetting.value"
                 :year-minus="datepickerSetting.yearMinus"
                 :from="datepickerSetting.from"
@@ -22,8 +31,9 @@
                 :disabled-date="datepickerSetting.disabledDate"
                 :locale="datepickerSetting.locale"
                 @value-changed="datepickerSetting.changeEvent"
-                />
-                <datepicker-lite 
+                class-attr="form-control"
+            />
+            <datepicker-lite
                 :value-attr="datepickerSetting2.value"
                 :year-minus="datepickerSetting2.yearMinus"
                 :from="datepickerSetting2.from"
@@ -31,89 +41,113 @@
                 :disabled-date="datepickerSetting2.disabledDate"
                 :locale="datepickerSetting2.locale"
                 @value-changed="datepickerSetting2.changeEvent"
-                />
-                <input type="text" placeholder="Nach BNR suchen" v-model="bnr">
-                <input type="text" placeholder="Nach Vorname suchen" v-model="vorname">
-                <input type="text" placeholder="Nach Nachname suchen" v-model="nachname">
-                <button @click="suchen()">Suchen</button>
-            </div>
-            <br /> 
-            <br />  
-            <table>
-                <thead>
-                    <tr>
-                        <th>BNR</th>
-                        <th>Startdatum</th>
-                        <th>Enddatum</th>
-                        <th>Auto</th>
-                        <th>Vorname</th>
-                        <th>Nachname</th>
-                        <th>Erstelldatum</th>
-                        <th>Status</th>
-                        <th>Bearbeiten</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
-                        <td>{{bestellung.bnr}}</td>
-                        <td>{{bestellung.startdatum}}</td>
-                        <td>{{bestellung.enddatum}}</td>
-                        <td>{{bestellung.auto_fk}}</td>
-                        <td>{{bestellung.vorname}}</td>
-                        <td>{{bestellung.nachname}}</td>
-                        <td>{{bestellung.zeitstempel}}</td>
-                        <td>{{status(bestellung.status)}}</td>
-                        <td><button @click="editingOrder(bestellung.bnr)">Weiter</button></td>
-                    </tr>
-                </tbody>
-            </table>
-             <br /> 
-            <br />  
-            <button @click="home()">Zurueck</button>
+                class-attr="form-control mx-sm-3"
+            />
+          </div>
         </div>
-        <div  v-else>
-            <br /> <h3>Auto: {{gewaehlteBestellung.auto_fk}}</h3>
-            <br /> <h3>Kunde: {{gewaehlteBestellung.vorname}} {{gewaehlteBestellung.nachname}}</h3>
-            <br /> <h3>Email: {{gewaehlteBestellung.user}}</h3>
-            <br /> <h3>Adresse: {{gewaehlteBestellung.adresse}}</h3>
-            <br /> <h3>Telefon: {{gewaehlteBestellung.telefon}}</h3>
-            <br /> <h3>Mietzeitraum: {{gewaehlteBestellung.startdatum}} - {{gewaehlteBestellung.enddatum}}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Kosten</th>
-                        <th>Beschreibung</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(kosten, index) in bestellkosten" :key="index">
-                        <td>{{kosten.menge}}€</td>
-                        <td>{{kosten.beschreibung}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <br /> <h3>Gesamtkosten: {{gesamtkosten}}€</h3>   
-            <button type="cancel" @click="back">Zurueck zur Suche</button>
-            <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1) && auto.ausgeliehen ==0">
-                <button @click="abbrechen(gewaehlteBestellung.bnr, 0)" :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">Abbrechen</button>
-            </div>
-            <div v-if="gewaehlteBestellung.status==0">
-                <button @click="acceptOrder(gewaehlteBestellung.bnr)" :disabled="gewaehlteBestellung.status!=0">Bestaetigen</button>
-            </div>
-            <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
-                <button @click="ausleihen(auto.name)">Auto ausleihen</button>
-            </div> 
-            <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
-                <button @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurueckgeben</button>
-            </div>
-            <div v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==1) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
-                <button @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
-            </div>
-            <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
-                <button @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
-            </div>
-         </div>
+        <div class="form-inline form-group">
+          <div class="form-group">
+            <input class="form-control" type="text" placeholder="Nach BNR suchen" v-model="bnr">
+            <input class="form-control mx-sm-3" type="text" placeholder="Nach Vorname suchen" v-model="vorname">
+            <input class="form-control" type="text" placeholder="Nach Nachname suchen" v-model="nachname">
+            <button class="btn btn-primary mx-sm-3" @click="suchen()" type="button">Suchen</button>
+          </div>
+        </div>
+      </form>
+      <div class="table-responsive form-group">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>BNR</th>
+            <th>Startdatum</th>
+            <th>Enddatum</th>
+            <th>Auto</th>
+            <th>Vorname</th>
+            <th>Nachname</th>
+            <th>Erstelldatum</th>
+            <th>Status</th>
+            <th>Bearbeiten</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(bestellung, index) in gesuchteBestellungen" :key="index" :class="getClass(bestellung)">
+            <td>{{ bestellung.bnr }}</td>
+            <td>{{ bestellung.startdatum }}</td>
+            <td>{{ bestellung.enddatum }}</td>
+            <td>{{ bestellung.auto_fk }}</td>
+            <td>{{ bestellung.vorname }}</td>
+            <td>{{ bestellung.nachname }}</td>
+            <td>{{ bestellung.zeitstempel }}</td>
+            <td>{{ status(bestellung.status) }}</td>
+            <td>
+              <button class="btn btn-primary" @click="editingOrder(bestellung.bnr)">Weiter</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-secondary" @click="home()">Zurück</button>
+      </div>
     </div>
+    <div v-else>
+      <h1>{{ msg }}</h1>
+      <hr>
+      <div class="form-group">
+        <h3>Auto: {{ gewaehlteBestellung.auto_fk }}</h3>
+        <h3>Kunde: {{ gewaehlteBestellung.vorname }} {{ gewaehlteBestellung.nachname }}</h3>
+        <h3>Email: {{ gewaehlteBestellung.user }}</h3>
+        <h3>Adresse: {{ gewaehlteBestellung.adresse }}</h3>
+        <h3>Telefon: {{ gewaehlteBestellung.telefon }}</h3>
+        <h3>Mietzeitraum: {{ gewaehlteBestellung.startdatum }} - {{ gewaehlteBestellung.enddatum }}</h3>
+      </div>
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Kosten</th>
+            <th>Beschreibung</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(kosten, index) in bestellkosten" :key="index">
+            <td>{{ kosten.menge }}€</td>
+            <td>{{ kosten.beschreibung }}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <br/>
+      <h3>Gesamtkosten: {{ gesamtkosten }}€</h3>
+      <div class="actions form-group">
+        <button class="btn btn-secondary" type="cancel" @click="back">Zurück zur Suche</button>
+        <div v-if="(gewaehlteBestellung.status==0 || gewaehlteBestellung.status==1)">
+          <button class="btn btn-danger" @click="abbrechen(gewaehlteBestellung.bnr, 0)"
+                  :disabled="gewaehlteBestellung.status!=0 && gewaehlteBestellung.status!=1 && auto.ausgeliehen !=0">
+            Abbrechen
+          </button>
+        </div>
+        <div v-if="gewaehlteBestellung.status==0">
+          <button class="btn btn-success" @click="acceptOrder(gewaehlteBestellung.bnr)"
+                  :disabled="gewaehlteBestellung.status!=0">Bestaetigen
+          </button>
+        </div>
+        <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
+          <button @click="ausleihen(auto.name, gewaehlteBestellung.bnr)">Auto ausleihen</button>
+        </div>
+        <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
+          <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurückgeben</button>
+        </div>
+        <div
+            v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==6) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
+          <button class="btn btn-primary" @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
+        </div>
+        <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
+          <button class="btn btn-info" @click="showDamage(gewaehlteBestellung)">Anzeigen Offener Autoprobleme</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 
@@ -187,7 +221,7 @@ export default {
         // daten neu laden bzw. bestimmte bestellungstypen anzeigen
         update(){
             if(this.bestellungsauswahl == ''){
-                alert("Bitte waehlen Sie einen Filter aus")
+                alert("Bitte wählen Sie einen Filter aus")
                 return
             }
             this.bestellungen = []
@@ -197,8 +231,9 @@ export default {
             else if(this.bestellungsauswahl == "Bestellungshistorie") typ = 7 //3 u. 4
             else if(this.bestellungsauswahl == "Offene Bezahlung") typ = 2
             else if(this.bestellungsauswahl == "Ueberzogene Bestellungen") typ = 5
-            else if(this.bestellungsauswahl =="Laufende Bestellungen") typ = 1
-            else if(this.bestellungsauswahl == "Doppelte Bestellungen") typ = 6
+            else if(this.bestellungsauswahl == "Bestaetigte Bestellungen") typ = 1
+            else if(this.bestellungsauswahl == "Laufende Bestellungen") typ = 6
+            else if(this.bestellungsauswahl == "Doppelte Bestellungen") typ = 10
             else if(this.bestellungsauswahl == "Alle Bestellungen") typ = 8
             this.holeBestellungen(typ)
         },
@@ -268,7 +303,7 @@ export default {
                 Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden");
             }
             // offene oder zeitlich ueberfaellige bestellungen
-            else if(bestellung.status == 1 || bestellung.status == 5 || bestellung.status == 2){
+            else if(bestellung.status == 1 || bestellung.status == 6 || bestellung.status == 5 || bestellung.status == 2){
                  Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
             }
         },
@@ -282,7 +317,7 @@ export default {
             }
             if(bestaetigen){
                 let bestellung = 0
-                 if(this.$route.params.bnr == ! ''){
+                 if(this.$route.params.bnr != ''){
                     bestellung = this.gewaehlteBestellung
                     bestellkosten = this.bestellkosten
                     auto = this.auto
@@ -291,12 +326,13 @@ export default {
                     bestellung = this.bestellungen.find((element) => element.bnr == bnr)
                 }             
                 // wenn vor ausleihe des autos vor ort probleme mit kunden (z.b. kann nicht bezahlen), dann abbruch mit strafzahlung
-                if(auto.ausgeliehen == 0 && bestellung.status == 1){
+                if(auto != null && auto.ausgeliehen == 0 && bestellung.status == 1){
                     //Strafe in Form von 30% der Bestellkosten des zu mietenden Autos 
                     let kosten = 0
                     for(let i =0; i< bestellkosten.length; i++){
-                        if(bestellkosten[i].typ != 0){
+                        if(bestellkosten[i].typ == 0){
                             kosten = bestellkosten[i].menge
+                            break
                         }
                     }
                     if(!skip) alert("Es wird wegen der kurzfristign Absage eine Strafzahlung in Hoehe von " + ((kosten/100)*30) + "€ faellig")
@@ -307,7 +343,7 @@ export default {
                                     Auth.addCost(bnr, 2, ((kosten/100)*30), 'Strafkosten fuer Problem bei Abholung des Autos')
                                     .then((response) =>{
                                         if(response.data.success){
-                                            if(this.$route.params.bnr == ! ''){
+                                            if(this.$route.params.bnr != ''){
                                                 // daten aktualisieren, indem in array eingefuegt
                                                 this.bestellkosten.push(response.data.cost)
                                             }
@@ -315,7 +351,7 @@ export default {
                                             Auth.deleteCost(bnr, 0, null)
                                             .then((response) =>{
                                                 if(response.data.success){
-                                                     if(this.$route.params.bnr == ! ''){
+                                                     if(this.$route.params.bnr != ''){
                                                         // daten aktualisieren, indem aus array geloescht 
                                                         for(let i=0; i<this.bestellkosten.length;i++){
                                                             if(this.bestellkosten[i].typ == 0){
@@ -409,7 +445,7 @@ export default {
                         if(item.bnr == date.bnr){
                             return
                         }
-                        await this.abbrechen(item.bnr, 1)
+                        await this.abbrechen(item.bnr, 1, null, 0)
                     })
                 }
                 else{
@@ -517,7 +553,7 @@ export default {
                                 if(response.data.success){
                                     this.gewaehlteBestellung.status = 4
                                     this.auto.ausgeliehen = 0
-                                    alert("Auto wurde erfolgreich zurueckgegeben")
+                                    alert("Auto wurde erfolgreich zurückgegeben")
                                     return
                                 }
                             })
@@ -538,14 +574,14 @@ export default {
                         return
                     })  
                 }
-                else{
+                else if(this.gewaehlteBestellung.status != 2){
                     this.rueckgabe(bnr)
                 }
             }
         },
         // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
         rueckgabe(bnr){
-          if(confirm("Wurde das Auto wirklick vom Kunden zurueckgegeben?")){                
+          if(confirm("Wurde das Auto wirklick vom Kunden zurückgegeben?")){                
             Auth.updateStatusOrder(bnr, 2)
             .then((response) =>{
                 if(response.data.success){
@@ -554,7 +590,7 @@ export default {
                         if(response.data.success){
                             this.gewaehlteBestellung.status = 2
                             this.auto.ausgeliehen = 0
-                            alert("Auto wurde erfolgreich zurueckgegeben")
+                            alert("Auto wurde erfolgreich zurückgegeben")
                             return
                         }
                     })
@@ -577,7 +613,7 @@ export default {
           }
         },
         // mitarbeiter bestaetigt dies, wenn auto ausgeliehen u. kunde standarkosten vor ort bezahlt hat
-        ausleihen(auto){
+        ausleihen(auto, bnr){
             let gesamt = 0
             for(let i=0; i<this.bestellkosten.length;i++){
                 gesamt += this.bestellkosten[i].menge
@@ -586,9 +622,23 @@ export default {
                 Auth.updateAusleiheAuto(auto, 1)
                 .then((response) =>{
                     if(response.data.success){
-                        alert("Das Auto kann nun ausgeliehen werden")
-                        this.auto.ausgeliehen = 1
-                        return
+                        Auth.updateStatusOrder(this.gewaehlteBestellung.bnr, 6)
+                        .then((response) =>{
+                            if(response.data.success){
+                                this.bestellungen.find(
+                                (element) => element.bnr == bnr).status = 6
+                                 alert("Das Auto kann nun ausgeliehen werden")
+                                this.auto.ausgeliehen = 1
+                                return
+                            }
+                        })
+                        .catch((error) => {
+                            Helper.handle(error)
+                            this.ausgewaehlt = false
+                            this.msg = "Alle Bestellungen"
+                            Helper.redirect("/admin/bestellungen");
+                            return
+                        })  
                     }
                 })
                 .catch((error) => {
@@ -626,15 +676,7 @@ export default {
                                 let enddatum = new Date(this.bestellungen[i].enddatum)
                                 let von = new Date(this.bestellungen[h].startdatum)
                                 let bis = new Date(this.bestellungen[h].enddatum)
-                                if((enddatum.getTime() >= von.getTime()) || (enddatum.getTime() >= bis.getTime())){
-                                    this.bestellungen[i].doppelt = true
-                                    this.bestellungen[h].doppelt = true
-                                }
-                                else if((startdatum.getTime() <= von.getTime()) || (startdatum.getTime() <= bis.getTime())){
-                                    this.bestellungen[i].doppelt = true
-                                    this.bestellungen[h].doppelt = true
-                                }
-                                else if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
+                                if(((startdatum.getTime() <= von.getTime()) && (enddatum.getTime() >= von.getTime())
                                     ||((startdatum.getTime() <= bis.getTime()) && (enddatum.getTime() >= bis.getTime()))
                                     ||((startdatum.getTime() >= von.getTime()) && (enddatum.getTime() <= bis.getTime())))){
                                     this.bestellungen[i].doppelt = true
@@ -650,10 +692,10 @@ export default {
         // geladene Bestellungen werden geprueft, ob sie offen, aber schon abgelaufen sind --> automatisch abgebrochen
         async testAbgelaufen(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let start = new Date(item.startdatum)
                 if(start.getTime() <= heute.getTime() && item.status == '0'){
-                    await this.abbrechen(item.bnr, 1)
+                    await this.abbrechen(item.bnr, 1, null, 0)
                 }
             })
             return
@@ -661,13 +703,14 @@ export default {
         // geladene Bestellungen werden geprueft, ob sie laufend sind, aber auto noch nicht abgeholt wurde sind --> automatisch abgebrochen mit strafe
         async testNichtAngetreten(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let start = new Date(item.startdatum)
                 start.setDate(start.getDate() + 1);
                 UserService.getCar(item.auto_fk)
                 .then(response =>{
                     let auto = response.data.car 
-                    if(start.getTime() <= heute.getTime() && item.status == '1' && auto.ausgeliehen == 0){
+                    // wenn datum 1 tag nach startdatum autobestellung
+                    if(start.getTime() <= heute.getTime() && item.status == '1'){
                          let bestellkosten = []
                          UserService.getOrderCost(item.bnr)
                         .then((response) => {
@@ -694,13 +737,13 @@ export default {
             })
             return
         },
-        // geladene Bestellungen werden geprueft, ob sie laufend sind, aber es zu Verspätung bei Autoabgabe durch Kunden kam
+        // geladene Bestellungen werden geprueft, ob sie laufend sind (auto ausgeliehen wurde), aber es zu Verspätung bei Autoabgabe durch Kunden kam
         async testVerspeatung(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let enddatum = new Date(item.enddatum) 
                 // nur bestellungen, wo auto noch nicht abgegeben wurde
-                if(enddatum.getTime() < heute.getTime() && (item.status == '1' || item.status == '5')){
+                if(enddatum.getTime() < heute.getTime() && (item.status == '6' || item.status == '5')){
                     let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
                     let diffDays = Math.floor((heute.getTime() - enddatum.getTime())/(oneDay))
                     await this.setzeVerspaetung(item.bnr, diffDays, item.auto_fk)
@@ -803,8 +846,20 @@ export default {
                 this.class="doppelt"
                 return this.class
               }
+              else if (bestellung.status == 0){
+                this.class = "offen"
+                return this.class
+              }
               else if (bestellung.status == 2) {
                 this.class = "bezahlen"
+                return this.class
+              }
+              else if (bestellung.status == 6) {
+                this.class = "gestartet"
+                return this.class
+              }
+              else if (bestellung.status == 3 || bestellung.status == 4){
+                this.class = "beendet"
                 return this.class
               }
               else{
@@ -815,7 +870,7 @@ export default {
         // zur detaillierten Bestellübersicht wechseln
         editingOrder(bnr){
             this.ausgewaehlt = true;
-            this.msg = "Bestellung: " + bnr
+            this.msg = "Bestellung Nr.: " + bnr
             this.gewaehlteBestellung = this.bestellungen.find(
             (element) => element.bnr == bnr)
             this.holeKosten(bnr)
@@ -830,7 +885,7 @@ export default {
                 if(typ == 7){
                     bestelltyp = "geschlossen"
                 }
-                else if(typ == 6){
+                else if(typ == 10){
                     bestelltyp = "offen " + 0
                 }
                 else if(typ == 8 || typ == 9){
@@ -845,11 +900,11 @@ export default {
                         order.doppelt = false
                         this.bestellungen.push(order)
                     })
-                    if(typ == 0 || typ == 6|| typ == 8){
+                    if(typ == 0 || typ == 10 || typ == 8){
                         this.testdoppelt()
                     } 
                     //nur doppelte anzeigen
-                    if(typ == 6){
+                    if(typ == 10){
                         let bestellungen = []
                         for(let i=0;i<this.bestellungen.length;i++){
                              if(this.bestellungen[i].doppelt){
@@ -890,7 +945,7 @@ export default {
               return 'Wartet auf Bestaetigung'
            }
            else if(status == 1){
-               return 'Laufende Bestellung'
+               return 'Bestätigte Bestellung'
            }
            else if(status == 2){
                return 'Bezahlung ausstehend'
@@ -903,6 +958,9 @@ export default {
            }
            else if(status == 5){
                return 'Überfällige Bestellung'
+           }
+           else if(status == 6){
+               return 'Auto ausgeliehen'
            }
         }   
     },
@@ -922,10 +980,10 @@ export default {
         }
     },
     beforeMount(){     
-        let heute = new Date()
+        let heute = new Date(new Date().setHours(0,0,0,0));
         this.datepickerSetting.value = Helper.formatDate(heute)
-                                                           //0                       3,4                   2                           5                   doppelt = true              1
-        this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen"];
+                                                           //0                       3,4                   2                           5                   doppelt = true              6                            1
+        this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen", "Bestaetigte Bestellungen"];
         if (this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
@@ -942,5 +1000,24 @@ export default {
 </script>
 
 <style scoped>
+
+.doppelt{
+    background-color: red
+}
+.offen{
+    background-color: yellow
+}
+.bezahlen {
+    background-color: orange
+}
+.gestartet {
+    background-color: rgb(6, 197, 6)
+}
+.beendet {
+    background-color: rgb(161, 158, 158)
+}
+.normal {
+    background-color: rgb(193, 197, 233)
+}
 
 </style>

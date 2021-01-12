@@ -1,88 +1,113 @@
 <template>
   <div class="container">
     <div>
-        <h1> {{msg}} </h1>
-         <textarea v-model="beschreibung" placeholder="Beschreibung des Schadens" name="text" cols="35" rows="4">Schaden hier beschreiben</textarea> 
+      <h1> {{ msg }} </h1>
+      <hr>
+      <div class="form-group">
+        <textarea class="form-control" v-model="beschreibung" placeholder="Beschreibung des Schadens" name="text"
+                  cols="35" rows="4">Schaden hier beschreiben</textarea>
+      </div>
+      <form class="form-inline">
+
+        <div class="form-group">
           <input
-          type="text"
-          placeholder="Kosten"
-          v-model="kosten"
-          required
-          autofocus
-         />
-        <select v-model="auswahl">
-          <option value="" disabled selected>Schadenstyp</option>
-          <option
-            v-for="(schaden, index) in schadenstypen"
-            :key="index"
-            :value="schaden"
-          >
-          {{schaden}}
-          </option>
-        </select>
-        <select v-model="auswahlPrio" v-if="!testTank()">
-            <option value="" disabled selected>Schadensausmaß</option>
-            <option
-                v-for="(typ, index) in prioTypen"
-                :key="index"
-                :value="typ"
-            >
-            {{typ}}
-            </option>
-         </select>
-         <select v-model="auswahlPrio" v-else>
-            <option value="" disabled selected>Schadensausmaß</option>
-            <option value="Fatal" >Fatal</option>
-         </select>
-        <button type="submit" @click="erstelleSchaden()">Erstellen</button>
-        <div v-if="allgemein">
-         <table>
-                <thead>
-                    <tr>
-                        <th>Beschreibung</th>
-                        <th>Typ</th>
-                        <th>Prioritaet</th>
-                        <th>Kosten in €</th>
-                        <th>Bestellung</th>
-                        <th>Abgearbeitet?</th>
-                        <th>Loeschen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(schaden, index) in schaeden" :key="index">
-                        <td>{{schaden.beschreibung}}</td>
-                        <td>{{reverseTyp(schaden.typ)}}</td>
-                        <td>{{reversePrio(schaden.prioritaet)}}</td>
-                        <td>{{schaden.hoehe}}</td>
-                        <td>{{schaden.bnr_fk}}</td>
-                        <td><button @click="updateCheck(schaden)">Problem beheben</button></td>
-                        <td><button @click="loescheSchaden(schaden)">Loeschen</button></td>
-                    </tr>
-                </tbody>
-            </table>
+              type="text"
+              placeholder="Kosten"
+              v-model="kosten"
+              required
+              autofocus
+              class="form-control"
+          />
+          <div class="form-group">
+            <select v-model="auswahl" class="form-control mx-sm-3">
+              <option value="" disabled selected>Schadenstyp</option>
+              <option
+                  v-for="(schaden, index) in schadenstypen"
+                  :key="index"
+                  :value="schaden"
+              >
+                {{ schaden }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" v-if="!testTank()">
+            <select v-model="auswahlPrio" class="form-control mx-sm-3">
+              <option value="" disabled selected>Schadensausmaß</option>
+              <option
+                  v-for="(typ, index) in prioTypen"
+                  :key="index"
+                  :value="typ"
+              >
+                {{ typ }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group" v-else>
+            <select v-model="auswahlPrio" class="form-control">
+              <option value="" disabled selected>Schadensausmaß</option>
+              <option value="Fatal">Fatal</option>
+            </select>
+          </div>
         </div>
-        <div v-else>
-                  <table>
-                <thead>
-                    <tr>
-                        <th>Beschreibung</th>
-                        <th>Typ</th>
-                        <th>Prioritaet</th>
-                        <th>Kosten in €</th>
-                        <th>Loeschen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(schaden, index) in schaeden" :key="index">
-                        <td>{{schaden.beschreibung}}</td>
-                        <td>{{reverseTyp(schaden.typ)}}</td>
-                        <td>{{reversePrio(schaden.prioritaet)}}</td>
-                        <td>{{schaden.hoehe}}</td>
-                        <td><button @click="loescheSchaden(schaden)">Loeschen</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>  
+
+      </form>
+      <div class="form-group text-right">
+        <button class="btn btn-primary" type="submit" @click="erstelleSchaden()">Erstellen</button>
+      </div>
+      <div v-if="allgemein" class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Beschreibung</th>
+            <th>Typ</th>
+            <th>Prioritaet</th>
+            <th>Kosten in €</th>
+            <th>Bestellung</th>
+            <th>Abgearbeitet?</th>
+            <th>Loeschen</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(schaden, index) in schaeden" :key="index">
+            <td>{{ schaden.beschreibung }}</td>
+            <td>{{ reverseTyp(schaden.typ) }}</td>
+            <td>{{ reversePrio(schaden.prioritaet) }}</td>
+            <td>{{ schaden.hoehe }}</td>
+            <td>{{ schaden.bnr_fk }}</td>
+            <td>
+              <button class="btn btn-success" @click="updateCheck(schaden)">Problem beheben</button>
+            </td>
+            <td>
+              <button class="btn btn-warning" @click="loescheSchaden(schaden)">Loeschen</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-else class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Beschreibung</th>
+            <th>Typ</th>
+            <th>Prioritaet</th>
+            <th>Kosten in €</th>
+            <th>Loeschen</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(schaden, index) in schaeden" :key="index">
+            <td>{{ schaden.beschreibung }}</td>
+            <td>{{ reverseTyp(schaden.typ) }}</td>
+            <td>{{ reversePrio(schaden.prioritaet) }}</td>
+            <td>{{ schaden.hoehe }}</td>
+            <td>
+              <button class="btn btn-warning" @click="loescheSchaden(schaden)">Loeschen</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zum Start</button>
   </div>
@@ -130,6 +155,9 @@ export default {
                             alert("Schaden wurde erfolgreich behoben")
                             if(response.data.cost){
                                 alert("Die dazugehoerigen Kosten wurden aus der Bestellung geloescht")
+                            }
+                            if(response.data.verfuegbar){
+                                alert("Das Auto ist wieder fuer die Vermietung verfuegbar")
                             }
                         }
                     })
@@ -223,57 +251,92 @@ export default {
                 var zahlentester = new RegExp("^[0-9 ]*$")
                 let val = this.prio(this.auswahlPrio)
                 if(zahlentester.test(this.kosten) && this.kosten >= 0){
-                    // wenn bnr vorhanden, dann werden kosten hinzugefuegt + schaden mit bestellung verknuepft
-                    if(!this.allgemein){
-                        Auth.addCost(this.$route.params.bnr, this.status(this.auswahl), this.kosten, this.beschreibung)
-                        .then((response) =>{
-                            if(response.data.success){
-                                let pos_fk = response.data.cost.pos
-                                Auth.addBnrToSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten, this.$route.params.bnr, pos_fk)
-                                .then((response) =>{
-                                    if(response.data.success){
-                                        if(response.data.verfuegbar == false){
-                                            alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
-                                        }
-                                        this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten, bnr_fk: this.$route.params.bnr, pos_fk: pos_fk})
-                                        this.auswahlPrio = ''
-                                        this.kosten = ''
-                                        this.beschreibung = ''
-                                        this.auswahl = ''
-                                        alert("Schaden erfolgreich hinzugefuegt")
-                                    }
-                                })
-                                .catch((error) => {
-                                    Helper.handle(error)
-                                    Helper.redirect("/admin");
-                                })
-                            }
-                        })
-                        .catch((error) => {
-                            Helper.handle(error)
-                            Helper.redirect("/admin");
-                        })
+                    // wenn fataler schaden
+                    let antwort = true
+                    if(val == 0){
+                        antwort = confirm("Das Auto wird für weitere Bestellungen gesperrt, bis dieser Schaden behoben wird.\nAchtung: Alle bereits bestätigten zukünftigen Bestellungen für dieses Auto müssen erneut bestätigt werden")
                     }
-                    // nur schaden hinzufuegen
-                    else{
-                        Auth.addSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten)
-                        .then((response) =>{
-                            if(response.data.success){
-                                if(response.data.verfuegbar == false){
-                                    alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                    if(antwort){
+                        // wenn bnr vorhanden, dann werden kosten hinzugefuegt + schaden mit bestellung verknuepft
+                        if(!this.allgemein){
+                            UserService.getCar(this.$route.params.autoname)
+                            .then(response =>{
+                                let auto = response.data.car 
+                                if(auto.ausgeliehen == 0){
+                                    Auth.addCost(this.$route.params.bnr, this.status(this.auswahl), this.kosten, this.beschreibung)
+                                    .then((response) =>{
+                                        if(response.data.success){
+                                            let pos_fk = response.data.cost.pos
+                                            Auth.addBnrToSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten, this.$route.params.bnr, pos_fk)
+                                            .then((response) =>{
+                                                if(response.data.success){
+                                                    if(response.data.verfuegbar == false){
+                                                        alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                                                        if(response.data.orders.length > 0){
+                                                            let bnrs = []
+                                                            for(let i=0;i<response.data.orders.length;i++){
+                                                                bnrs.push(response.data.orders[i].bnr)
+                                                            }
+                                                            alert("Folgende Bestellungen muessen erneut ueberprueft werden BNR: " + bnrs.join('; '))
+                                                        }
+                                                    }
+                                                    this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten, bnr_fk: this.$route.params.bnr, pos_fk: pos_fk})
+                                                    this.auswahlPrio = ''
+                                                    this.kosten = ''
+                                                    this.beschreibung = ''
+                                                    this.auswahl = ''
+                                                    alert("Schaden erfolgreich hinzugefuegt")
+                                                }
+                                            })
+                                            .catch((error) => {
+                                                Helper.handle(error)
+                                                Helper.redirect("/admin");
+                                            })
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        Helper.handle(error)
+                                        Helper.redirect("/admin");
+                                    })
                                 }
-                                this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
-                                this.auswahlPrio = ''
-                                this.kosten = ''
-                                this.beschreibung = ''
-                                this.auswahl = ''
-                                alert("Schaden erfolgreich hinzugefuegt")
-                            }
-                        })
-                        .catch((error) => {
-                            Helper.handle(error)
-                            Helper.redirect("/admin");
-                        })
+                                else{
+                                    alert("Cant add damage when car is rented")
+                                    Helper.redirect("/admin");
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                Helper.redirect("/admin");
+                            })
+                        }
+                        // nur schaden hinzufuegen
+                        else{
+                            Auth.addSchaden(this.$route.params.autoname, this.beschreibung, val, this.status(this.auswahl), this.kosten)
+                            .then((response) =>{
+                                if(response.data.success){
+                                    if(response.data.verfuegbar == false){
+                                        alert("Das Auto ist erst wieder vefuegbar fuer die Vermietung, wenn dieser Schaden behoben wurde")
+                                        if(response.data.orders.length > 0){
+                                            let bnrs = []
+                                            for(let i=0;i<response.data.orders.length;i++){
+                                                bnrs.push(response.data.orders[i].bnr)
+                                            }
+                                            alert("Folgende Bestellungen muessen erneut ueberprueft werden BNR: " + bnrs.join('; '))
+                                        }
+                                    }
+                                    this.schaeden.push({auto_fk: this.$route.params.autoname, pos: response.data.pos, beschreibung: this.beschreibung, prioritaet: this.prio(this.auswahlPrio), typ:this.status(this.auswahl), hoehe: this.kosten})
+                                    this.auswahlPrio = ''
+                                    this.kosten = ''
+                                    this.beschreibung = ''
+                                    this.auswahl = ''
+                                    alert("Schaden erfolgreich hinzugefuegt")
+                                }
+                            })
+                            .catch((error) => {
+                                Helper.handle(error)
+                                Helper.redirect("/admin");
+                            })
+                        }
                     }
                 }
                 else{

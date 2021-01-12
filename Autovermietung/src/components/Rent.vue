@@ -46,6 +46,7 @@
         <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zur Uebersicht</button>
         <button
             class="btn btn-primary"
+            type="button"
             @click='bestellen()'
             :disabled="!verfuegbarkeit(auto.verfuegbar)"
         >
@@ -70,12 +71,12 @@ export default {
             telefon: '',
             email: '',
             start: '',
-            ende: '',
+            ende:  '',
             user: '',
             auto: '',
             cost: '',
             datepickerSetting : {
-                value:"",
+                value: '',
                 placeholder: "Startdatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -102,7 +103,7 @@ export default {
             },
             //enddatum
             datepickerSetting2 : {
-                value: "",
+                value:  '',
                 placeholder: "Enddatum",
                 yearMinus: 0,
                 fromDate: "2020/01/01",
@@ -198,7 +199,8 @@ export default {
             })
             .catch((error) => {
               Helper.handle(error)
-              Helper.redirect('/')
+              Helper.redirect("/search")
+              
             })
         },
         //Alle Tage zw. (inklusive) Start- und Enddatum deaktivieren
@@ -216,7 +218,7 @@ export default {
         },
       back() {
         this.$router.push("/search")
-      },
+      }
     },
     computed: {
         // kosten berechnen durch bestimmung zeitraumlaenge in tage
@@ -246,10 +248,20 @@ export default {
         let to = new Date();
         to.setDate(to.getDate() + 90) //max. 3 Monate in Zukunft buchen
         //Zeiträume für Start-und Endkalender festlegen
+        if(sessionStorage.getItem('start') != null){
+            this.datepickerSetting.value = sessionStorage.getItem('start')
+            this.start = this.datepickerSetting.value
+        }
         this.datepickerSetting.toDate = Helper.formatDate(to)
         this.datepickerSetting2.toDate = Helper.formatDate(to)
         this.datepickerSetting.fromDate = Helper.formatDate(from)
         this.datepickerSetting2.fromDate = Helper.formatDate(from)
+        if(sessionStorage.getItem('ende') != null){
+            this.datepickerSetting2.value = sessionStorage.getItem('ende')
+            this.ende = this.datepickerSetting2.value
+        }
+        sessionStorage.removeItem('start');
+        sessionStorage.removeItem('ende');
         UserService.getUser()
         .then((response) =>{
             this.user = response.data.user;     
@@ -268,8 +280,7 @@ export default {
             Helper.handle(error)
             Helper.redirect("/");
         })
-    }
-  
+    },
 }
 </script>
 

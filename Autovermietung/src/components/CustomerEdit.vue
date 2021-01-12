@@ -1,21 +1,58 @@
 <template>
   <div class="container">
-    <h1>Mitarbeiterdaten bearbeiten</h1>
+    <h1>Kundendaten bearbeiten</h1>
     <hr>
+
     <div class="form-group">
       <form>
         <div class="form-group">
           <label for="name"><b>Aktueller Name: </b> {{ name }}</label>
         </div>
         <div  class="form-inline">
+          <div class="form-group">
+            <input class="form-control" id="name" type="text" v-model="new_name" required autofocus>
+          </div>
+          <div class="form-group mx-sm-3">
+            <button class="btn btn-primary" type="button" @click="updateName">
+              Name ändern
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="form-group" v-if="rolle == 0">
+      <form>
         <div class="form-group">
-          <input class="form-control" id="name" type="text" v-model="new_name" required autofocus>
+          <label for="name"><b>Adresse: </b> {{ adresse}}</label>
         </div>
-        <div class="form-group mx-sm-3">
-          <button class="btn btn-primary" type="button" @click="updateName">
-            Name ändern
-          </button>
+        <div  class="form-inline">
+          <div class="form-group">
+            <input class="form-control" id="adresse" type="text" v-model="new_adresse" required autofocus>
+          </div>
+          <div class="form-group mx-sm-3">
+            <button class="btn btn-primary" type="button" @click="updateAdresse">
+              Adresse ändern
+            </button>
+          </div>
         </div>
+      </form>
+    </div>
+
+    <div class="form-group" v-if="rolle == 0">
+      <form>
+        <div class="form-group">
+          <label for="name"><b>Telefon: </b> {{ telefon}}</label>
+        </div>
+        <div  class="form-inline">
+          <div class="form-group">
+            <input class="form-control" id="telefon" type="text" v-model="new_telefon" required autofocus>
+          </div>
+          <div class="form-group mx-sm-3">
+            <button class="btn btn-primary" type="button" @click="updateTelefon">
+              Telefon ändern
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -40,7 +77,7 @@
     <div class="form-group">
       <form>
         <div class="form-group">
-          <label for="password">Nesues Passwort</label>
+          <label for="password">Neues Passwort</label>
           <input class="form-control" id="password" type="password" v-model="password" required>
         </div>
         <div class="form-group">
@@ -59,7 +96,7 @@
         Zurück
       </button>
       <button class="btn btn-danger" type="button" @click="deleteEmployee">
-        Mitarbeiter entfernen
+        Kundenkonto entfernen
       </button>
     </div>
     <h2 class="text-center">{{ meldung }}</h2>
@@ -81,7 +118,12 @@ export default {
       id: -1,
       new_name: '',
       new_username: '',
-      new_password: ''
+      new_password: '',
+      adresse: '',
+      new_adresse: '',
+      telefon: '',
+      new_telefon: '',
+      rolle: '',
     }
   },
   methods: {
@@ -100,11 +142,47 @@ export default {
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/customers')
           })
       } else {
         this.new_name = ''
         return alert('Name invalid')
+      }
+    },
+    updateAdresse() {
+      var adresseTest = new RegExp("[A-Za-z0-9'\\.\\-\\s\\,]")
+      if (this.new_adresse.length > 5 && this.new_adresse.length < 100 && this.new_adresse != this.adresse && adresseTest.test(this.new_adresse)) {
+        Auth.updateEmployee(this.id, null, null, null, this.new_adresse)
+            .then(response => {
+              this.meldung = 'Employee adresse successfully updated'
+              this.adresse = response.data.adresse
+              this.new_adresse = ''
+            })
+            .catch((error) => {
+              Helper.handle(error)
+              Helper.redirect('/admin/customers')
+            })
+      } else {
+        this.new_adresse = ''
+        return alert('adresse invalid')
+      }
+    },
+    updateTelefon () {
+      var telefonTest =new RegExp('^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$')
+      if (this.new_telefon.length > 5 && this.new_telefon.length < 100 && this.new_telefon != this.telefon && telefonTest.test(this.new_telefon)) {
+        Auth.updateEmployee(this.id, null, null, null,null, this.new_telefon)
+            .then(response => {
+              this.meldung = 'Employee telefon successfully updated'
+              this.telefon = response.data.telefon
+              this.new_telefon = ''
+            })
+            .catch((error) => {
+              Helper.handle(error)
+              Helper.redirect('/admin/customers')
+            })
+      } else {
+        this.new_telefon = ''
+        return alert('telefon invalid')
       }
     },
     updateUsername () {
@@ -118,7 +196,7 @@ export default {
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/customers')
           })
       } else {
         this.new_username = ''
@@ -126,7 +204,7 @@ export default {
       }
     },
     changePassword () {
-      var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      var passTest = new RegExp('(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}')
       if (this.password == this.new_password) {
         if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
           Auth.updateEmployee(this.id, null, null, this.new_password)
@@ -139,7 +217,7 @@ export default {
             })
             .catch((error) => {
               Helper.handle(error)
-              Helper.redirect('/admin')
+              Helper.redirect('/admin/customers')
             })
         } else {
           this.password = ''
@@ -161,11 +239,11 @@ export default {
             if(response)
             
             alert('Employee account successfully deleted')
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/customers')
           })
           .catch((error) => {
             Helper.handle(error)
-            Helper.redirect('/admin')
+            Helper.redirect('/admin/customers')
           })
       } else {
         this.meldung = ''
@@ -179,13 +257,16 @@ export default {
           this.id = response.data.employee.id
           this.name = response.data.employee.name
           this.username = response.data.employee.email
+          this.adresse = response.data.employee.adresse;
+          this.rolle = response.data.employee.rolle;
+          this.telefon = response.data.employee.telefon;
         })
         .catch((error) => {
           Helper.handle(error)
-          Helper.redirect('/admin')
+          Helper.redirect('/admin/customers')
         })
     } else {
-      Helper.redirect('/admin')
+      Helper.redirect('/admin/customers')
     }
   }
 }
