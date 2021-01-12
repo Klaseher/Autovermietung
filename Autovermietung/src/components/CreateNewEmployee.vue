@@ -73,7 +73,14 @@ export default {
       Met by positive lookahead (?=.*[A-Z])
       Repetitive Characters - Allowed only two repetitive characters */
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      var passTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
+      /*
+      At least one upper case English letter, (?=.?[A-Z])
+      At least one lower case English letter, (?=.?[a-z])
+      At least one digit, (?=.?[0-9])
+      At least one special character, (?=.?[#?!@$%^&*-])
+      Minimum eight in length .{8,} (with the anchors)
+      */
+      var passTest = new RegExp('^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&*-]).{8,}$')
         if (this.name.length > 2 && this.name.length < 100 && nameTest.test(this.name) && this.vorname.length > 2 && this.vorname.length < 100 && vornameTest.test(this.vorname)) {
          if (this.username.length > 5 && this.username.length < 100 && userTest.test(this.username)) {
           if (this.password == this.password_confirmation && this.password.length > 0 && this.password.length < 100) {

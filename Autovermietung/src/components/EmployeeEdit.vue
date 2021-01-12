@@ -126,7 +126,14 @@ export default {
       }
     },
     changePassword () {
-      var passTest = new RegExp('(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}')
+       /*
+      At least one upper case English letter, (?=.?[A-Z])
+      At least one lower case English letter, (?=.?[a-z])
+      At least one digit, (?=.?[0-9])
+      At least one special character, (?=.?[#?!@$%^&*-])
+      Minimum eight in length .{8,} (with the anchors)
+      */
+      var passTest = new RegExp('^(?=.?[A-Z])(?=.?[a-z])(?=.?[0-9])(?=.?[#?!@$%^&*-]).{8,}$')
       if (this.password == this.new_password) {
         if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
           Auth.updateEmployee(this.id, null, null, this.new_password)

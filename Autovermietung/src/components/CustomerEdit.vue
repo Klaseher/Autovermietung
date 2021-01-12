@@ -204,7 +204,7 @@ export default {
       }
     },
     changePassword () {
-      var passTest = new RegExp('(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}')
+      var passTest = new RegExp('^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})')
       if (this.password == this.new_password) {
         if (passTest.test(this.new_password) && this.new_password.length > 0 && this.new_password.length < 100) {
           Auth.updateEmployee(this.id, null, null, this.new_password)
