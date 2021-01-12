@@ -82,7 +82,7 @@ router.post('/register', function (req, res) {
             '<a href=' + (process.env.FRONTEND_APP_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
             '<p>Dieser Link ist für 24h gültig</p>' +
             '<br><br>' +
-            '<p>--Ihr Autovermietung-Team</p>'
+            '<p>--Ihr HEYRJP-Team</p>'
           }
           transporter.sendMail(mailOptions, function (error, info) { // sending mail to user where he can verify account. User id and the token are sent as params in a link
             if (error) {
@@ -175,7 +175,7 @@ router.post('/login', (req, res) => {
           '<a href=' + (process.env.FRONTEND_APP_URL || 'http://localhost:3000') +'/verify-account/' + user.id + '/' + token + '>Account verifizeren</a>' +
           '<p>Dieser Link ist für 24h gültig</p>' +
           '<br><br>' +
-          '<p>--Ihr Autovermietung-Team</p>'
+          '<p>--Ihr HEYRJP-Team</p>'
         }
         transporter.sendMail(mailOptions, function (error, info) { // sending mail to user where he can verify account. User id and the token are sent as params in a link
           if (error) {

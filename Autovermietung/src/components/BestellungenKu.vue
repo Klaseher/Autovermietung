@@ -93,7 +93,7 @@ export default {
         },
         // bestellung abbrechen
         abbrechen() {
-            let heute = new Date()
+            let heute = new Date(new Date().setHours(0,0,0,0));
             let start = new Date(this.gewaehlteBestellung.startdatum)
             let oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
             let diffDays = Math.floor((start.getTime() - heute.getTime())/(oneDay))
@@ -254,7 +254,7 @@ export default {
     },
     computed: {
         isDisabled() {
-            let heute = new Date()
+            let heute = new Date(new Date().setHours(0,0,0,0));
             let start = new Date(this.gewaehlteBestellung.startdatum)
             if (start.getTime() <= heute.getTime() || (this.gewaehlteBestellung.status != 0 && this.gewaehlteBestellung.status != 1)){
                 return true

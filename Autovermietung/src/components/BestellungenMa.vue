@@ -692,7 +692,7 @@ export default {
         // geladene Bestellungen werden geprueft, ob sie offen, aber schon abgelaufen sind --> automatisch abgebrochen
         async testAbgelaufen(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let start = new Date(item.startdatum)
                 if(start.getTime() <= heute.getTime() && item.status == '0'){
                     await this.abbrechen(item.bnr, 1, null, 0)
@@ -703,14 +703,14 @@ export default {
         // geladene Bestellungen werden geprueft, ob sie laufend sind, aber auto noch nicht abgeholt wurde sind --> automatisch abgebrochen mit strafe
         async testNichtAngetreten(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let start = new Date(item.startdatum)
                 start.setDate(start.getDate() + 1);
                 UserService.getCar(item.auto_fk)
                 .then(response =>{
                     let auto = response.data.car 
                     // wenn datum 1 tag nach startdatum autobestellung
-                    if(start.getTime() < heute.getTime() && item.status == '1'){
+                    if(start.getTime() <= heute.getTime() && item.status == '1'){
                          let bestellkosten = []
                          UserService.getOrderCost(item.bnr)
                         .then((response) => {
@@ -740,7 +740,7 @@ export default {
         // geladene Bestellungen werden geprueft, ob sie laufend sind (auto ausgeliehen wurde), aber es zu Verspätung bei Autoabgabe durch Kunden kam
         async testVerspeatung(){
             this.bestellungen.forEach(async (item) => {
-                let heute = new Date()
+                let heute = new Date(new Date().setHours(0,0,0,0));
                 let enddatum = new Date(item.enddatum) 
                 // nur bestellungen, wo auto noch nicht abgegeben wurde
                 if(enddatum.getTime() < heute.getTime() && (item.status == '6' || item.status == '5')){
@@ -980,7 +980,7 @@ export default {
         }
     },
     beforeMount(){     
-        let heute = new Date()
+        let heute = new Date(new Date().setHours(0,0,0,0));
         this.datepickerSetting.value = Helper.formatDate(heute)
                                                            //0                       3,4                   2                           5                   doppelt = true              6                            1
         this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen", "Bestaetigte Bestellungen"];
