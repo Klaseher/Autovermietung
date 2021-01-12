@@ -81,7 +81,7 @@ export default {
               Auth.registerEmployee(this.name, this.vorname, this.username, this.password)
                 .then(response => {
                   alert(response.data)
-                  this.created = 'Neuer Mitarbeiter wurde erfolgreich angelegt'
+                  this.created = 'User successfully created'
                   this.vorname = ''
                   this.name = ''
                   this.username = ''
