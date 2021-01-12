@@ -41,11 +41,11 @@
             <div class="text-center form-group">Nutzen Sie Ihre Email zum Registrieren</div>
             <div class="form-group">
               <label for="reg-vorname">Vorname*</label>
-              <input id="reg-vorname" class="form-control" type="text" v-model="name" required autofocus/>
+              <input id="reg-vorname" class="form-control" type="text" v-model="vorname" required autofocus/>
             </div>
             <div class="form-group">
               <label for="reg-name">Name*</label>
-              <input id="reg-name" class="form-control" type="text" v-model="vorname" required autofocus/>
+              <input id="reg-name" class="form-control" type="text" v-model="name" required autofocus/>
             </div>
 
             <div class="form-group">
