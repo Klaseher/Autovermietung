@@ -136,7 +136,7 @@ export default {
       if (this.new_name.length > 5 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
         Auth.updateEmployee(this.id, this.new_name, null, null)
           .then(response => {
-            this.meldung = 'Employee Name successfully updated'
+            this.meldung = 'Kundenname erfolgreich geändert'
             this.name = response.data.name
             this.new_name = ''
           })
@@ -154,7 +154,7 @@ export default {
       if (this.new_adresse.length > 5 && this.new_adresse.length < 100 && this.new_adresse != this.adresse && adresseTest.test(this.new_adresse)) {
         Auth.updateEmployee(this.id, null, null, null, this.new_adresse)
             .then(response => {
-              this.meldung = 'Employee adresse successfully updated'
+              this.meldung = 'Kundenadresse erfolgreich geändert'
               this.adresse = response.data.adresse
               this.new_adresse = ''
             })
@@ -172,7 +172,7 @@ export default {
       if (this.new_telefon.length > 5 && this.new_telefon.length < 100 && this.new_telefon != this.telefon && telefonTest.test(this.new_telefon)) {
         Auth.updateEmployee(this.id, null, null, null,null, this.new_telefon)
             .then(response => {
-              this.meldung = 'Employee telefon successfully updated'
+              this.meldung = 'Kundenrufnummer erfolgreich geändert'
               this.telefon = response.data.telefon
               this.new_telefon = ''
             })
@@ -211,7 +211,7 @@ export default {
             .then(response => {
               if(response)
 
-              this.meldung = 'Employee Password successfully updated'
+              this.meldung = 'Kundenkennwort wurde erfolgreich geändert'
               this.password = ''
               this.new_password = ''
             })
