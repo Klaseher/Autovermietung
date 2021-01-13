@@ -949,9 +949,17 @@ router.get('/order/:bnr', (req, res) => {
       } 
       // wenn kunde
       else{
-        if (req.params.bnr == "alle") {
-          // alle bestellungen holen
+        if (req.params.bnr == "offen") {
+          // alle offenen bestellungen holen
           db.getOpenCustomerOrders(user.id, (err, orders) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
+          })
+        }
+        else if (req.params.bnr == "geschlossen") {
+          // alle geschlossenen bestellungen holen
+          db.getCustomerOrdersHistory(user.id, (err, orders) => {
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})

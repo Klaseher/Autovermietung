@@ -133,7 +133,7 @@ export default {
     //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
     updateName () {
       var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
-      if (this.new_name.length > 5 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
+      if (this.new_name.length > 2 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
         Auth.updateEmployee(this.id, this.new_name, null, null)
           .then(response => {
             this.meldung = 'Kundennachname erfolgreich geändert'
@@ -187,7 +187,7 @@ export default {
     },
     updateUsername () {
       var userTest = new RegExp('^(?=.*[A-Z])(?=.*\\d)(?!.*(.)\\1\\1)[a-zA-Z0-9@]{6,12}$')
-      if (this.new_username.length > 6 && this.new_username.length < 100 && this.new_username != this.username && userTest.test(this.new_username)) {
+      if (this.new_username.length > 5 && this.new_username.length < 100 && this.new_username != this.username && userTest.test(this.new_username)) {
         Auth.updateEmployee(this.id, null, this.new_username, null)
           .then(response => {
             this.meldung = 'Kunden Benutzername erfolgreich geändert'
