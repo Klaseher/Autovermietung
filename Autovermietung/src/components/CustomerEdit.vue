@@ -6,6 +6,24 @@
     <div class="form-group">
       <form>
         <div class="form-group">
+          <label for="name"><b>Aktueller Vorname: </b> {{ vorname }}</label>
+        </div>
+        <div  class="form-inline">
+          <div class="form-group">
+            <input class="form-control" id="name" type="text" v-model="new_vorname" required autofocus>
+          </div>
+          <div class="form-group mx-sm-3">
+            <button class="btn btn-primary" type="button" @click="updateName(1)">
+              Vorname ändern
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="form-group">
+      <form>
+        <div class="form-group">
           <label for="name"><b>Aktueller Name: </b> {{ name }}</label>
         </div>
         <div  class="form-inline">
@@ -13,7 +31,7 @@
             <input class="form-control" id="name" type="text" v-model="new_name" required autofocus>
           </div>
           <div class="form-group mx-sm-3">
-            <button class="btn btn-primary" type="button" @click="updateName">
+            <button class="btn btn-primary" type="button" @click="updateName(2)">
               Name ändern
             </button>
           </div>
@@ -95,7 +113,7 @@
       <button class="btn btn-secondary" type="cancel" @click="back">
         Zurück
       </button>
-      <button class="btn btn-danger" type="button" @click="deleteEmployee">
+      <button class="btn btn-danger" type="button" @click="deleteCustomer">
         Kundenkonto entfernen
       </button>
     </div>
@@ -113,10 +131,12 @@ export default {
     return {
       meldung: '',
       name: '',
+      vorname: '',
       username: '',
       password: '',
       id: -1,
       new_name: '',
+      new_vorname: '',
       new_username: '',
       new_password: '',
       adresse: '',
@@ -131,22 +151,39 @@ export default {
       this.$router.push('/admin/customers');
     },
     //Methoden zum Ändern der jeweiligen Attribute von Mitarbeiter
-    updateName () {
+    updateName (typ) {
       var nameTest = new RegExp("^[a-zA-Z]+(([', ][a-zA-Z ])?[a-zA-Z]*)*$")
-      if (this.new_name.length > 2 && this.new_name.length < 100 && this.new_name != this.name && nameTest.test(this.new_name)) {
-        Auth.updateEmployee(this.id, this.new_name, null, null)
+      let name = ''
+      let vergleich = ''
+      if(typ == 2){
+        name = this.new_name
+        vergleich = this.name
+      }
+      else{
+        name = this.new_vorname
+        vergleich = this.vorname
+      }
+      if (name.length > 2 && name.length < 100 && name != vergleich && nameTest.test(name)) {
+        name = name + ":" + typ
+        Auth.updateEmployee(this.id, name, null, null)
           .then(response => {
-            this.meldung = 'Kundennachname erfolgreich geändert'
-            this.name = response.data.name
-            this.new_name = ''
+            if(typ == 2){
+              this.name = response.data.name
+              this.new_name = response.data.name
+              this.meldung = 'Kundennachname erfolgreich geändert'
+            }
+            else{
+              this.vorname = response.data.name
+              this.new_vorname = response.data.name
+              this.meldung = 'Kundenvorname erfolgreich geändert'
+            }
           })
           .catch((error) => {
             Helper.handle(error)
             Helper.redirect('/admin/customers')
           })
       } else {
-        this.new_name = ''
-        return alert('Name invalid')
+        return alert('Namensfeld ist leer oder enthält nicht erlaubte Sonderzeichen')
       }
     },
     updateAdresse() {
@@ -232,12 +269,11 @@ export default {
       }
     },
     //Methode zum Löschen von Mitarbeiter-Account
-    deleteEmployee () {
+    deleteCustomer () {
       if (confirm('Möchten Sie wirklich dieses Kundenkonto löschen?')) {
-        Auth.deleteEmployee(this.id)
+        Auth.deleteCustomer(this.id)
           .then(response => {
             if(response)
-            
             alert('Kundenkonto erfolgreich gelöscht')
             Helper.redirect('/admin/customers')
           })
@@ -255,11 +291,19 @@ export default {
       UserService.getEmployee(this.$route.params.id)
         .then(response => {
           this.id = response.data.employee.id
+          this.vorname = response.data.employee.vorname
           this.name = response.data.employee.name
           this.username = response.data.employee.email
           this.adresse = response.data.employee.adresse;
           this.rolle = response.data.employee.rolle;
           this.telefon = response.data.employee.telefon;
+
+          this.new_vorname = response.data.employee.vorname
+          this.new_name = response.data.employee.name
+          this.new_username = response.data.employee.email
+          this.new_adresse = response.data.employee.adresse;
+          this.new_telefon = response.data.employee.telefon;
+
         })
         .catch((error) => {
           Helper.handle(error)

@@ -58,6 +58,11 @@ class Auth {
     return axios.delete(API_URL + 'employee/' + id)
   }
 
+  // Kundenkonto löschen
+  deleteCustomer (id) {
+    return axios.delete(API_URL + 'customer/' + id)
+  }
+
   resetUserPW (mail) {
     return axios.post(API_URL + 'reset-userpw', {
       email: mail

@@ -45,6 +45,7 @@
           <table class="table">
             <thead>
             <tr>
+              <th>Vorname</th>
               <th>Name</th>
               <th>Benutzername</th>
               <th>Daten bearbeiten</th>
@@ -52,6 +53,7 @@
             </thead>
             <tbody>
             <tr v-for="(employee, index) in employees" :key="index">
+              <td>{{ employee.vorname }}</td>
               <td>{{ employee.nachname }}</td>
               <td>{{ employee.user }}</td>
               <td>
@@ -66,6 +68,7 @@
           <table class="table">
             <thead>
             <tr>
+              <th>Vorname</th>
               <th>Name</th>
               <th>Benutzername</th>
               <th>Daten bearbeiten</th>
@@ -73,6 +76,7 @@
             </thead>
             <tbody>
             <tr v-for="(customer, index) in customers" :key="index">
+              <td>{{ customer.vorname }}</td>
               <td>{{ customer.nachname }}</td>
               <td>{{ customer.user }}</td>
               <td>
@@ -165,6 +169,7 @@ export default {
       if (this.editEmployee) {
         UserService.getEmployee(-200)
             .then(response => {
+              this.employees = []
               this.employees.push.apply(this.employees, response.data.employees)
             })
             .catch((error) => Helper.handle(error))
@@ -179,6 +184,7 @@ export default {
       if (this.editUser) {
         UserService.getCustomers()
             .then(response => {
+              this.customers = []
               this.customers.push.apply(this.customers, response.data.customers)
             })
             .catch((error) => Helper.handle(error))
@@ -193,6 +199,7 @@ export default {
       if (this.editCar) {
         UserService.getCar('alle')
             .then(response => {
+              this.cars = []
               this.cars.push.apply(this.cars, response.data.cars)
             })
             .catch((error) => Helper.handle(error))
