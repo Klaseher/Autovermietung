@@ -478,7 +478,7 @@ router.delete('/customer/:id', (req, res) => {
       let user = ausgabe.user
       // Ab Mitarbeiter oder nur Kunden, dem Konto gehört
       if(user.rolle > 0 || (user.rolle == 0 && (req.params.id == user.id))){
-        db.getOpenCustomerOrders(user.id, (err, bestellungen) => {
+        db.getOpenCustomerOrders(req.params.id, (err, bestellungen) => {
           if (err) return res.status(500).send('Error on the server.')
           if (bestellungen.length > 0) return res.status(409).send('Still active orders available')
           db.deleteAccount(req.params.id, (err) => {
