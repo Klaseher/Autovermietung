@@ -88,7 +88,7 @@
 
         <div class="table-responsive" v-if="editCar">
           <div class="form-group">
-            <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
+            <button class="btn btn-success" @click="createCar()" v-if="admin">Neues Auto erstellen</button>
           </div>
           <table class="table">
             <thead>
