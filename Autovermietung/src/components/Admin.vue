@@ -13,7 +13,7 @@
     <div v-if="admin || employee" class="form-group">
       <div class="text-center">
         <button class="btn btn-primary" v-on:click="seen = !seen">
-          Admin-Funktionen
+          {{message}}
         </button>
       </div>
     </div>
@@ -22,8 +22,7 @@
 
     <!-- Anzeigen der Adminfunktionen -->
     <div v-if="seen" class="form-group">
-      <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet
-        werden.</p>
+      <p class="text-center">{{message3}}</p>
       <div class="actions form-group">
         <button class="btn btn-primary" type="submit" @click="showEmployees" v-if="admin">
           Mitarbeiterübersicht
@@ -97,6 +96,7 @@
               <th>Name</th>
               <th>Photo</th>
               <th>Bearbeiten</th>
+              <th>Schäden</th>
             </tr>
             </thead>
             <tbody>
@@ -110,6 +110,9 @@
               <td>
                 <button class="btn btn-primary" @click="editingCar(car.name)">Bearbeiten</button>
               </td>
+              <td>
+                <button class="btn btn-primary" @click="showDamage(car.name)">Schäden</button>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -117,7 +120,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-center">In diesem Bereich können Sie auf erweiterte Administrator Funktionen zugreifen</p>
+      <p class="text-center">{{message2}}</p>
     </div>
   </div>
 </template>
@@ -149,7 +152,10 @@ export default {
       customers: [],
       getriebe: '',
       editUser: false,
-      adminmessage: ''
+      adminmessage: '',
+      message: '',
+      message2: '',
+      message3: ''
     }
   },
   methods: {
@@ -160,6 +166,10 @@ export default {
       this.$router.push('/admin/bestellungen')
     },
 
+    // zu schadenansicht des autos wechseln
+    showDamage(auto){
+      this.$router.push('/admin/' + auto + "/schaden")
+    },
     //laden aller Mitarbeiter aus Backend
 
     showEmployees() {
@@ -232,12 +242,18 @@ export default {
     let role = sessionStorage.getItem('role')
     if (role == 1) {
       this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
+      this.message = "Mitarbeiter-Funktionen"
+      this.message2 = "In diesem Bereich können Sie auf erweiterte Mitarbeiter Funktionen zugreifen"
+      this.message3 = "In diesem Bereich können Kundendaten verwaltet und bearbeitet werden."
       this.admin = false
       this.employee = true;
     } else if (role == 2) {
       this.admin = true;
       this.employee = false;
       this.adminmessage = "Sie sind als Administrator angemeldet"
+      this.message = "Admin-Funktionen"
+      this.message2 = "In diesem Bereich können Sie auf erweiterte Administrator Funktionen zugreifen"
+      this.message3 = "In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet werden."
     }
 
   },
