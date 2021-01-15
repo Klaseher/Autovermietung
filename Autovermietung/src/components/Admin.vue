@@ -31,7 +31,7 @@
         <button class="btn btn-primary" type="submit" @click="showCustomers" v-if="admin || employee">
           Kundenübersicht
         </button>
-        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin">
+        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin || employee">
           Autoübersicht
         </button>
       </div>
@@ -108,7 +108,7 @@
                 </div>
               </td>
               <td>
-                <button class="btn btn-primary" @click="editingCar(car.name)">Bearbeiten</button>
+                <button class="btn btn-primary" @click="editingCar(car.name)" v-if="admin">Bearbeiten</button>
               </td>
               <td>
                 <button class="btn btn-primary" @click="showDamage(car.name)">Schäden</button>
@@ -244,7 +244,7 @@ export default {
       this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
       this.message = "Mitarbeiter-Funktionen"
       this.message2 = "In diesem Bereich können Sie auf erweiterte Mitarbeiter Funktionen zugreifen"
-      this.message3 = "In diesem Bereich können Kundendaten verwaltet und bearbeitet werden."
+      this.message3 = "In diesem Bereich können Kundendaten sowie Autoschäden verwaltet und bearbeitet werden."
       this.admin = false
       this.employee = true;
     } else if (role == 2) {
