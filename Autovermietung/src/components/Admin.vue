@@ -13,7 +13,7 @@
     <div v-if="admin || employee" class="form-group">
       <div class="text-center">
         <button class="btn btn-primary" v-on:click="seen = !seen">
-          Admin-Funktionen
+          {{message}}
         </button>
       </div>
     </div>
@@ -22,8 +22,7 @@
 
     <!-- Anzeigen der Adminfunktionen -->
     <div v-if="seen" class="form-group">
-      <p class="text-center">In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet
-        werden.</p>
+      <p class="text-center">{{message3}}</p>
       <div class="actions form-group">
         <button class="btn btn-primary" type="submit" @click="showEmployees" v-if="admin">
           Mitarbeiterübersicht
@@ -32,7 +31,7 @@
         <button class="btn btn-primary" type="submit" @click="showCustomers" v-if="admin || employee">
           Kundenübersicht
         </button>
-        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin">
+        <button class="btn btn-primary" type="submit" @click="showCars" v-if="admin || employee">
           Autoübersicht
         </button>
       </div>
@@ -45,6 +44,7 @@
           <table class="table">
             <thead>
             <tr>
+              <th>Vorname</th>
               <th>Name</th>
               <th>Benutzername</th>
               <th>Daten bearbeiten</th>
@@ -52,6 +52,7 @@
             </thead>
             <tbody>
             <tr v-for="(employee, index) in employees" :key="index">
+              <td>{{ employee.vorname }}</td>
               <td>{{ employee.nachname }}</td>
               <td>{{ employee.user }}</td>
               <td>
@@ -66,6 +67,7 @@
           <table class="table">
             <thead>
             <tr>
+              <th>Vorname</th>
               <th>Name</th>
               <th>Benutzername</th>
               <th>Daten bearbeiten</th>
@@ -73,6 +75,7 @@
             </thead>
             <tbody>
             <tr v-for="(customer, index) in customers" :key="index">
+              <td>{{ customer.vorname }}</td>
               <td>{{ customer.nachname }}</td>
               <td>{{ customer.user }}</td>
               <td>
@@ -85,7 +88,7 @@
 
         <div class="table-responsive" v-if="editCar">
           <div class="form-group">
-            <button class="btn btn-success" @click="createCar()">Neues Auto erstellen</button>
+            <button class="btn btn-success" @click="createCar()" v-if="admin">Neues Auto erstellen</button>
           </div>
           <table class="table">
             <thead>
@@ -93,6 +96,7 @@
               <th>Name</th>
               <th>Photo</th>
               <th>Bearbeiten</th>
+              <th>Schäden</th>
             </tr>
             </thead>
             <tbody>
@@ -104,7 +108,10 @@
                 </div>
               </td>
               <td>
-                <button class="btn btn-primary" @click="editingCar(car.name)">Bearbeiten</button>
+                <button class="btn btn-primary" @click="editingCar(car.name)" v-if="admin">Bearbeiten</button>
+              </td>
+              <td>
+                <button class="btn btn-primary" @click="showDamage(car.name)">Schäden</button>
               </td>
             </tr>
             </tbody>
@@ -113,7 +120,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="text-center">In diesem Bereich können Sie auf erweiterte Administrator Funktionen zugreifen</p>
+      <p class="text-center">{{message2}}</p>
     </div>
   </div>
 </template>
@@ -145,7 +152,10 @@ export default {
       customers: [],
       getriebe: '',
       editUser: false,
-      adminmessage: ''
+      adminmessage: '',
+      message: '',
+      message2: '',
+      message3: ''
     }
   },
   methods: {
@@ -156,6 +166,10 @@ export default {
       this.$router.push('/admin/bestellungen')
     },
 
+    // zu schadenansicht des autos wechseln
+    showDamage(auto){
+      this.$router.push('/admin/' + auto + "/schaden")
+    },
     //laden aller Mitarbeiter aus Backend
 
     showEmployees() {
@@ -165,6 +179,7 @@ export default {
       if (this.editEmployee) {
         UserService.getEmployee(-200)
             .then(response => {
+              this.employees = []
               this.employees.push.apply(this.employees, response.data.employees)
             })
             .catch((error) => Helper.handle(error))
@@ -179,6 +194,7 @@ export default {
       if (this.editUser) {
         UserService.getCustomers()
             .then(response => {
+              this.customers = []
               this.customers.push.apply(this.customers, response.data.customers)
             })
             .catch((error) => Helper.handle(error))
@@ -193,6 +209,7 @@ export default {
       if (this.editCar) {
         UserService.getCar('alle')
             .then(response => {
+              this.cars = []
               this.cars.push.apply(this.cars, response.data.cars)
             })
             .catch((error) => Helper.handle(error))
@@ -225,12 +242,18 @@ export default {
     let role = sessionStorage.getItem('role')
     if (role == 1) {
       this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
+      this.message = "Mitarbeiter-Funktionen"
+      this.message2 = "In diesem Bereich können Sie auf erweiterte Mitarbeiter Funktionen zugreifen"
+      this.message3 = "In diesem Bereich können Kundendaten sowie Autoschäden verwaltet und bearbeitet werden."
       this.admin = false
       this.employee = true;
     } else if (role == 2) {
       this.admin = true;
       this.employee = false;
       this.adminmessage = "Sie sind als Administrator angemeldet"
+      this.message = "Admin-Funktionen"
+      this.message2 = "In diesem Bereich können Sie auf erweiterte Administrator Funktionen zugreifen"
+      this.message3 = "In diesem Bereich können Mitarbeiter- Kunden- sowie Autodaten verwaltet und bearbeitet werden."
     }
 
   },

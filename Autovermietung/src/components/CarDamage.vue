@@ -134,7 +134,7 @@ export default {
     },
     methods: {
         back() {
-            this.$router.push("/admin/bestellungen")
+            this.$router.push("/admin")
         },
         // nur schaden wird allgemein geloescht
         loescheSchaden(schaden){

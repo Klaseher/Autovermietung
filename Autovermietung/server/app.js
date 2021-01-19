@@ -307,10 +307,20 @@ router.put('/employee/:id', (req, res) => {
           userr = ausgabe.user
           if (req.params.id != null && (userr.rolle == 2 || (userr.rolle == 1))) {
             if (req.body.name != null && req.body.username == null && req.body.password == null) {
-              db.updateName(req.body.name, req.params.id, (err) => {
-                if (err) return ausgabe.res.status(500).send('Error on the server.')
-                return ausgabe.res.status(200).send({name: req.body.name})
-              })
+              let typ = req.body.name.split(":")[1]
+              let name =  req.body.name.split(":")[0]
+              if(typ == 2){
+                db.updateName(name, req.params.id, (err) => {
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  return ausgabe.res.status(200).send({name: name})
+                })
+              }
+              else if(typ == 1){
+                db.updateVorname(name, req.params.id, (err) => {
+                  if (err) return ausgabe.res.status(500).send('Error on the server.')
+                  return ausgabe.res.status(200).send({name: name})
+                })
+              }
             } else if (req.body.name == null && req.body.username != null && req.body.password == null) {
               db.updateMail(req.body.username, req.params.id, (err) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
@@ -415,7 +425,7 @@ router.get('/employee/:id', (req, res) => {
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 if (!user) return ausgabe.res.status(404).send('Employee not found')
                 if (userr.rolle == 2 || (userr.rolle == 1 && (userr.id == user.id || user.rolle == 0))) {
-                  let employee = {id: user.id, name: user.nachname, email: user.user, rolle: user.rolle, adresse: user.adresse, telefon: user.telefon}
+                  let employee = {id: user.id, name: user.nachname, vorname: user.vorname , email: user.user, rolle: user.rolle, adresse: user.adresse, telefon: user.telefon}
                   return ausgabe.res.status(200).send({employee: employee})
                 } else {
                   return ausgabe.res.status(401).send('Unauthorized access')
@@ -458,6 +468,35 @@ router.get('/customers', (req, res) => {
       else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
     }
   })
+})
+
+//Kunden aus DB löschen
+router.delete('/customer/:id', (req, res) => {
+  let token = req.cookies.jwt
+  confirmToken(token,res, function(ausgabe){
+    if(ausgabe.role != -1) {
+      let user = ausgabe.user
+      // Ab Mitarbeiter oder nur Kunden, dem Konto gehört
+      if(user.rolle > 0 || (user.rolle == 0 && (req.params.id == user.id))){
+        db.getOpenCustomerOrders(req.params.id, (err, bestellungen) => {
+          if (err) return res.status(500).send('Error on the server.')
+          if (bestellungen.length > 0) return res.status(409).send('Still active orders available')
+          db.deleteAccount(req.params.id, (err) => {
+            if (err) return ausgabe.res.status(500).send('Error on the server.')
+            return ausgabe.res.status(200).send(null)
+          })
+        })
+      }
+      else{
+        return ausgabe.res.status(401).send('Unauthorized access')
+      }
+    } else {
+      if(ausgabe.auth == 403) return ausgabe.res.status(ausgabe.auth).send('Forbidden Access')
+      else if(ausgabe.auth == 401) return ausgabe.res.status(ausgabe.auth).send('Unauthorized access')
+      else if(ausgabe.auth == 404) return ausgabe.res.status(ausgabe.auth).send('Requested resource is not available')
+      else if(ausgabe.auth == 500) return ausgabe.res.status(ausgabe.auth).send('Error on the server.')
+    }
+  })  
 })
 
 //Auto(s) holen
@@ -949,9 +988,17 @@ router.get('/order/:bnr', (req, res) => {
       } 
       // wenn kunde
       else{
-        if (req.params.bnr == "alle") {
-          // alle bestellungen holen
+        if (req.params.bnr == "offen") {
+          // alle offenen bestellungen holen
           db.getOpenCustomerOrders(user.id, (err, orders) => {
+            if (err) return res.status(500).send('Error on the server.')
+            if (!orders) return res.status(404).send('No Orders available')
+            return res.status(200).send({orders: orders})
+          })
+        }
+        else if (req.params.bnr == "geschlossen") {
+          // alle geschlossenen bestellungen holen
+          db.getCustomerOrdersHistory(user.id, (err, orders) => {
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})

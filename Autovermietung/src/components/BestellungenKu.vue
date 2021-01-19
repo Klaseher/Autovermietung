@@ -3,6 +3,11 @@
     <div v-if="!ausgewaehlt">
       <h1>{{ msg }}</h1>
       <hr>
+      <select v-model="auswahl" class="form-control mx-sm-3">
+        <option value="offen">Offene Bestellungen</option>
+        <option value="geschlossen">Bestellungshistorie</option>
+      </select>
+      <button class="btn btn-primary" @click="aktualisieren()">Aktualisieren</button>
       <div class="table-responsive">
         <table class="table">
           <thead>
@@ -30,6 +35,7 @@
           </tr>
           </tbody>
         </table>
+        <button class="btn btn-secondary" type="cancel" @click="zurueck">Zurueck</button>
       </div>
     </div>
     <div v-else>
@@ -80,7 +86,8 @@ export default {
             msg: '',
             bestellungen: [],
             gewaehlteBestellung: '',
-            bestellkosten: []
+            bestellkosten: [],
+            auswahl: ''
         }
     },
     methods: {
@@ -90,6 +97,10 @@ export default {
             this.msg = "Alle Bestellungen"
             this.holeBestellungen();
             this.$router.push("/dashboard/bestellungen")
+        },
+        // zur allgemeinen userübersicht gehen
+        zurueck(){
+            this.$router.push("/dashboard")
         },
         // bestellung abbrechen
         abbrechen() {
@@ -224,7 +235,7 @@ export default {
         // alle bestellungen von backend holen
         holeBestellungen(){
             if (this.bestellungen.length < 1) {
-                UserService.getOrder("alle")
+                UserService.getOrder(this.auswahl)
                 .then((response) => {
                     response.data.orders.forEach((order) => {
                         this.bestellungen.push(order)
@@ -232,6 +243,11 @@ export default {
                 })
                 .catch((error) => Helper.handle(error));
             }
+        },
+        // bestellungen aktualisiere, nachdem neuer bestellungstyp ausgewählt
+        aktualisieren(){
+            this.bestellungen = []
+            this.holeBestellungen()
         },
          // status in text umwandeln
           status(status) {
@@ -307,6 +323,7 @@ export default {
                 })
         }
         else{
+            this.auswahl = "offen"
             this.ausgewaehlt = false
             this.msg = "Alle Bestellungen"
             this.holeBestellungen()

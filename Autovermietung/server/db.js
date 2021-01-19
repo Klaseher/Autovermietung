@@ -59,7 +59,7 @@ class Db {
   getAllEmployees (callback) {
     let users = []
     return this.db.all(
-      `SELECT id, nachname, user FROM user WHERE rolle = ?`,
+      `SELECT id, vorname, nachname, user FROM user WHERE rolle = ?`,
       ['1'], function (err, rows) {
         rows.forEach(function (row) {
           users.push(row)
@@ -70,7 +70,7 @@ class Db {
     getAllCustomers (callback) {
         let users = []
         return this.db.all(
-            `SELECT id, nachname, user FROM user WHERE rolle = ?`,
+            `SELECT id, vorname, nachname, user FROM user WHERE rolle = ?`,
             ['0'], function (err, rows) {
                 rows.forEach(function (row) {
                     users.push(row)
@@ -192,6 +192,13 @@ class Db {
   updateName (name, id, callback) {
     return this.db.get(
       `UPDATE user SET nachname = ? WHERE id = ?`,
+      [name, id], function (err, row) {
+        callback(err, row)
+      })
+  }
+  updateVorname (name, id, callback) {
+    return this.db.get(
+      `UPDATE user SET vorname = ? WHERE id = ?`,
       [name, id], function (err, row) {
         callback(err, row)
       })
