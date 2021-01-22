@@ -7,6 +7,7 @@
         <option value="offen">Offene Bestellungen</option>
         <option value="geschlossen">Bestellungshistorie</option>
       </select>
+      <br><br/>
       <button class="btn btn-primary" @click="aktualisieren()">Aktualisieren</button>
       <div class="table-responsive">
         <table class="table">
@@ -35,7 +36,7 @@
           </tr>
           </tbody>
         </table>
-        <button class="btn btn-secondary" type="cancel" @click="zurueck">Zurueck</button>
+        <button class="btn btn-secondary" type="cancel" @click="zurueck">Zurück</button>
       </div>
     </div>
     <div v-else>

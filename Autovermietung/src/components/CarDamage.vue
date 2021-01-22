@@ -109,7 +109,7 @@
         </table>
       </div>
     </div>
-    <button class="btn btn-secondary" type="cancel" @click="back">Zurueck zum Start</button>
+    <button class="btn btn-secondary" type="cancel" @click="back">Zurück zum Start</button>
   </div>
 </template>
 

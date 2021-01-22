@@ -8,9 +8,7 @@
         <input class="form-control" id="reset-email" type="email" v-model="email" required autofocus/>
       </div>
       <div class="form-group actions">
-        <button class="btn btn-secondary" type="cancel" @click="back">
-          Zurueck
-        </button>
+        <button class="btn btn-secondary" type="cancel" @click="back">Zurück</button>
         <button class="btn btn-primary" type="button" @click="reset">
           Reset
         </button>
