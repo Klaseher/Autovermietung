@@ -1,8 +1,6 @@
 <template>
   <div class="container">
     <div v-if="!ausgewaehlt">
-      <h1>{{ msg }}</h1>
-      <hr>
       <form class="form-group">
         <div class="form-inline form-group">
           <div class="form-group">
@@ -85,9 +83,6 @@
           </tr>
           </tbody>
         </table>
-      </div>
-      <div class="form-group">
-        <button class="btn btn-secondary" @click="home()">Zurück</button>
       </div>
     </div>
     <div v-else>
@@ -292,7 +287,7 @@ export default {
         back() {
             this.ausgewaehlt = false;
             this.msg = "Alle Bestellungen"
-            this.$router.push("/admin/bestellungen")
+            this.$router.push("/admin/orders")
         },
         home() {
             this.$router.push("/admin")
@@ -984,7 +979,7 @@ export default {
         this.datepickerSetting.value = Helper.formatDate(heute)
                                                            //0                       3,4                   2                           5                   doppelt = true              6                            1
         this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen", "Bestaetigte Bestellungen"];
-        if (this.$route.params.bnr != "") {
+        if (this.$route.params.bnr != undefined && this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
             this.holeBestellungen(9)

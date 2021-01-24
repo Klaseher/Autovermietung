@@ -5,21 +5,12 @@
 
     <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
 
-    <div v-if="admin || employee" class="form-group">
-      <div class="text-center">
-        <button class="btn btn-primary" v-on:click="seen = !seen">
-          {{message}}
-        </button>
-      </div>
-    </div>
-    <hr>
-
 
     <!-- Anzeigen der Adminfunktionen -->
-    <div v-if="seen" class="form-group">
+    <div class="form-group">
       <p class="text-center">{{message3}}</p>
       <div class="actions form-group">
-        <button class="btn-primary btn" v-on:click="zeigeBestellungen()" v-if="admin || employee">
+        <button class="btn-primary btn" v-on:click="showOrders()" v-if="admin || employee">
           Bestellungen verwalten
         </button>
 
@@ -36,6 +27,11 @@
       </div>
       <div>
         <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
+        <div v-if="editOrders">
+          <div class="row">
+            <BestellungenMa/>
+          </div>
+        </div>
         <div v-if="editEmployee" class="table-responsive">
           <div class="form-group">
             <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
@@ -118,9 +114,6 @@
         </div>
       </div>
     </div>
-    <div v-else>
-      <p class="text-center">{{message2}}</p>
-    </div>
   </div>
 </template>
 
@@ -129,8 +122,10 @@
 import UserService from '../services/user.service'
 import Helper from '../services/helper.service'
 import fileService from "@/services/file.service";
+import BestellungenMa from '../components/BestellungenMa.vue'
 
 export default {
+  components:{BestellungenMa},
   data() {
     return {
       vorname: '',
@@ -143,7 +138,7 @@ export default {
       content: '',
       admin: false, //speichern, ob Mitarbeiter Admin ist
       employee: false,
-      seen: false,
+      seen: true,
       editEmployee: false,
       editCar: false,
       employees: [], //Alle Mitarbeiter
@@ -154,17 +149,14 @@ export default {
       adminmessage: '',
       message: '',
       message2: '',
-      message3: ''
+      message3: '',
+      editOrders: false,
     }
   },
   methods: {
     getImageUrl(image) {
       return fileService.getImageUrl(image)
     },
-    zeigeBestellungen() {
-      this.$router.push('/admin/bestellungen')
-    },
-
     // zu schadenansicht des autos wechseln
     showDamage(auto){
       this.$router.push('/admin/' + auto + "/schaden")
@@ -175,6 +167,7 @@ export default {
       this.editEmployee = !this.editEmployee
       this.editCar = false;
       this.editUser = false;
+      this.editOrders = false;
       if (this.editEmployee) {
         UserService.getEmployee(-200)
             .then(response => {
@@ -190,6 +183,7 @@ export default {
       this.editUser = !this.editUser
       this.editCar = false;
       this.editEmployee = false;
+      this.editOrders = false;
       if (this.editUser) {
         UserService.getCustomers()
             .then(response => {
@@ -205,6 +199,7 @@ export default {
       this.editCar = !this.editCar
       this.editEmployee = false;
       this.editUser = false;
+      this.editOrders = false;
       if (this.editCar) {
         UserService.getCar('alle')
             .then(response => {
@@ -215,6 +210,12 @@ export default {
       } else {
         this.cars = []
       }
+    },
+    showOrders(){
+      this.editOrders = !this.editOrders;
+      this.editCar = false;
+      this.editEmployee = false;
+      this.editUser = false;
     },
     //Pfad auf detaillierte Mitarbeiteranzeige erneuern
     createEmployee() {
@@ -273,6 +274,11 @@ export default {
         case 'customers': {
           this.seen = true;
           this.showCustomers();
+          break;
+        }
+        case 'orders': {
+          this.seen = true;
+          this.showOrders();
           break;
         }
       }

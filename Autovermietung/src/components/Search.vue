@@ -148,7 +148,7 @@
             <td>Typ:</td>
             <td>{{ auto.typ }}</td>
             <td>Verbrauch:</td>
-            <td>{{ auto.verbrauch }}</td>
+            <td>{{ auto.verbrauch }} <span class="verbrauch">L/100 km</span></td>
             <td class="text-center">
               <button
                   type="submit"
@@ -177,14 +177,14 @@
             <td>{{ auto.kraftstoff }}</td>
 
             <td>Leistung:</td>
-            <td>{{ auto.leistung }}</td>
+            <td>{{ auto.leistung }} PS</td>
           </tr>
 
           <tr>
             <td>Getriebe:</td>
             <td>{{ auto.getriebe }}</td>
             <td>Preis:</td>
-            <td>{{ auto.preis }}</td>
+            <td>{{ auto.preis }} &euro;</td>
             <td>Modell:</td>
             <td>{{ auto.modelbezeichnung }}</td>
           </tr>
@@ -192,10 +192,24 @@
       </div>
     </main>
     <div v-else class="search-result">
-      <div class="text-center description">
-      <p>Auto: {{ gewaehltesauto.name }}</p>
-      <p>Preis/Tag: {{ gewaehltesauto.preis }}</p>
-      <p>Verbrauch: {{ gewaehltesauto.verbrauch }}</p>
+
+      <div class="description">
+        <h2 class="text-center">Auto: {{ gewaehltesauto.name }}</h2>
+        <div class="row">
+          <div class="col text-center">
+            <div class="img-preview" v-if="gewaehltesauto.image">
+              <img v-bind:src="`${getImageUrl(gewaehltesauto.image)}`"
+                   v-bind:alt="`${gewaehltesauto.image.originalname}`">
+            </div>
+          </div>
+          <div class="col">
+            <p>Preis/Tag: {{ gewaehltesauto.preis }}  &euro;</p>
+            <p v-if="gewaehltesauto.verbrauch">Verbrauch: {{ gewaehltesauto.verbrauch }} <span class="verbrauch">L/100 km</span></p>
+            <p v-if="gewaehltesauto.sitzplaetze">Sitzplätze: {{ gewaehltesauto.sitzplaetze }}</p>
+            <p v-if="gewaehltesauto.kraftstoff">Kraftstoff: {{ gewaehltesauto.kraftstoff }}</p>
+            <p v-if="gewaehltesauto.getriebe">Getriebe: {{ gewaehltesauto.getriebe }}</p>
+          </div>
+        </div>
       </div>
       <div class="actions">
       <button type="cancel" class="btn btn-secondary" @click="back">Zur Fahrzeugsuche</button>
@@ -511,13 +525,23 @@ export default ({
 }
 .search-result{
   .description{
-    font-size: 2em;
+    p {
+      font-size: 1.3em;
+    }
+    .verbrauch{
+      font-size: 0.7em;
+    }
+    h2 {
+      font-size: 2em;
+    }
   }
   .actions{
     display: flex;
     justify-content: space-between;
   }
 }
-
+.verbrauch{
+  font-size: 0.8em;
+}
 
 </style>
