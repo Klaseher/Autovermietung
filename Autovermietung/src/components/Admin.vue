@@ -2,11 +2,6 @@
   <div class="administrator container">
     <h1>{{adminmessage}}</h1>
     <hr>
-    <div class="text-center form-group">
-      <button class="btn-primary btn" v-on:click="zeigeBestellungen()">
-        Bestellungen verwalten
-      </button>
-    </div>
 
     <!-- Wenn Admin, dann werden hier zusätzliche Adminelemente geladen  -->
 
@@ -24,6 +19,10 @@
     <div v-if="seen" class="form-group">
       <p class="text-center">{{message3}}</p>
       <div class="actions form-group">
+        <button class="btn-primary btn" v-on:click="zeigeBestellungen()" v-if="admin || employee">
+          Bestellungen verwalten
+        </button>
+
         <button class="btn btn-primary" type="submit" @click="showEmployees" v-if="admin">
           Mitarbeiterübersicht
         </button>
