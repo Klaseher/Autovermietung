@@ -1,12 +1,13 @@
 <template>
 
     <div class="container">
-        <h1>Welcome to regular users page</h1>
+        <h1>Wilkommen in ihrem Kundenkonto</h1>
+        <br><br/>
         <hr>
         <h2>{{msg}}</h2>
         <div v-on:click="zeigeBestellungen()" class="text-center">
                 <button class="btn btn-primary">
-                    Bestellungen
+                    Meine Bestellungen
                 </button>
         </div>
 

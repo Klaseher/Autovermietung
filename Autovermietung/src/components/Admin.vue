@@ -1,5 +1,6 @@
 <template>
   <div class="administrator container">
+  <br><br/>
     <h1>{{adminmessage}}</h1>
     <hr>
 
@@ -9,6 +10,7 @@
     <!-- Anzeigen der Adminfunktionen -->
     <div class="form-group">
       <p class="text-center">{{message3}}</p>
+      <br><br/>
       <div class="actions form-group">
         <button class="btn-primary btn" v-on:click="showOrders()" v-if="admin || employee">
           Bestellungen verwalten
@@ -28,11 +30,15 @@
       <div>
         <!-- Anzeigen aller Mitarbeiter + Auswählen zum Bearbeiten -->
         <div v-if="editOrders">
+        <br><br/>
+        <br><br/>
           <div class="row">
             <BestellungenMa/>
           </div>
         </div>
         <div v-if="editEmployee" class="table-responsive">
+        <br><br/>
+        <br><br/>
           <div class="form-group">
             <button class="btn btn-success" @click="createEmployee()">Neuen Mitarbeiter anlegen</button>
           </div>
@@ -59,6 +65,8 @@
         </div>
 
         <div v-if="editUser" class="table-responsive">
+        <br><br/>
+        <br><br/>
           <table class="table">
             <thead>
             <tr>
@@ -82,6 +90,8 @@
         </div>
 
         <div class="table-responsive" v-if="editCar">
+        <br><br/>
+        <br><br/>
           <div class="form-group">
             <button class="btn btn-success" @click="createCar()" v-if="admin">Neues Auto erstellen</button>
           </div>
@@ -244,7 +254,7 @@ export default {
       this.adminmessage = "Sie sind als Mitarbeiter angemeldet"
       this.message = "Mitarbeiter-Funktionen"
       this.message2 = "In diesem Bereich können Sie auf erweiterte Mitarbeiter Funktionen zugreifen"
-      this.message3 = "In diesem Bereich können Kundendaten sowie Autoschäden verwaltet und bearbeitet werden."
+      this.message3 = "In diesem Bereich können Bestellungen, Kundendaten sowie Autoschäden verwaltet und bearbeitet werden."
       this.admin = false
       this.employee = true;
     } else if (role == 2) {
