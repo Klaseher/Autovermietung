@@ -3,6 +3,14 @@
     <h1>ÜBER UNS</h1>
     <hr>
     <div>
+      <br><br/>
+      <h3>Für jeden Kunden den passenden Mietwagen</h3>
+      <p></p>
+      <p>
+        Mobilität ist in der heutigen Zeit unverzichtbar. Daher hat es sich Buchbinder Rent-a-Car zur Aufgabe gemacht,
+        Sie in Bewegung zu bringen. Seit der Aufnahme der Geschäftstätigkeit folgen wir dabei unserer Maxime, Sie
+        mit hochwertigem Service und bestechend guten Leistungen zu überzeugen. Wir machen Ihre Wünsche wahr!
+      </p>
       <p>
         Ob Sie einmaligen Bedarf haben oder an einer langfristigen Geschäftslösung interessiert 
         sind – wir bieten Ihnen das Fahrzeug Ihrer Wahl und den passenden Service gleich dazu. Mit
@@ -11,46 +19,34 @@
         besonderen Anlass oder doch eher der Kleinbus für die ganze Familie - wir stehen Ihnen mit
         unserem Rundum-Service und einer großen Auswahl zur Verfügung. Bei uns können Sie 
         zwischen Kurz- und Langzeitmiete sowie zwischen einer Anmietung vor Ort oder einer 
-        Fahrzeuglieferun bis zum gewünschtem Anmietort auswählen.
+        Fahrzeuglieferung bis zum gewünschtem Anmietort auswählen.
       </p>
       <p>
-        Donec ultricies, lorem id porta dignissim, tellus nibh sagittis purus, ut hendrerit est arcu facilisis justo.
-        Mauris volutpat lobortis accumsan. Phasellus sapien metus, venenatis nec tortor laoreet, malesuada hendrerit
-        dolor. In neque mi, tempus ut est a, consectetur lobortis magna. Pellentesque purus nibh, hendrerit in efficitur
-        ut, rhoncus quis justo. Ut tincidunt et arcu in fringilla. Phasellus consequat justo id massa aliquam gravida in
-        at leo. Etiam tincidunt nisi nec erat lacinia tempor. Curabitur enim sapien, fringilla faucibus pellentesque
-        vel,
-        dapibus nec libero. Pellentesque congue sagittis velit ac dapibus. Fusce sagittis, purus eu porta viverra, dolor
-        augue placerat felis, in varius tortor ipsum id risus. In et tortor id odio volutpat sodales. Quisque auctor sem
-        enim, vitae pellentesque mauris tincidunt in. Curabitur quis ex ac augue tempus tempus.
+        Bester Service und kompetente Beratung machen uns zu Ihrem verlässlichen Partner für die Vermietung
+        von Fahrzeugen. Denn trotz der guten Unternehmensentwicklung in den vergangenen Jahren ruhen wir uns
+        nicht aus, sondern haben stets ein Ziel vor Augen: die ständige Verbesserung im Sinne unserer Kunden.
+        Und dabei fangen wir an der Basis an, denn ein funktionierendes, professionelles Unternehmen kann nur durch
+        zufriedene, motivierte und qualifizierte Mitarbeiter bestehen, die Raum für individuelle Entfaltung und
+        eigenes Engagement haben. Uns ist wichtig, dass nicht nur auf geschäftlicher, sondern auch persönlicher
+        Ebene das Klima stimmt, denn nur so lassen sich Höchstleistungen erbringen. HEYRJP Autovermietung ist Ihr
+        zuverlässiger und kompetenter Partner – und das in jeder Situation. Wir machen Sie mobil auf den Punkt.
       </p>
+      <br><br/>
+      <h3>Welche Leistungen im Mietpreis enthalten sind</h3>
+      <p></p>
       <p>
-        Nam sed diam enim. Fusce id magna ante. Sed volutpat tristique neque, eget feugiat elit dapibus a. Praesent
-        pretium nibh eu massa consequat, non vehicula orci ornare. Fusce aliquet interdum arcu, sed vestibulum dui
-        fringilla id. Vivamus dolor orci, pharetra ornare congue non, blandit in enim. Aenean dictum, ex id pellentesque
-        ultricies, urna massa ultricies eros, nec cursus lectus elit at dolor. Nam ultrices sit amet elit a sagittis.
+        Zunächst richtet sich der Mietpreis bei Buchbinder Rent-a-Car nach der Anmietdauer. Bei speziellen Tarifen,
+        Sonderangeboten und Fahrzeugtypen richtet sich der Preis auch nach den gefahrenen Kilometern.
+        Grundsätzlich enthält der Mietpreis die Aufwendungen für den Ölverbrauch, für Wartung und Verschleißreparturen
+        und für die Kfz-Haftpflichtversicherung. Die Kosten für den Kraftstoff sind vom Mieter zu tragen. 
+        Wir bieten unseren Kunden hierfür einen eigenen Tankservice, dessen Konditionen Sie bei den Filialen
+        unserer Vermietung einsehen können. Ebenfalls nicht im Mietpreis enthalten sind AdBlue-Zusätze und nach
+        gesetzlichen Bestimmungen des Aufenthaltslandes anfallende Mautgebühren. Diese Kosten gehen ebenfalls
+        zu Lasten des Mieters.
+        Sollte eine Bearbeitung von nachträglich eingehenden Strafzetteln oder Verkehrsverstößen erforderlich werden,
+        so berechnen wir Ihnen diese weiter, verbunden mit einer Aufwandspauschale.
       </p>
-      <p>
-        Phasellus maximus vel ex vel consectetur. Maecenas non tristique ante. Fusce ut diam vitae mi vulputate
-        fringilla
-        sed ac lectus. Nullam ipsum ex, vulputate sit amet vehicula vitae, malesuada at neque. Fusce convallis molestie
-        ipsum. Aliquam erat volutpat. Ut condimentum accumsan condimentum. Curabitur nisl felis, volutpat sit amet
-        dictum
-        nec, malesuada vel libero. Proin pellentesque, arcu eu eleifend pulvinar, mauris velit euismod dolor, vehicula
-        gravida nibh urna sed felis. Etiam venenatis posuere diam, a tristique leo gravida in. Nullam commodo lectus nec
-        tortor sodales hendrerit. Phasellus varius erat sagittis sem volutpat, non vestibulum ligula pulvinar. Etiam
-        commodo erat vel nulla condimentum euismod. Vivamus sit amet tellus metus. Integer maximus lobortis iaculis.
-        Donec
-        a nisl quis libero fringilla efficitur.
-      </p>
-      <p>
-        Suspendisse vitae semper nibh, in laoreet sem. Nulla nec pharetra orci. Aliquam eget mi sed diam pulvinar
-        vulputate. Donec et imperdiet elit. Morbi dapibus posuere orci sit amet egestas. Nunc molestie tincidunt
-        porttitor. Nulla facilisi. In ac molestie leo. Donec ultrices ac augue at lacinia. Vivamus et velit auctor,
-        interdum urna finibus, commodo ipsum. Nulla facilisi. Etiam aliquet consectetur orci, et posuere lacus
-        scelerisque
-        quis. Integer et libero nec enim finibus eleifend. Etiam ac varius justo.
-      </p>
+      <br><br/>
     </div>
   </div>
 </template>
