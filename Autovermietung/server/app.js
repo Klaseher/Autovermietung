@@ -88,7 +88,6 @@ router.post('/register', function (req, res) {
             if (error) {
               res.status(500).send('Error on the server.')
             } else {
-              console.log('Verifizierungs-Email erfolgreich gesendet')
               res.status(200).send('User successfully created!\nPlease verify your account first by clicking on the link sent to the provided email')
             }
           })
@@ -181,7 +180,6 @@ router.post('/login', (req, res) => {
           if (error) {
             res.status(500).send('Error on the server.')
           } else {
-            console.log('Verifizierungs-Email erfolgreich gesendet')
             res.status(420).send('We\'ve sent a verification email. Please verify your account first before logging in again')
           }
         })
@@ -234,7 +232,6 @@ router.post('/reset-userpw', (req, res) => {
           if (error) {
             res.status(500).send('Error on the server.')
           } else {
-            console.log('Rücksetz-Email erfolgreich gesendet')
             res.status(200).send({success: true})
           }
         })
@@ -506,7 +503,6 @@ router.get('/car/:autoname', (req, res) => {
       db.getAllCars((err, cars) => {
         if (err) return res.status(500).send('Error on the server.')
         if (!cars) return res.status(404).send('No Cars available')
-        console.log(cars)
         //sieht hier jede Bestellung (also auch Anfrage von Kunden)
         //bereits als vollständige Bestellung an 
         //--> Auto kann nicht gemietet werden, erst wenn Mitarbeiter Bestellung löschen würde
@@ -531,7 +527,6 @@ router.get('/car/:autoname', (req, res) => {
             orderTime[index].times.push({from: timee.startdatum, to: timee.enddatum})
           }
           //werden jetzt alle Autos und die zu ihnen gehörigen Bestellzeiträume zurückgegeben
-          console.log(orderTime)
           return res.status(200).send({cars: cars, times: orderTime})
         })
       })
@@ -562,10 +557,8 @@ router.get('/car/:autoname/schaeden', (req, res) => {
         user = ausgabe.user
         // nur mitarbeiter darf auf schaeden zugreifen
         if(user.rolle > 0){
-          console.log(req.params.autoname)
           db.getOpenCarDamage(req.params.autoname, (err, cardamage) => {
             if (err) return ausgabe.res.status(500).send('Error on the server.')
-            console.log(cardamage)
             if (cardamage.length == 0) return ausgabe.res.status(200).send({success: true}) // kein aktiver schaden ist erfolg
             return ausgabe.res.status(200).send({cardamage: cardamage})
           })
@@ -610,7 +603,7 @@ router.delete('/car/:autoname/schaeden/:pos', (req, res) => {
                     break
                   }
                 }
-                // auto wieder verfuegbar
+                // auto verfuegbar
                 if (cardamage.length == 0 || !fatal){
                   updater = true
                 } 
@@ -692,7 +685,6 @@ router.put('/car/:autoname/schaeden/updateStatus', (req, res) => {
                 // auto wieder verfuegbar
                 if (cardamage.length == 0 || !fatal){
                   db.updateVerfuegbarkeit(req.params.autoname, 1, (err) => {
-                    console.log(err)
                     if (err) return ausgabe.res.status(500).send('Error on the server.')
                     return res.status(200).send({success: true, verfuegbar: true})
                   })
@@ -750,7 +742,6 @@ router.put('/car/:autoname/updateAusleihe', (req, res) => {
 
 //schaeden auto erstellen
 router.post('/car/:autoname/schaeden', (req, res) => {
-  console.log(req.body)
   if(req.body.beschreibung != null && req.body.prio != null && req.body.typ != null && req.body.kosten != null){
     let token = req.cookies.jwt
     //Wenn Token vorhanden, Verifizerung, ob Token gültig
@@ -774,7 +765,7 @@ router.post('/car/:autoname/schaeden', (req, res) => {
                 }
               }
           }
-          // nur mitarbeiter darf schaeden hinzufuegen
+          // nur mitarbeiter+admin darf schaeden hinzufuegen
           if(user.rolle > 0){
             db.getCar(req.params.autoname, (err, auto) =>{
               if (err) return ausgabe.res.status(500).send('Error on the server.')
@@ -796,7 +787,6 @@ router.post('/car/:autoname/schaeden', (req, res) => {
                 bnr,
                 pos
               ], (err) => {
-                console.log(err)
                 if (err) return ausgabe.res.status(500).send('Error on the server.')
                 // wenn schaden prioritaet 0, dann wird auto fuer weitere bestellungen gesperrt
                 // alle bereits bestaetigten bestellungen (1), werden wieder auf offenen gesetzt 
@@ -952,7 +942,6 @@ router.get('/order/:bnr', (req, res) => {
         if (req.params.bnr.includes("alle")) {
           // alle bestellungen jeden typs holen
           db.getAllOrders((err, orders) => {
-            console.log(orders)
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})
@@ -962,7 +951,6 @@ router.get('/order/:bnr', (req, res) => {
           // alle offenen bestellungen bestimmten typs holen
           let typ = req.params.bnr.split(" ")[1]
           db.getAllOpenOrders(typ, (err, orders) => {
-            console.log(orders)
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})
@@ -971,7 +959,6 @@ router.get('/order/:bnr', (req, res) => {
         // alle geschlossenen bestellungen holen
         else if(req.params.bnr == "geschlossen"){
           db.getOrderHistory((err, orders) => {
-            console.log(orders)
             if (err) return res.status(500).send('Error on the server.')
             if (!orders) return res.status(404).send('No Orders available')
             return res.status(200).send({orders: orders})
@@ -1038,9 +1025,9 @@ router.get('/order/:bnr/car/:autoname', (req, res) => {
         // test, ob es bestellung mit bnr gibt, die noch offen ist
         db.getOrderbyBnr(req.params.bnr, (err, order) => {
           if (err) return res.status(500).send('Error on the server.')
-          if (!order || order.status == 3 || order.status == 4) return res.status(200).send({success:false})
+          // darf nur kosten zu bestellungen hinzufügen, wenn auto ausgeliehen und zurückgegeben wurde
+          if (!order || order.status != 2) return res.status(200).send({success:false})
           db.getDamagebyBnrAndCar(req.params.bnr, req.params.autoname, (err, schaeden) => {
-            console.log(schaeden)
             if (err) return res.status(500).send('Error on the server.')
             if (!schaeden) return res.status(404).send('No Orders available')
             return res.status(200).send({success: true, schaeden: schaeden})
@@ -1148,7 +1135,6 @@ router.post('/order/:bnr/cost', (req, res) => {
           }
           else{
             for(let i=0;i<costs.length-1;i++){
-              console.log(costs[i])
               if(costs[i].pos > costs[i+1].pos){
                 posMax = costs[i].pos
               }
@@ -1171,8 +1157,6 @@ router.post('/order/:bnr/cost', (req, res) => {
          }
          if(vorhanden){
           db.updateCost(req.body.kosten, req.params.bnr, kosten.pos, req.body.beschreibung, (err) => {
-            console.log(req.body.beschreibung)
-            console.log(err)
             if (err) return res.status(500).send('Error on the server.')
             return res.status(200).send({success: true, changed: true, pos : kosten.pos})
           })
@@ -1315,9 +1299,7 @@ router.delete('/order/:bnr/cost/:pos/:typ', (req, res) => {
               })
             }
             else{
-              console.log(req.params.bnr, req.params.typ, req.params.pos)
               db.deleteFirstOrderCost(req.params.bnr, req.params.typ, (err) => {
-                console.log(err)
                 if (err ) return res.status(500).send('Error on the server.')
                 return res.status(200).send({success: true})
               })

@@ -130,11 +130,11 @@
         <div v-if="auto.ausgeliehen == 0 && gewaehlteBestellung.status==1">
           <button @click="ausleihen(auto.name, gewaehlteBestellung.bnr)">Auto ausleihen</button>
         </div>
-        <div v-if="gewaehlteBestellung.status==5 && auto.ausgeliehen == 1">
+        <div v-if="(gewaehlteBestellung.status==5 || gewaehlteBestellung.status == 6) && auto.ausgeliehen == 1">
           <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurückgeben</button>
         </div>
         <div
-            v-if="(auto.ausgeliehen == 1 && gewaehlteBestellung.status==6) || (auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
+            v-if="(auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
           <button class="btn btn-primary" @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
         </div>
         <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
@@ -293,12 +293,12 @@ export default {
             this.$router.push("/admin")
         },
         showDamage(bestellung){
-            // vor bestaetigung behandlung schaeden
-            if(bestellung.status == 0){
+            // allgemeine autoschäden behandlen, wenn auto im ausleihprozess ist
+            if(bestellung.status == 0 || bestellung.status == 1 || bestellung.status == 6 || bestellung.status == 5){
                 Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden");
             }
-            // offene oder zeitlich ueberfaellige bestellungen
-            else if(bestellung.status == 1 || bestellung.status == 6 || bestellung.status == 5 || bestellung.status == 2){
+            // erst wenn auto erfolgreich durch kunden zurückgegeben, dann können auch zur bestellung schäden hinzugefügt werden
+            else if(bestellung.status == 2){
                  Helper.redirect("/admin/"+bestellung.auto_fk+"/schaden" + "/" + bestellung.bnr);
             }
         },
@@ -569,12 +569,9 @@ export default {
                         return
                     })  
                 }
-                else if(this.gewaehlteBestellung.status != 2){
-                    this.rueckgabe(bnr)
-                }
             }
         },
-        // 5 zu 2, um weitere Verspaetungsgebuehren zu verhindern bzw. wenn Zusatzkosten nicht direkt durch Kunden bezahlt werden koennen (1-->2)
+        // 5 zu 2 bzw. 6-->2 (rueckgabe auto)
         rueckgabe(bnr){
           if(confirm("Wurde das Auto wirklick vom Kunden zurückgegeben?")){                
             Auth.updateStatusOrder(bnr, 2)
@@ -943,7 +940,7 @@ export default {
                return 'Bestätigte Bestellung'
            }
            else if(status == 2){
-               return 'Bezahlung ausstehend'
+               return 'Wartet auf Beendigung'
            }
            else if(status == 3){
                return 'Abgebrochene Bestellung'

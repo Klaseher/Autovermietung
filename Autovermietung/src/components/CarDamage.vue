@@ -157,7 +157,7 @@ export default {
                                 alert("Die dazugehoerigen Kosten wurden aus der Bestellung geloescht")
                             }
                             if(response.data.verfuegbar){
-                                alert("Das Auto ist wieder fuer die Vermietung verfuegbar")
+                                alert("Das Auto ist fuer die Vermietung verfuegbar")
                             }
                         }
                     })
@@ -378,7 +378,7 @@ export default {
                     this.schaeden.push.apply(this.schaeden, response.data.schaeden)    
                 }
                 else{
-                    alert("Die Bestellung BNR: " + this.$route.params.bnr + " ist ungueltig/nicht mehr vorhanden/bereits abgeschlossen")
+                    alert("Die Bestellung BNR: " + this.$route.params.bnr + " ist ungueltig/nicht mehr vorhanden/bereits abgeschlossen/laufend")
                     Helper.redirect("/admin");
                 }
             })
