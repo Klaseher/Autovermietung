@@ -975,7 +975,7 @@ export default {
         let heute = new Date(new Date().setHours(0,0,0,0));
         this.datepickerSetting.value = Helper.formatDate(heute)
                                                            //0                       3,4                   2                           5                   doppelt = true              6                            1
-        this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Offene Bezahlung", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen", "Bestaetigte Bestellungen"];
+        this.bestellungstypen = ["Alle Bestellungen", "Offene Bestellanfragen", "Bestellungshistorie", "Zu beendende Bestellungen", "Ueberzogene Bestellungen","Doppelte Bestellungen", "Laufende Bestellungen", "Bestaetigte Bestellungen"];
         if (this.$route.params.bnr != undefined && this.$route.params.bnr != "") {
             this.ausgewaehlt = true
             this.msg = "Bestellung: " + this.$route.params.bnr
