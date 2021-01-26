@@ -134,7 +134,7 @@
           <button class="btn btn-warning" @click="rueckgabe(gewaehlteBestellung.bnr)">Auto zurückgeben</button>
         </div>
         <div
-            v-if="(auto.ausgeliehen == 0 && gewaehlteBestellung.status==2)">
+            v-if="gewaehlteBestellung.status==2">
           <button class="btn btn-primary" @click="finishOrder(gewaehlteBestellung.bnr)">Abschließen</button>
         </div>
         <div v-if="gewaehlteBestellung.status!=3 && gewaehlteBestellung.status!=4">
