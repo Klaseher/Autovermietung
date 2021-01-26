@@ -361,7 +361,7 @@ export default {
                                                 Helper.handle(error)
                                                 this.ausgewaehlt = false;
                                                 this.msg = "Alle Bestellungen"
-                                                Helper.redirect("/admin/bestellungen");
+                                                Helper.redirect("/admin/orders");
                                             })
                                         }
                                     })
@@ -369,7 +369,7 @@ export default {
                                         Helper.handle(error)
                                         this.ausgewaehlt = false;
                                         this.msg = "Alle Bestellungen"
-                                        Helper.redirect("/admin/bestellungen");
+                                        Helper.redirect("/admin/orders");
                                         })
                             }
                             })
@@ -377,7 +377,7 @@ export default {
                             Helper.handle(error)
                             this.ausgewaehlt = false;
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen");
+                            Helper.redirect("/admin/orders");
                     })
                 }
                 else{
@@ -392,7 +392,7 @@ export default {
                             if(!skip) alert("Bestellung wurde erfolgreich abgebrochen.")
                             this.ausgewaehlt = false
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen");
+                            Helper.redirect("/admin/orders");
                             return
                         }
                     })
@@ -400,7 +400,7 @@ export default {
                         Helper.handle(error)
                         this.ausgewaehlt = false
                         this.msg = "Alle Bestellungen"
-                        Helper.redirect("/admin/bestellungen");
+                        Helper.redirect("/admin/orders");
                         return
                     })
                 }
@@ -459,7 +459,7 @@ export default {
                                 alert("Bestellung wurde erfolgreich bestaetigt.")
                                 this.ausgewaehlt = false
                                 this.msg = "Alle Bestellungen"
-                                Helper.redirect("/admin/bestellungen");
+                                Helper.redirect("/admin/orders");
                                 return
                             }
                         })
@@ -467,7 +467,7 @@ export default {
                             Helper.handle(error)
                             this.ausgewaehlt = false
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen");
+                            Helper.redirect("/admin/orders");
                             return
                         })
                     }
@@ -494,7 +494,7 @@ export default {
                                             this.bestellungen.find(
                                             (element) => element.bnr == date.bnr).status = 1
                                             alert("Bestellung wurde erfolgreich bestaetigt.")
-                                            Helper.redirect("/admin/bestellungen");
+                                            Helper.redirect("/admin/orders");
                                             this.ausgewaehlt = false
                                             this.msg = "Alle Bestellungen"
                                             return
@@ -504,7 +504,7 @@ export default {
                                         Helper.handle(error)
                                         this.ausgewaehlt = false
                                         this.msg = "Alle Bestellungen"
-                                        Helper.redirect("/admin/bestellungen");
+                                        Helper.redirect("/admin/orders");
                                         return
                                     })
                             }
@@ -515,7 +515,7 @@ export default {
                     Helper.handle(error)
                     this.ausgewaehlt = false
                     this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen");
+                    Helper.redirect("/admin/orders");
                 })
         },
 
@@ -556,7 +556,7 @@ export default {
                                 Helper.handle(error)
                                 this.ausgewaehlt = false
                                 this.msg = "Alle Bestellungen"
-                                Helper.redirect("/admin/bestellungen");
+                                Helper.redirect("/admin/orders");
                                 return
                             })  
                         }
@@ -565,7 +565,7 @@ export default {
                         Helper.handle(error)
                         this.ausgewaehlt = false
                         this.msg = "Alle Bestellungen"
-                        Helper.redirect("/admin/bestellungen");
+                        Helper.redirect("/admin/orders");
                         return
                     })  
                 }
@@ -590,7 +590,7 @@ export default {
                         Helper.handle(error)
                         this.ausgewaehlt = false
                         this.msg = "Alle Bestellungen"
-                        Helper.redirect("/admin/bestellungen");
+                        Helper.redirect("/admin/orders");
                         return
                     })  
                 }
@@ -599,7 +599,7 @@ export default {
                 Helper.handle(error)
                 this.ausgewaehlt = false
                 this.msg = "Alle Bestellungen"
-                Helper.redirect("/admin/bestellungen");
+                Helper.redirect("/admin/orders");
                 return
             })  
           }
@@ -628,7 +628,7 @@ export default {
                             Helper.handle(error)
                             this.ausgewaehlt = false
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen");
+                            Helper.redirect("/admin/orders");
                             return
                         })  
                     }
@@ -637,7 +637,7 @@ export default {
                     Helper.handle(error)
                     this.ausgewaehlt = false
                     this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen");
+                    Helper.redirect("/admin/orders");
                     return
                 })  
             }
@@ -715,7 +715,7 @@ export default {
                             Helper.handle(error)
                             this.ausgewaehlt = false
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen/");
+                            Helper.redirect("/admin/orders/");
                         })
                     }
                 })
@@ -723,7 +723,7 @@ export default {
                     Helper.handle(error)
                     this.ausgewaehlt = false
                     this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen/");
+                    Helper.redirect("/admin/orders/");
                 })
                 
             })
@@ -745,7 +745,7 @@ export default {
                 Helper.handle(error);
                 this.ausgewaehlt = false
                 this.msg = "Alle Bestellungen"
-                Helper.redirect("/admin/bestellungen");
+                Helper.redirect("/admin/orders");
             });
             return
         },
@@ -782,7 +782,7 @@ export default {
                                     Helper.handle(error)
                                     this.ausgewaehlt = false
                                     this.msg = "Alle Bestellungen"
-                                    Helper.redirect("/admin/bestellungen");
+                                    Helper.redirect("/admin/orders");
                                     return
                                 })  
                             }
@@ -791,7 +791,7 @@ export default {
                             Helper.handle(error)
                             this.ausgewaehlt = false
                             this.msg = "Alle Bestellungen"
-                            Helper.redirect("/admin/bestellungen");
+                            Helper.redirect("/admin/orders");
                             return
                         })
                    }
@@ -800,7 +800,7 @@ export default {
                     Helper.handle(error)
                     this.ausgewaehlt = false
                     this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen");
+                    Helper.redirect("/admin/orders");
                     return
                 })
         },
@@ -814,7 +814,7 @@ export default {
                 Helper.handle(error)
                 this.ausgewaehlt = false
                 this.msg = "Alle Bestellungen"
-                Helper.redirect("/admin/bestellungen/");
+                Helper.redirect("/admin/orders/");
             })
         },
         holeKosten(bnr){
@@ -829,7 +829,7 @@ export default {
                     Helper.handle(error)
                     this.ausgewaehlt = false
                     this.msg = "Alle Bestellungen"
-                    Helper.redirect("/admin/bestellungen/");
+                    Helper.redirect("/admin/orders/");
                 })
         },
         // faerbe tabelle, wenn doppelte bestellung
